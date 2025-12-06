@@ -9,8 +9,6 @@ import Link from "@mui/material/Link";
 import "../styles/login.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
-import showIcon from "../components/login/show.svg";
-import hideIcon from "../components/login/hide.svg";
 import { useEffect, useState } from "react";
 import TemporaryNotification from "~/components/temporaryNotification";
 import { LocationMenu } from "~/components/dropdown menus/location-dropdown";
@@ -355,9 +353,9 @@ export default function SignUp() {
                       <InputAdornment position="end">
                         <IconButton onClick={() => setShow(!show)}>
                           {show ? (
-                            <img src={showIcon} alt="Show" />
+                            <img src="/assets/icons/show.svg" alt="Show" />
                           ) : (
-                            <img src={hideIcon} alt="Hide" />
+                            <img src="/assets/icons/hide.svg" alt="Hide" />
                           )}
                         </IconButton>
                       </InputAdornment>

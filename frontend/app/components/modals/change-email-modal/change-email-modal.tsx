@@ -6,8 +6,6 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
-import showIcon from "../../login/show.svg";
-import hideIcon from "../../login/hide.svg";
 import TextField from "@mui/material/TextField";
 import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
@@ -339,9 +337,9 @@ export default function ChangeEmailModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src='/assets/icons/show.svg' alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src='/assets/icons/hide.svg' alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -487,9 +485,9 @@ export default function ChangeEmailModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src='/assets/icons/show.svg' alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src='/assets/icons/hide.svg' alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>

@@ -10,8 +10,6 @@ import Link from "@mui/material/Link";
 import { useEffect, useState } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
-import showIcon from "../components/login/show.svg";
-import hideIcon from "../components/login/hide.svg";
 import { auth } from "../../firebase";
 import { useNavigate } from "react-router";
 import handleLogIn from "~/utils/loginFunction";
@@ -111,9 +109,9 @@ export default function Login() {
                       <InputAdornment position="end">
                         <IconButton onClick={() => setShow(!show)}>
                           {show ? (
-                            <img src={showIcon} alt="Show" />
+                            <img src="/assets/icons/show.svg" alt="Show" />
                           ) : (
-                            <img src={hideIcon} alt="Hide" />
+                            <img src="/assets/icons/hide.svg" alt="Hide" />
                           )}
                         </IconButton>
                       </InputAdornment>

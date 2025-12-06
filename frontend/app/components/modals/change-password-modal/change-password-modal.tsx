@@ -11,9 +11,6 @@ import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
 import handleLogIn from "~/utils/loginFunction";
-import showIcon from "../../login/show.svg";
-import hideIcon from "../../login/hide.svg";
-
 export default function ChangePasswordModal() {
   const matches = useMediaQuery("(min-width: 600px)");
   const [open, setOpen] = React.useState(false);
@@ -337,9 +334,9 @@ export default function ChangePasswordModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -395,9 +392,9 @@ export default function ChangePasswordModal() {
                               onClick={() => setShowNewPass(!showNewPass)}
                             >
                               {showNewPass ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -455,9 +452,9 @@ export default function ChangePasswordModal() {
                               }
                             >
                               {showReEnterPass ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -564,9 +561,9 @@ export default function ChangePasswordModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -622,9 +619,9 @@ export default function ChangePasswordModal() {
                               onClick={() => setShowNewPass(!showNewPass)}
                             >
                               {showNewPass ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -682,9 +679,9 @@ export default function ChangePasswordModal() {
                               }
                             >
                               {showReEnterPass ? (
-                                <img src={showIcon} alt="Show" />
+                                <img src="/assets/icons/show.svg" alt="Show" />
                               ) : (
-                                <img src={hideIcon} alt="Hide" />
+                                <img src="/assets/icons/hide.svg" alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
