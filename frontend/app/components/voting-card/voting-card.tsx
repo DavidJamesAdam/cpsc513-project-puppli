@@ -126,12 +126,15 @@ export default function VotingCard({
         }
       );
 
+      console.log("Frontend test")
+      console.log(response)
       if (response.ok) {
         const result = await response.json();
         const favourited = result.favourited;
 
         // Fetch the updated post data directly by ID
         const postResponse = await fetch(`http://localhost:8000/posts/${post.id}`, {
+          method: "GET",
           credentials: "include",
         });
 

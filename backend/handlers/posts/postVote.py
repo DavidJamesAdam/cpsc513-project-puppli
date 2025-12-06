@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.post("/posts/vote/{postId}")
 # vote count increase
-async def post_vote(post_id: str, request: Request):
+async def post_vote(postId: str, request: Request):
     try:
         # Get user ID from session cookie
         session_cookie = request.cookies.get("session")
@@ -21,7 +21,7 @@ async def post_vote(post_id: str, request: Request):
         except Exception:
             raise HTTPException(status_code=401, detail="Invalid session")
 
-        doc_ref = db.collection("posts").document(post_id)
+        doc_ref = db.collection("posts").document(postId)
         doc = doc_ref.get()
 
         if not doc.exists:
@@ -34,7 +34,7 @@ async def post_vote(post_id: str, request: Request):
         doc_ref.update({"voteCount": firestore.Increment(1)})
 
         # Record that user voted on this post with timestamp
-        user_voted_ref = db.collection('users').document(user_id).collection('votedPosts').document(post_id)
+        user_voted_ref = db.collection('users').document(user_id).collection('votedPosts').document(postId)
         user_voted_ref.set({
             "votedAt": datetime.now(timezone.utc)
         })

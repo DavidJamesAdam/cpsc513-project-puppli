@@ -6,11 +6,11 @@ router = APIRouter()
 
 @router.get("/posts/rank/province/{location}")
 #fix class use if location stored as JSON instead of string
-async def rank_province(user_location: str):
-        
+async def rank_province(location: str):
+
     try:
         #convert user's location to Location object
-        user_location = Location.from_string(user_location)
+        location = Location.from_string(location)
 
         # Get all documents from 'posts' collection
         docs = db.collection('posts').stream()
@@ -18,7 +18,7 @@ async def rank_province(user_location: str):
         # Convert documents to dictionary format
         results = []
         for doc in docs:
-           
+
             #get post's (other user's) location and convert to Location object
             doc_data = doc.to_dict()
             post_user_id = doc_data.get('userId')
@@ -37,12 +37,12 @@ async def rank_province(user_location: str):
             #get the location as object
             post_location = post_user['location']
             post_location = Location.from_string(post_location)
-        
-            #match 'location' to user's 'location' 
-            if post_location.province == user_location.province:
+
+            #match 'location' to user's 'location'
+            if post_location.province == location.province:
                 doc_data['id'] = doc.id  # Include document ID
                 results.append(doc_data)
-            
+
         #sort from highest to lowest number of votes
         results.sort(key=lambda x: x.get('voteCount', 0), reverse=True)
 

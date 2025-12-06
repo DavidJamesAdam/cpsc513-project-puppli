@@ -7,8 +7,9 @@ router = APIRouter()
 
 @router.post("/posts/favourite/{postId}")
 # favourite toggle (add or remove)
-async def post_favourite(post_id: str, request: Request):
+async def post_favourite(postId: str, request: Request):
     try:
+        print('Backend test')
         # Get user ID from session cookie for authentication
         session_cookie = request.cookies.get("session")
         if not session_cookie:
@@ -20,7 +21,7 @@ async def post_favourite(post_id: str, request: Request):
         except Exception:
             raise HTTPException(status_code=401, detail="Invalid session")
 
-        doc_ref = db.collection("posts").document(post_id)
+        doc_ref = db.collection("posts").document(postId)
         doc = doc_ref.get()
 
         if not doc.exists:
