@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from firebase_admin import auth
 
@@ -8,8 +8,11 @@ class PassUpdate(BaseModel):
     id_token: str
     new_password: str
 
-def update_password(update: PassUpdate):
+@router.post("/user/update-password")
+async def update_password(request: Request):
     try:
+        data = await request.json()
+        update = PassUpdate(**data)
         #verify user identity token, must be a new one!!! (not days old)
         decoded = auth.verify_id_token(update.id_token)
         uid = decoded["uid"]
@@ -22,4 +25,3 @@ def update_password(update: PassUpdate):
         raise HTTPException(status_code=400, detail="Invalid password")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
- 

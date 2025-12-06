@@ -4,6 +4,7 @@ from firebase_admin import auth
 
 router = APIRouter()
 
+@router.get("/user/posts")
 async def get_posts(request: Request):
     """
     Retrieve all posts for the authenticated user

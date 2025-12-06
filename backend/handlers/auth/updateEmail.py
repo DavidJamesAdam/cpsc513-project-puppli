@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from firebase_admin import auth
 from firebase_service import db
@@ -10,8 +10,10 @@ class EmailUpdate(BaseModel):
     new_email: str
 
 @router.post("/user/update-email")
-def update_email(update: EmailUpdate):
+async def update_email(request: Request):
     try:
+        data = await request.json()
+        update = EmailUpdate(**data)
         #verify user identity token, must be a new one!!! (not days old)
         decoded = auth.verify_id_token(update.id_token)
         uid = decoded["uid"]

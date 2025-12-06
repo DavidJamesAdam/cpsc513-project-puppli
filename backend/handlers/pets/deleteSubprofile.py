@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
+@router.delete("/pet/delete/{pet_id}")
 #delete pet subprofile
 async def delete_pet(pet_id: str):
 
@@ -14,7 +15,7 @@ async def delete_pet(pet_id: str):
 
         if not doc.exists:
             raise HTTPException(status_code=404, detail="Pet not found")
-        
+
         #delete the pet
         doc_ref.delete()
 

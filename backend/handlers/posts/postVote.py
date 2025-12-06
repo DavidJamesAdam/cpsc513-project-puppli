@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 router = APIRouter()
 
+@router.post("/posts/vote/{postId}")
 # vote count increase
 async def post_vote(post_id: str, request: Request):
     try:

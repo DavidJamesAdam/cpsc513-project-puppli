@@ -5,6 +5,7 @@ from firebase_admin import auth
 
 router = APIRouter()
 
+@router.post("/posts/favourite/{postId}")
 # favourite toggle (add or remove)
 async def post_favourite(post_id: str, request: Request):
     try:
