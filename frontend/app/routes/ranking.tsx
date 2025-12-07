@@ -7,8 +7,9 @@ import Tab from "@mui/material/Tab";
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
-import rankOneIcon from "/assets/icons/rankOne.svg";
-import rankTwoIcon from "/assets/icons/rankTwo.svg";
+import rankOneIcon from "/assets/icons/rank_one.svg";
+import rankTwoIcon from "/assets/icons/rank_two.svg";
+import rankThreeIcon from "/assets/icons/rank_three.svg";
 import { authCheck } from "~/utils/authCheck";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
@@ -31,7 +32,6 @@ export default function Ranking() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   // keeps track of which tab we are on
   const [value, setValue] = useState(0);
-  const rankThreeIcon = "/assets/icons/rankThree.svg";
 
   // list to store all global names
   const [globalList, setGlobalList] = useState<RankedPet[]>([]);

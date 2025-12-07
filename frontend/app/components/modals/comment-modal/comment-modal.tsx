@@ -5,7 +5,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import disabledCommentIcon from "../../voting-card/icons/disabled_comment.svg";
+
 
 interface Comment {
   text: string;
@@ -31,6 +31,7 @@ export default function CommentModal({
   onCommentAdded,
   onOpen,
 }: CommentModalProps) {
+  const disabledCommentIcon = "/assets/icons/disabled_comment.svg";
   const [open, setOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
