@@ -2,18 +2,12 @@ import type { Route } from "./+types/profile";
 import Header from "../components/header/header";
 import "../styles/profile.css";
 import { useEffect, useState, type ChangeEvent } from "react";
-import settingsIcon from "../components/settings/icons/settings.svg";
-import defaultProfilePicture from "../components/profile/defaultPFP.svg";
-import postIcon from "../components/profile/postIcon.svg";
 import Container from "@mui/material/Container";
-import defaultPetProfilePicture from "../components/profile/defaultPetPFP.svg";
-import defaultPetPFPMain from "../components/profile/defaultPetPFPMain.svg";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import EditAboutModal from "~/components/profile/editAboutModal";
 import CreateSubProfileModal from "~/components/profile/createSubProfileModal";
 import TextField from "@mui/material/TextField";
-import editIcon from "../components/settings/icons/username.svg";
 import SaveAndCancelButtons from "~/components/saveAndCancelButtons";
 import UploadModal from "~/components/modals/upload-modal/upload-modal";
 import ProfileBanner from "~/components/profile/profileBanner";
@@ -30,6 +24,12 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Profile() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const settingsIcon = "/assets/icons/settings.svg";
+  const defaultProfilePicture = "/assets/icons/defaultPFP.svg";
+  const postIcon = "/assets/icons/postIcon.svg";
+  const defaultPetProfilePicture = "/assets/icons/defaultPetPFP.svg";
+  const defaultPetPFPMain = "/assets/icons/defaultPetPFPMain.svg";
+  const editIcon = "/assets/icons/username.svg";
 
   // Pet info from database
   const [petInfo1, setPetInfo1] = useState({
@@ -91,9 +91,12 @@ export default function Profile() {
   // fetches the last uploaded image for a specific pet
   const fetchLastPetImage = async (petId: string): Promise<string> => {
     try {
-      const response = await fetch(`http://localhost:8000/pet/${petId}/last-image`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8000/pet/${petId}/last-image`,
+        {
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -449,7 +452,15 @@ export default function Profile() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", overflow: "auto" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100vw",
+        overflow: "auto",
+      }}
+    >
       <Header />
       <main style={{ backgroundColor: "var(--bg-color)", flex: 1 }}>
         {!onMainProfile && (
@@ -464,7 +475,9 @@ export default function Profile() {
             src={
               onMainProfile
                 ? defaultProfilePicture
-                : (onPetOneSubPage ? petInfo1.lastImageUrl : petInfo2.lastImageUrl) || defaultPetProfilePicture
+                : (onPetOneSubPage
+                    ? petInfo1.lastImageUrl
+                    : petInfo2.lastImageUrl) || defaultPetProfilePicture
             }
             alt=""
           />

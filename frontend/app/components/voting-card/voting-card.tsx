@@ -5,8 +5,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
-import disabledVoteIcon from "./icons/disabled_vote.svg";
-import disabledLikeIcon from "./icons/disabled_like.svg";
 
 interface Comment {
   text: string;
@@ -38,6 +36,8 @@ export default function VotingCard({
   authorized,
   post,
 }: VotingCardProps) {
+  const disabledVoteIcon = "/assets/icons/disabled_vote.svg";
+  const disabledLikeIcon = "/assets/icons/disabled_like.svg";
   const [isFadedOut, setIsFadedOut] = useState(false);
   const [isPopped, setIsPopped] = useState(false);
   const [plusOnes, setPlusOnes] = useState<number[]>([]);
@@ -126,17 +126,20 @@ export default function VotingCard({
         }
       );
 
-      console.log("Frontend test")
-      console.log(response)
+      console.log("Frontend test");
+      console.log(response);
       if (response.ok) {
         const result = await response.json();
         const favourited = result.favourited;
 
         // Fetch the updated post data directly by ID
-        const postResponse = await fetch(`http://localhost:8000/posts/${post.id}`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const postResponse = await fetch(
+          `http://localhost:8000/posts/${post.id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (postResponse.ok) {
           const updatedPost = await postResponse.json();

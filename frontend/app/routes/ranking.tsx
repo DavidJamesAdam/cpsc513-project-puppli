@@ -1,20 +1,19 @@
 import type { Route } from "./+types/ranking";
 import Header from "../components/header/header";
-import rankingIcon from "../components/rankings/rankingIcon.svg";
+import rankingIcon from "/assets/icons/rankingIcon.svg";
 import "../styles/rankings.css";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
-import rankOneIcon from "../components/rankings/rankOne.svg";
-import rankTwoIcon from "../components/rankings/rankTwo.svg";
-import rankThreeIcon from "../components/rankings/rankThree.svg";
+import rankOneIcon from "/assets/icons/rankOne.svg";
+import rankTwoIcon from "/assets/icons/rankTwo.svg";
 import { authCheck } from "~/utils/authCheck";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import TableBody from "@mui/material/TableBody";
-import petPFP from "../components/profile/defaultPetPFP.svg";
+import petPFP from "/assets/icons/defaultPetPFP.svg";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -32,6 +31,7 @@ export default function Ranking() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   // keeps track of which tab we are on
   const [value, setValue] = useState(0);
+  const rankThreeIcon = "/assets/icons/rankThree.svg";
 
   // list to store all global names
   const [globalList, setGlobalList] = useState<RankedPet[]>([]);

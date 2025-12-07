@@ -1,9 +1,4 @@
 import "../../styles/settings.css";
-import faqsIcon from "./icons/faqs.svg";
-import notificationsDisabledIcon from "./icons/notificationsDisabled.svg";
-import notificationsEnabledIcon from "./icons/notificationsEnabled.svg";
-import passwordIcon from "./icons/password.svg";
-import usernameIcon from "./icons/username.svg";
 
 interface SettingOptionProps {
   settingName: string;
@@ -12,6 +7,11 @@ interface SettingOptionProps {
 
 // gets the icon based on the setting name
 function getIcon(name: string, enabled?: boolean) {
+  const notificationsEnabledIcon = "/assets/icons/notificationsEnabled.svg";
+  const notificationsDisabledIcon = "/assets/icons/notificationsDisabled.svg";
+  const passwordIcon = "/assets/icons/password.svg";
+  const usernameIcon = "/assets/icons/username.svg";
+  const faqsIcon = "/assets/icons/faqs.svg";
   if (name === "Notifications" && enabled === false) {
     return notificationsDisabledIcon;
   } else if (name === "Notifications" && enabled === true) {

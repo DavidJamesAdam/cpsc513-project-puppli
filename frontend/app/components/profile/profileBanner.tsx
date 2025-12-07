@@ -1,6 +1,6 @@
-import rankOneIcon from "../rankings/rankOne.svg";
-import rankTwoIcon from "../rankings/rankTwo.svg";
-import rankThreeIcon from "../rankings/rankThree.svg";
+import rankOneIcon from "/assets/icons/rankOne.svg";
+import rankTwoIcon from "/assets/icons/rankTwo.svg";
+
 import "./profileBanner.css";
 
 interface ProfileBannerProps {
@@ -14,6 +14,7 @@ export default function ProfileBanner({
   second,
   third,
 }: ProfileBannerProps) {
+  const rankThreeIcon = "/assets/icons/rankThree.svg";
   return (
     <div className="banner">
       <p className="award">

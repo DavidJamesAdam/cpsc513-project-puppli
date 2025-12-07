@@ -2,9 +2,6 @@ import type { Route } from "./+types/settings";
 import Header from "../components/header/header";
 import SettingOption from "../components/settings/settingOption";
 import "../styles/settings.css";
-import settingsIcon from "../components/settings/icons/settings.svg";
-import aboutIcon from "../components/settings/icons/about.svg";
-import userIcon from "../components/settings/icons/user.svg";
 import ChangePasswordModal from "~/components/modals/change-password-modal/change-password-modal";
 import FAQModal from "~/components/modals/faq-modal/faq-modal";
 import { authCheck } from "../utils/authCheck";
@@ -21,6 +18,9 @@ export function meta({}: Route.MetaArgs) {
 const version = "1.0.0";
 
 export default function Settings() {
+  const settingsIcon = "/assets/icons/settings.svg";
+  const aboutIcon = "/assets/icons/about.svg";
+  const userIcon = "/assets/icons/user.svg";
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   useEffect(() => {
     (async () => {
