@@ -1,7 +1,7 @@
 import {
   MainNavMenu,
-} from "../dropdown menus/nav-menu";
-import NotificationMenu from "../dropdown menus/notification-menu";
+} from "../dropdown menus/NavMenu";
+import NotificationMenu from "../dropdown menus/NotificationMenu";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function Header() {

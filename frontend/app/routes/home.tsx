@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import type { Route } from "./+types/home";
-import Header from "../components/header/header";
-import VotingCard from "../components/voting-card/voting-card";
+import Header from "~/components/header/header";
+import VotingCard from "~/components/voting-card/VotingCard";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { authCheck } from "../utils/authCheck";
+import { authCheck } from "~/utils/authCheck";
 import Link from "@mui/material/Link";
 import LoginHeader from "~/components/header/loginHeader";
 

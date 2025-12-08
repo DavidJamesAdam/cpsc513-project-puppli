@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import "./styles.css";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import disabledCommentIcon from "../../../assets/icons/disabled_comment.svg";
-import messageIcon from "../../../assets/icons/message_icon.svg"
-import closeIcon from "../../../assets/icons/close_icon.svg";
-import fallbackImage from "../../../assets/icons/ant-design--picture-outlined.svg";
+import disabledCommentIcon from "~/assets/icons/disabled_comment.svg";
+import messageIcon from "~/assets/icons/message_icon.svg"
+import closeIcon from "~/assets/icons/close_icon.svg";
+import fallbackImage from "~/assets/icons/ant-design--picture-outlined.svg";
+import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, buttonStyle } from "./modal.styles.js"
 
 interface Comment {
   text: string;
@@ -111,58 +111,6 @@ export default function CommentModal({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const modalStyle = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "60%",
-    maxHeight: "90%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    overflowY: "auto",
-    padding: "20px",
-  };
-
-  const modalStyleMobile = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "100%",
-    maxHeight: "90%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    overflowY: "auto",
-  };
-
-  const openButtonStyle = {
-    fontFamily: "inherit",
-    fontSize: "inherit",
-    height: "inherit",
-    textTransform: "capitalize",
-    color: "inherit",
-    gap: "0.75rem",
-    padding: "8px",
-  };
-
-  const closeButtonStyle = {
-    display: "flex",
-    borderRadius: "100px",
-    height: "100%",
   };
 
   return (
@@ -354,7 +302,7 @@ export default function CommentModal({
                   }}
                 >
                   <Button
-                    className="buttonStyle"
+                    sx={buttonStyle}
                     onClick={submitComment}
                     disabled={isSubmitting || !commentText.trim()}
                   >
@@ -562,7 +510,7 @@ export default function CommentModal({
                   }}
                 >
                   <Button
-                    className="buttonStyle"
+                    sx={buttonStyle}
                     onClick={submitComment}
                     disabled={isSubmitting || !commentText.trim()}
                   >

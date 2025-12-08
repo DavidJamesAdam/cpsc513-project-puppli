@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
-import ConfirmDeletionModal from "~/components/modals/confirm-modal/confirm-modal";
+import ConfirmDeletionModal from "~/components/modals/ConfirmModal";
 import toast from "react-hot-toast";
 import { authCheck } from "~/utils/authCheck";
 import useMediaQuery from "@mui/material/useMediaQuery";

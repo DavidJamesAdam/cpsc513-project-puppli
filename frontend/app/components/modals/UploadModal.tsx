@@ -1,18 +1,18 @@
 import React, { useRef, useState } from "react";
-import "./styles.css";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { PetSelectionMenu } from "../../dropdown menus/pet-selection-menu";
+import { PetSelectionMenu } from "../dropdown menus/PetSelectionMenu";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../../firebase";
+import { storage } from "../../../firebase";
 import toast from "react-hot-toast";
 import { toastStyle } from "~/styles/component-styles";
-import uploadIcon from "../../../assets/icons/upload_icon.svg"
-import closeIcon from "../../../assets/icons/close_icon.svg"
-import fallbackImage from "../../../assets/icons/ant-design--picture-outlined.svg"
+import uploadIcon from "~/assets/icons/upload_icon.svg"
+import closeIcon from "~/assets/icons/close_icon.svg"
+import fallbackImage from "~/assets/icons/ant-design--picture-outlined.svg"
+import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, buttonStyle } from "./modal.styles.js"
 
 type UploadModalProps = {
   open?: boolean;
@@ -146,60 +146,6 @@ export default function UploadModal({
     }
 
     handleClose();
-  };
-
-  const modalStyle = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "50%",
-    height: "70%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    transform: "translate(50%, 20%)",
-  };
-
-  const modalStyleMobile = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "100%",
-    height: "70%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    transform: "translate(0%, 20%)",
-  };
-
-  const openButtonStyle = {
-    fontFamily: "inherit",
-    fontSize: "inherit",
-    height: "inherit",
-    textTransform: "capitalize",
-    color: "inherit",
-    gap: "0.75rem",
-    padding: 0,
-  };
-
-  const closeButtonStyle = {
-    display: "flex",
-    borderRadius: "100px",
-    height: "100%",
-  };
-
-  const buttonStyle = {
-    borderRadius: "100px",
-    border: "1px solid rgba(147, 191, 191, 1)",
-    backgroundColor: "rgba(179, 232, 232, 1)",
-    color: "inherit",
-    font: "inherit",
-    display: "flex",
   };
 
   return (

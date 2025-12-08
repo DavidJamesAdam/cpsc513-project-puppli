@@ -1,7 +1,7 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import SettingOption from "../../settings/settingOption";
+import SettingOption from "../settings/SettingOption";
 import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import TextField from "@mui/material/TextField";
@@ -11,13 +11,17 @@ import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
 import handleLogIn from "~/utils/loginFunction";
-import closeIcon from "../../../assets/icons/close_icon.svg";
-import showIcon from "../../../assets/icons/show.svg";
-import hideIcon from "../../../assets/icons/hide.svg"
+import closeIcon from "~/assets/icons/close_icon.svg";
+import showIcon from "~/assets/icons/show.svg";
+import hideIcon from "~/assets/icons/hide.svg";
+import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, submitButtonStyle } from "./modal.styles.js"
 
 export default function ChangePasswordModal() {
   const matches = useMediaQuery("(min-width: 600px)");
   const [open, setOpen] = React.useState(false);
+  // server error from backend (shown in UI)
+  const [serverErrorMsg, setServerErrorMsg] = React.useState<string>("");
+  const [showServerError, setShowServerError] = React.useState<boolean>(false);
   const handleOpen = () => setOpen(true);
   // reset all error catching on modal close
   const handleClose = () => {
@@ -28,6 +32,8 @@ export default function ChangePasswordModal() {
     setNewPassReEnterErrorMsg("");
     setHasPasswordError(false);
     setPasswordErrorMsg("");
+    setShowServerError(false);
+    setServerErrorMsg("");
     // reset show password toggle
     setShow(false);
     setShowNewPass(false);
@@ -68,7 +74,23 @@ export default function ChangePasswordModal() {
 
       // catch errors
       if (!updatePassResponse.ok) {
-        console.log("Error updating password.");
+        // parse JSON if possible, otherwise use text
+        const parsed = await updatePassResponse
+          .clone()
+          .json()
+          .catch(async () => await updatePassResponse.clone().text());
+
+        // build a readable message: if parsed is object try parsed.message
+        const message =
+          typeof parsed === "string"
+            ? parsed
+            : parsed?.message
+              ? parsed.message
+              : JSON.stringify(parsed);
+
+        // set UI state so the modal shows the server message
+        setServerErrorMsg(message);
+        setShowServerError(true);
       } else {
         successful = true;
         // automatically log user in again to get new session cookie with the new password if update was successful
@@ -128,55 +150,7 @@ export default function ChangePasswordModal() {
   const [showNewPass, setShowNewPass] = React.useState(false);
   const [showReEnterPass, setShowReEnterPass] = React.useState(false);
 
-  const modalStyle = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "50%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    transform: "translate(50%, 20%)",
-  };
 
-  const modalStyleMobile = {
-    borderRadius: "40px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    width: "100%",
-    boxShadow: "5px 10px 10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "rgba(224, 205, 178, 1)",
-    position: "absolute",
-    transform: "translate(0%, 40%)",
-  };
-
-  const openButtonStyle = {
-    fontFamily: "inherit",
-    fontSize: "24px",
-    textTransform: "capitalize",
-  };
-
-  const closeButtonStyle = {
-    display: "flex",
-    padding: 0,
-    borderRadius: "100px",
-    height: "100%",
-  };
-
-  const submitButtonStyle = {
-    borderRadius: "100px",
-    border: "1px solid rgba(147, 191, 191, 1)",
-    backgroundColor: "rgba(179, 232, 232, 1)",
-    color: "inherit",
-    font: "inherit",
-    margin: "10px",
-    width: "inherit",
-    height: "inherit",
-  };
 
   // needs at least one letter, any characters allowed
   const [newPassword, setNewPassword] = React.useState("");
@@ -288,10 +262,7 @@ export default function ChangePasswordModal() {
                 }}
               >
                 <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img
-                    style={{ scale: "50%" }}
-                    src={closeIcon}
-                  />
+                  <img style={{ scale: "50%" }} src={closeIcon} />
                 </Button>
               </div>
               <form
@@ -358,6 +329,20 @@ export default function ChangePasswordModal() {
                   >
                     {passwordErrorMsg}
                   </p>
+
+                  {showServerError && (
+                    <p
+                      role="alert"
+                      style={{
+                        fontSize: "1.3vw",
+                        color: "red",
+                        paddingLeft: "5px",
+                        lineHeight: "1.05",
+                      }}
+                    >
+                      {serverErrorMsg}
+                    </p>
+                  )}
                   <br></br>
                 </div>
                 <div
@@ -515,10 +500,7 @@ export default function ChangePasswordModal() {
                 }}
               >
                 <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img
-                    style={{ scale: "50%" }}
-                    src={closeIcon}
-                  />
+                  <img style={{ scale: "50%" }} src={closeIcon} />
                 </Button>
               </div>
               <form
@@ -585,6 +567,20 @@ export default function ChangePasswordModal() {
                   >
                     {passwordErrorMsg}
                   </p>
+
+                  {showServerError && (
+                    <p
+                      role="alert"
+                      style={{
+                        fontSize: "2vw",
+                        color: "red",
+                        paddingLeft: "5px",
+                        lineHeight: "1.05",
+                      }}
+                    >
+                      {serverErrorMsg}
+                    </p>
+                  )}
                   <br></br>
                 </div>
                 <div

@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import * as React from "react";
-import CommentModal from "../modals/comment-modal/comment-modal";
+import CommentModal from "../modals/CommentModal";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect, useRef } from "react";

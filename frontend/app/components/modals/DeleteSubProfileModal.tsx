@@ -2,7 +2,13 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Card from "@mui/material/Card";
-import closeIcon from "../../assets/icons/close_icon.svg"
+import closeIcon from "~/assets/icons/close_icon.svg";
+import {
+  modalStyle,
+  modalStyleMobile,
+  closeButtonStyle,
+  deleteButtonStyle,
+} from "./modal.styles.js";
 
 interface DeleteSubProfileModalProps {
   open?: boolean;
@@ -51,46 +57,6 @@ export default function DeleteSubProfileModal({
       console.error("Error deleting pet:", error);
       alert("An error occurred while deleting the pet profile.");
     }
-  };
-
-  // bunch of styling in constants used for sx attributes
-  const modalStyle = {
-    textAlign: "left",
-    backgroundColor: "#E0CDB2",
-    borderRadius: "40px",
-    justifyContent: "center",
-    maxWidth: "500px",
-    minWidth: "300px",
-    maxHeight: "520px",
-    padding: "5px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    overflow: "auto",
-  };
-
-  const pinkBorder = "1px solid rgba(255, 132, 164, 1)";
-
-  const closeButtonStyle = {
-    display: "flex",
-    border: "none",
-    padding: 0,
-    borderRadius: "100px",
-    justifySelf: "flex-end",
-    scale: "50%",
-  };
-
-  const deleteButtonStyle = {
-    borderRadius: "100px",
-    border: pinkBorder,
-    backgroundColor: "#ffc2cf",
-    color: "#c10058",
-    font: "inherit",
-    display: "flex",
-    justifyContent: "flex-end",
-    margin: "10px",
   };
 
   return (

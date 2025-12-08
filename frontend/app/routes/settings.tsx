@@ -1,12 +1,12 @@
 import type { Route } from "./+types/settings";
 import Header from "../components/header/header";
-import SettingOption from "../components/settings/settingOption";
+import SettingOption from "../components/settings/SettingOption";
 import "../styles/settings.css";
-import ChangePasswordModal from "~/components/modals/change-password-modal/change-password-modal";
-import FAQModal from "~/components/modals/faq-modal/faq-modal";
+import ChangePasswordModal from "~/components/modals/ChangePasswordModal";
+import FAQModal from "~/components/modals/FaqModal";
 import { authCheck } from "../utils/authCheck";
 import { useEffect, useState } from "react";
-import ChangeEmailModal from "~/components/modals/change-email-modal/change-email-modal";
+import ChangeEmailModal from "~/components/modals/ChangeEmailModal";
 import settingsIcon from "../assets/icons/settings.svg";
   import aboutIcon from "../assets/icons/about.svg";
   import userIcon from "../assets/icons/user.svg";

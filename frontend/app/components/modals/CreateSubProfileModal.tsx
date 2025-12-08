@@ -4,7 +4,16 @@ import Modal from "@mui/material/Modal";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
-import closeIcon from "../../assets/icons/close_icon.svg"
+import closeIcon from "~/assets/icons/close_icon.svg";
+import {
+  modalStyle,
+  modalStyleMobile,
+  openButtonStyle,
+  closeButtonStyle,
+  submitButtonStyle,
+  inputSectionStyle,
+  inputFieldStyle,
+} from "./modal.styles.js";
 
 export default function CreateSubProfileModal() {
   // handles whether the modal is open or not
@@ -64,79 +73,17 @@ export default function CreateSubProfileModal() {
         window.location.reload();
       } else {
         const errorData = await response.json();
-        console.error("Error creating pet profile:", response.status, errorData);
+        console.error(
+          "Error creating pet profile:",
+          response.status,
+          errorData
+        );
         alert("Failed to create pet profile. Please try again.");
       }
     } catch (error) {
       console.error("Failed to create pet profile:", error);
       alert("Failed to create pet profile. Please try again.");
     }
-  };
-
-  // bunch of styling in constants used for sx attributes
-  const modalStyle = {
-    textAlign: "left",
-    backgroundColor: "#E0CDB2",
-    borderRadius: "40px",
-    justifyContent: "center",
-    maxWidth: "785px",
-    minWidth: "300px",
-    maxHeight: "520px",
-    padding: "5px",
-    border: "1px solid rgba(255, 132, 164, 1)",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    overflow: "auto",
-  };
-
-  const openButtonStyle = {
-    fontFamily: "inherit",
-    fontSize: "24px",
-    textTransform: "capitalize",
-    color: "#675844",
-    borderColor: "#675844",
-  };
-
-  const inputSectionStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    width: "100%",
-    maxWidth: "522px",
-    justifySelf: "left",
-  };
-
-  const pinkBorder = "1px solid rgba(255, 132, 164, 1)";
-
-  const inputFieldStyle = {
-    backgroundColor: "var(--bg-color)",
-    borderRadius: "100px",
-    padding: "10px",
-    maxHeight: "59px",
-    borderBottom: "none",
-    border: pinkBorder,
-  };
-
-  const closeButtonStyle = {
-    display: "flex",
-    border: "none",
-    padding: 0,
-    borderRadius: "100px",
-    justifySelf: "flex-end",
-    scale: "50%",
-  };
-
-  const submitButtonStyle = {
-    borderRadius: "100px",
-    border: "1px solid rgba(147, 191, 191, 1)",
-    backgroundColor: "rgba(179, 232, 232, 1)",
-    color: "#675844",
-    font: "inherit",
-    display: "flex",
-    justifyContent: "flex-end",
-    margin: "10px",
   };
 
   // saves each input field content to a variable
@@ -216,12 +163,24 @@ export default function CreateSubProfileModal() {
 
   // disable submit button if any error exists
   React.useEffect(() => {
-    if (hasPetNameError || hasBreedError || hasBdayError || hasTreatError || hasToyError) {
+    if (
+      hasPetNameError ||
+      hasBreedError ||
+      hasBdayError ||
+      hasTreatError ||
+      hasToyError
+    ) {
       setHasFormErrors(true);
     } else {
       setHasFormErrors(false);
     }
-  }, [hasPetNameError, hasBreedError, hasBdayError, hasTreatError, hasToyError]);
+  }, [
+    hasPetNameError,
+    hasBreedError,
+    hasBdayError,
+    hasTreatError,
+    hasToyError,
+  ]);
 
   // functions to update inputs being saved
   function onNameChange(event: React.ChangeEvent<HTMLInputElement>) {

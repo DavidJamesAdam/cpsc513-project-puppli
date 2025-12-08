@@ -1,4 +1,4 @@
-import LoginHeader from "~/components/header/loginHeader";
+import LoginHeader from "~/components/header/LoginHeader";
 import type { Route } from "./+types/signup";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -11,7 +11,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import { useEffect, useState } from "react";
 import TemporaryNotification from "~/components/temporaryNotification";
-import { LocationMenu } from "~/components/dropdown menus/location-dropdown";
+import { LocationMenu } from "~/components/dropdown menus/LocationDropdown";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import handleLogIn from "~/utils/loginFunction";

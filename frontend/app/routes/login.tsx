@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
-import LoginHeader from "../components/header/loginHeader";
+import LoginHeader from "../components/header/LoginHeader";
 import Link from "@mui/material/Link";
 import { useEffect, useState } from "react";
 import InputAdornment from "@mui/material/InputAdornment";

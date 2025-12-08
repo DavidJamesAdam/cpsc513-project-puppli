@@ -2,7 +2,7 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import UploadModal from "../modals/upload-modal/upload-modal";
+import UploadModal from "../modals/UploadModal";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -15,14 +15,14 @@ import {
 } from "./mui-styles";
 import { toastStyle } from "~/styles/component-styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import logo from "../../assets/icons/logo.svg"
-import voteIcon from "../../assets/icons/vote_icon.svg";
-import profileIcon from "../../assets/icons/profile_icon.svg";
-import rankingsIcon from "../../assets/icons/rankings_icon.svg";
-import uploadIcon from "../../assets/icons/upload_icon.svg";
-import logoutIcon from "../../assets/icons/logout_icon.svg";
-import listIcon from "../../assets/icons/fontisto--list-2.svg";
-import dropdownArrow from "../../assets/icons/mdi_arrow-down-drop.svg"
+import logo from "~/assets/icons/logo.svg"
+import voteIcon from "~/assets/icons/vote_icon.svg";
+import profileIcon from "~/assets/icons/profile_icon.svg";
+import rankingsIcon from "~/assets/icons/rankings_icon.svg";
+import uploadIcon from "~/assets/icons/upload_icon.svg";
+import logoutIcon from "~/assets/icons/logout_icon.svg";
+import listIcon from "~/assets/icons/fontisto--list-2.svg";
+import dropdownArrow from "~/assets/icons/mdi_arrow-down-drop.svg"
 
 export function MainNavMenu() {
   const matches = useMediaQuery("(min-width: 600px)");
