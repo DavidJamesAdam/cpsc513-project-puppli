@@ -10,9 +10,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../../firebase";
 import toast from "react-hot-toast";
 import { toastStyle } from "~/styles/component-styles";
-import uploadIcon from "/assets/icons/upload_icon.svg"
-import closeIcon from "/assets/icons/close_icon.svg"
-import fallbackImage from "/assets/icons/ant-design--picture-outlined.svg"
+import uploadIcon from "../../../assets/icons/upload_icon.svg"
+import closeIcon from "../../../assets/icons/close_icon.svg"
+import fallbackImage from "../../../assets/icons/ant-design--picture-outlined.svg"
 
 type UploadModalProps = {
   open?: boolean;

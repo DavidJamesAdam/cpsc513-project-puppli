@@ -1,6 +1,6 @@
-import rankOneIcon from "/assets/icons/rank_one.svg";
-import rankTwoIcon from "/assets/icons/rank_two.svg";
-import rankThreeIcon from "/assets/icons/rank_three.svg";
+import rankOneIcon from "../../assets/icons/rank_one.svg";
+import rankTwoIcon from "../../assets/icons/rank_two.svg";
+import rankThreeIcon from "../../assets/icons/rank_three.svg";
 
 import "./profileBanner.css";
 

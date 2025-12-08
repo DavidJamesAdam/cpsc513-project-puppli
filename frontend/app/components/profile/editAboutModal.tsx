@@ -1,10 +1,11 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import editIcon from "/assets/icons/username.svg";
+import editIcon from "../../assets/icons/username.svg";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
+import closeIcon from "../../assets/icons/close_icon.svg"
 
 interface EditAboutModalProps {
   onPetOneSubPage: boolean;
@@ -270,7 +271,7 @@ export default function EditAboutModal({
       >
         <Card sx={modalStyle}>
           <Button sx={closeButtonStyle} onClick={handleClose}>
-            <img src="assets\icons\Close icon.svg" />
+            <img src={closeIcon} />
           </Button>
           <h1
             style={{
