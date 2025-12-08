@@ -1,20 +1,20 @@
 import type { Route } from "./+types/ranking";
 import Header from "../components/header/header";
-import rankingIcon from "/assets/icons/rankingIcon.svg";
 import "../styles/rankings.css";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
-import rankOneIcon from "/assets/icons/rank_one.svg";
-import rankTwoIcon from "/assets/icons/rank_two.svg";
-import rankThreeIcon from "/assets/icons/rank_three.svg";
 import { authCheck } from "~/utils/authCheck";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import TableBody from "@mui/material/TableBody";
-import petPFP from "/assets/icons/defaultPetPFP.svg";
+import rankingIcon from "../assets/icons/rankingIcon.svg";
+import rankOneIcon from "../assets/icons/rank_one.svg";
+import rankTwoIcon from "../assets/icons/rank_two.svg";
+import rankThreeIcon from "../assets/icons/rank_three.svg";
+import petPFP from "../assets/icons/defaultPetPFP.svg";
 
 export function meta({}: Route.MetaArgs) {
   return [

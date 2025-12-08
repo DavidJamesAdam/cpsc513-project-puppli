@@ -14,10 +14,12 @@ import ProfileBanner from "~/components/profile/profileBanner";
 import DeleteSubProfileModal from "~/components/profile/deleteSubProfileModal";
 import PhotoGallery from "~/components/profile/photoGallery";
 import { authCheck } from "../utils/authCheck";
-import settingsIcon from "/assets/icons/settings.svg";
-import defaultPetPFPMain from "/assets/icons/defaultPetPFPMain.svg";
-import defaultPetProfilePicture from "/assets/icons/defaultPetPFP.svg";
-import editIcon from "/assets/icons/username.svg";
+import settingsIcon from "../assets/icons/settings.svg";
+import defaultPetPFPMain from "../assets/icons/defaultPetPFPMain.svg";
+import defaultPetProfilePicture from "../assets/icons/defaultPetPFP.svg";
+import editIcon from "../assets/icons/username.svg";
+import defaultProfilePicture from "../assets/icons/defaultPFP.svg";
+import postIcon from "../assets/icons/postIcon.svg";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -28,8 +30,6 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Profile() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
-  const defaultProfilePicture = "/assets/icons/defaultPFP.svg";
-  const postIcon = "/assets/icons/postIcon.svg";
 
   // Pet info from database
   const [petInfo1, setPetInfo1] = useState({

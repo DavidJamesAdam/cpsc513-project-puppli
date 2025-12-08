@@ -1,3 +1,5 @@
+import logo from "/assets/icons/logo.svg"
+
 export default function LoginHeader() {
   return (
     <div
@@ -16,7 +18,7 @@ export default function LoginHeader() {
     >
       {/* Logo */}
       <div>
-        <img src="assets\icons\Logo.svg" />
+        <img src={logo} />
       </div>
 
       {/* App name */}

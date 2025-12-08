@@ -15,6 +15,14 @@ import {
 } from "./mui-styles";
 import { toastStyle } from "~/styles/component-styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import logo from "../../assets/icons/logo.svg"
+import voteIcon from "../../assets/icons/vote_icon.svg";
+import profileIcon from "../../assets/icons/profile_icon.svg";
+import rankingsIcon from "../../assets/icons/rankings_icon.svg";
+import uploadIcon from "../../assets/icons/upload_icon.svg";
+import logoutIcon from "../../assets/icons/logout_icon.svg";
+import listIcon from "../../assets/icons/fontisto--list-2.svg";
+import dropdownArrow from "../../assets/icons/mdi_arrow-down-drop.svg"
 
 export function MainNavMenu() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -99,12 +107,12 @@ export function MainNavMenu() {
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
-        <img src="assets\icons\Logo.svg" />
+        <img src={logo} />
         <div
           className="dropdown"
           style={{ position: "absolute", right: -4, bottom: -6 }}
         >
-          <img src="assets\icons\mdi_arrow-down-drop.svg" />
+          <img src={dropdownArrow} />
         </div>
       </Button>
       <Menu
@@ -125,7 +133,7 @@ export function MainNavMenu() {
       >
         <MenuItem onClick={() => { handleClose(); navigate("/"); }} sx={matches ? menuItemStyle : mobileMenuItemStyle}>
           <div className="menu-icon">
-            <img src="assets\icons\vote icon.svg" />
+            <img src={voteIcon} />
           </div>
           <div className="menu-text">
             Vote
@@ -133,7 +141,7 @@ export function MainNavMenu() {
         </MenuItem>
         <MenuItem onClick={() => { handleClose(); navigate("/profile"); }} sx={matches ? menuItemStyle : mobileMenuItemStyle}>
           <div className="menu-icon">
-            <img src="assets\icons\Profile icon.svg" />
+            <img src={profileIcon} />
           </div>
           <div className="menu-text">
             Profile
@@ -141,7 +149,7 @@ export function MainNavMenu() {
         </MenuItem>
         <MenuItem onClick={() => { handleClose(); navigate("/ranking"); }} sx={matches ? menuItemStyle : mobileMenuItemStyle}>
           <div className="menu-icon">
-            <img src="assets\icons\Rankings icon.svg" />
+            <img src={rankingsIcon} />
           </div>
           <div className="menu-text">
             Rankings
@@ -155,14 +163,14 @@ export function MainNavMenu() {
           sx={matches ? menuItemStyle : mobileMenuItemStyle}
         >
           <div className="menu-icon">
-            <img src="assets\icons\Upload icon.svg" />
+            <img src={uploadIcon} />
           </div>
           <div className="menu-text">Upload</div>
         </MenuItem>
         {isAdmin ? (
           <MenuItem onClick={() => { handleClose(); navigate("/all-users"); }} sx={matches ? menuItemStyle : mobileMenuItemStyle}>
             <div className="menu-icon">
-              <img src="assets\icons\fontisto--list-2.svg" />
+              <img src={listIcon} />
             </div>
             <div className="menu-text">
               All users
@@ -171,7 +179,7 @@ export function MainNavMenu() {
         ) : null}
         <MenuItem onClick={handleLogOut} sx={matches ? menuItemStyle : mobileMenuItemStyle}>
           <div className="menu-icon">
-            <img src="assets\icons\Logout icon.svg" />
+            <img src={logoutIcon} />
           </div>
           <div
             className="menu-text"

@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import "./styles.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import closeIcon from "../../../assets/icons/close_icon.svg";
 
 export default function FAQModal() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -82,7 +83,7 @@ export default function FAQModal() {
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ height: "100%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -167,7 +168,7 @@ export default function FAQModal() {
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ height: "50%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>

@@ -5,7 +5,10 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
+import disabledCommentIcon from "../../../assets/icons/disabled_comment.svg";
+import messageIcon from "../../../assets/icons/message_icon.svg"
+import closeIcon from "../../../assets/icons/close_icon.svg";
+import fallbackImage from "../../../assets/icons/ant-design--picture-outlined.svg";
 
 interface Comment {
   text: string;
@@ -31,7 +34,7 @@ export default function CommentModal({
   onCommentAdded,
   onOpen,
 }: CommentModalProps) {
-  const disabledCommentIcon = "/assets/icons/disabled_comment.svg";
+
   const [open, setOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -169,7 +172,7 @@ export default function CommentModal({
           {authorized ? (
             <Button onClick={handleOpen} sx={openButtonStyle}>
               <div>
-                <img src="assets\icons\Message icon.svg" />
+                <img src={messageIcon} />
               </div>
               <Typography variant="caption" sx={{ ml: 0.5 }}>
                 {comments.length}
@@ -207,7 +210,7 @@ export default function CommentModal({
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ height: "100%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -224,7 +227,7 @@ export default function CommentModal({
               >
                 <img
                   src={
-                    imageUrl || "assets/icons/ant-design--picture-outlined.svg"
+                    imageUrl || fallbackImage
                   }
                   alt={caption || "Post image"}
                   style={{

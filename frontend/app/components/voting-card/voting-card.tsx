@@ -5,6 +5,12 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
+import disabledVoteIcon from "../../assets/icons/disabled_vote.svg";
+import disabledLikeIcon from "../../assets/icons/disabled_like.svg";
+import fallbackImage from "../../assets/icons/ant-design--picture-outlined.svg";
+import voteIcon from "../../assets/icons/vote_icon.svg";
+import likedPostIcon from "../../assets/icons/liked_post.svg";
+import heartIcon from "../../assets/icons/heart_icon.svg"
 
 interface Comment {
   text: string;
@@ -36,8 +42,6 @@ export default function VotingCard({
   authorized,
   post,
 }: VotingCardProps) {
-  const disabledVoteIcon = "/assets/icons/disabled_vote.svg";
-  const disabledLikeIcon = "/assets/icons/disabled_like.svg";
   const [isFadedOut, setIsFadedOut] = useState(false);
   const [isPopped, setIsPopped] = useState(false);
   const [plusOnes, setPlusOnes] = useState<number[]>([]);
@@ -244,7 +248,7 @@ export default function VotingCard({
               />
             ) : (
               <img
-                src={"assets/icons/ant-design--picture-outlined.svg"}
+                src={fallbackImage}
                 className="fallback-image"
               />
             )}
@@ -283,8 +287,8 @@ export default function VotingCard({
                   <img
                     src={
                       likedPost
-                        ? "assets/icons/Liked post.svg"
-                        : "assets/icons/heart icon.svg"
+                        ? likedPostIcon
+                        : heartIcon
                     }
                     alt={likedPost ? "Liked" : "Like"}
                   />
@@ -309,7 +313,7 @@ export default function VotingCard({
                 onClick={handleVoteButtonClick}
                 sx={{ gap: "0.5rem", color: "inherit", fontFamily: "inherit" }}
               >
-                <img src="assets\icons\vote icon.svg" />
+                <img src={voteIcon} />
                 <Typography variant="caption">{voteCount}</Typography>
               </Button>
             ) : (
@@ -344,7 +348,7 @@ export default function VotingCard({
               />
             ) : (
               <img
-                src={"assets/icons/ant-design--picture-outlined.svg"}
+                src={fallbackImage}
                 className="fallback-image"
               />
             )}
@@ -384,8 +388,8 @@ export default function VotingCard({
                 <img
                   src={
                     likedPost
-                      ? "assets\\icons\\Liked post.svg"
-                      : "assets\\icons\\heart icon.svg"
+                      ? likedPostIcon
+                      : heartIcon
                   }
                   alt={likedPost ? "Liked" : "Like"}
                 />
@@ -410,7 +414,7 @@ export default function VotingCard({
                   flexDirection: "column",
                 }}
               >
-                <img src="assets\icons\vote icon.svg" />
+                <img src={voteIcon} />
                 {voteCount > 0 && (
                   <Typography variant="caption">{voteCount}</Typography>
                 )}

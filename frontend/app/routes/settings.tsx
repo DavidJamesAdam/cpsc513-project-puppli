@@ -7,6 +7,9 @@ import FAQModal from "~/components/modals/faq-modal/faq-modal";
 import { authCheck } from "../utils/authCheck";
 import { useEffect, useState } from "react";
 import ChangeEmailModal from "~/components/modals/change-email-modal/change-email-modal";
+import settingsIcon from "../assets/icons/settings.svg";
+  import aboutIcon from "../assets/icons/about.svg";
+  import userIcon from "../assets/icons/user.svg";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,9 +21,9 @@ export function meta({}: Route.MetaArgs) {
 const version = "1.0.0";
 
 export default function Settings() {
-  const settingsIcon = "/assets/icons/settings.svg";
-  const aboutIcon = "/assets/icons/about.svg";
-  const userIcon = "/assets/icons/user.svg";
+
+
+
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   useEffect(() => {
     (async () => {

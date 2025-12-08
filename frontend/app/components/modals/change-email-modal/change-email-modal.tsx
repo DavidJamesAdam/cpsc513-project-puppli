@@ -11,6 +11,9 @@ import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
 import handleLogIn from "~/utils/loginFunction";
+import closeIcon from "../../../assets/icons/close_icon.svg";
+import showIcon from "../../../assets/icons/show.svg";
+import hideIcon from "../../../assets/icons/hide.svg"
 
 export default function ChangeEmailModal() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -249,7 +252,7 @@ export default function ChangeEmailModal() {
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ scale: "50%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -337,9 +340,9 @@ export default function ChangeEmailModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src='/assets/icons/show.svg' alt="Show" />
+                                <img src={showIcon} alt="Show" />
                               ) : (
-                                <img src='/assets/icons/hide.svg' alt="Hide" />
+                                <img src={hideIcon} alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>
@@ -397,7 +400,7 @@ export default function ChangeEmailModal() {
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ scale: "50%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -485,9 +488,9 @@ export default function ChangeEmailModal() {
                           <InputAdornment position="end">
                             <IconButton onClick={() => setShow(!show)}>
                               {show ? (
-                                <img src='/assets/icons/show.svg' alt="Show" />
+                                <img src={showIcon} alt="Show" />
                               ) : (
-                                <img src='/assets/icons/hide.svg' alt="Hide" />
+                                <img src={hideIcon} alt="Hide" />
                               )}
                             </IconButton>
                           </InputAdornment>

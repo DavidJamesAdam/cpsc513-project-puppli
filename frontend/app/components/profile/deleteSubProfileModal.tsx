@@ -2,6 +2,7 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Card from "@mui/material/Card";
+import closeIcon from "../../assets/icons/close_icon.svg"
 
 interface DeleteSubProfileModalProps {
   open?: boolean;
@@ -102,7 +103,7 @@ export default function DeleteSubProfileModal({
       >
         <Card sx={modalStyle}>
           <Button sx={closeButtonStyle} onClick={handleClose}>
-            <img src="assets\icons\Close icon.svg" />
+            <img src={closeIcon} />
           </Button>
           <h1
             style={{

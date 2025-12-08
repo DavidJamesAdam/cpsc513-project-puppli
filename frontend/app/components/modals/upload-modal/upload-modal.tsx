@@ -10,6 +10,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../../firebase";
 import toast from "react-hot-toast";
 import { toastStyle } from "~/styles/component-styles";
+import uploadIcon from "/assets/icons/upload_icon.svg"
+import closeIcon from "/assets/icons/close_icon.svg"
+import fallbackImage from "/assets/icons/ant-design--picture-outlined.svg"
 
 type UploadModalProps = {
   open?: boolean;
@@ -206,7 +209,7 @@ export default function UploadModal({
           {!hideTrigger && (
             <Button onClick={handleOpen} sx={openButtonStyle}>
               <div className="menu-icon">
-                <img src="assets\icons\Upload icon.svg" />
+                <img src={uploadIcon} />
               </div>
               Upload
             </Button>
@@ -232,7 +235,7 @@ export default function UploadModal({
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ height: "100%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -264,7 +267,7 @@ export default function UploadModal({
                 >
                   <img
                     src={
-                      image || "assets/icons/ant-design--picture-outlined.svg"
+                      image || fallbackImage
                     }
                     style={{
                       maxWidth: "100%",
@@ -330,7 +333,7 @@ export default function UploadModal({
           {!hideTrigger && (
             <Button onClick={handleOpen} sx={openButtonStyle}>
               <div className="menu-icon">
-                <img src="assets\icons\Upload icon.svg" />
+                <img src={uploadIcon} />
               </div>
               Upload
             </Button>
@@ -356,7 +359,7 @@ export default function UploadModal({
                 <Button sx={closeButtonStyle} onClick={handleClose}>
                   <img
                     style={{ height: "100%" }}
-                    src="assets\icons\Close icon.svg"
+                    src={closeIcon}
                   />
                 </Button>
               </div>
@@ -389,7 +392,7 @@ export default function UploadModal({
                 >
                   <img
                     src={
-                      image || "assets/icons/ant-design--picture-outlined.svg"
+                      image || fallbackImage
                     }
                     style={{
                       maxWidth: "100%",

@@ -17,8 +17,8 @@ import { useNavigate } from "react-router";
 import handleLogIn from "~/utils/loginFunction";
 import { auth } from "../../firebase";
 import { toastStyle } from "~/styles/component-styles";
-import showIcon from "/assets/icons/show.svg";
-import hideIcon from "/assets/icons/hide.svg";
+import showIcon from "../assets/icons/show.svg";
+import hideIcon from "../assets/icons/hide.svg";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "login" }, { name: "description", content: "Sign-up page" }];

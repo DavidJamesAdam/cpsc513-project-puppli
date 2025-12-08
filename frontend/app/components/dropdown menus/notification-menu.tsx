@@ -5,6 +5,8 @@ import { useState } from "react";
 import "./styles.css";
 import { menuStyle, menuItemStyle, mobileMenuStyle, mobileMenuItemStyle } from "./mui-styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import notificationBell from "../../assets/icons/notification_bell.svg"
+import dropdownArrow from "../../assets/icons/mdi_arrow-down-drop.svg"
 
 export default function NotificationMenu() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -27,9 +29,9 @@ export default function NotificationMenu() {
         onClick={handleClick}
       >
         <div style={{ position: "relative", display: "inline-block" }}>
-          <img src="assets\icons\Notification Bell.svg" />
+          <img src={notificationBell} />
           <img
-            src="assets\icons\mdi_arrow-down-drop.svg"
+            src={dropdownArrow}
             style={{ position: "absolute", left: -12, bottom: -12 }}
           />
         </div>
