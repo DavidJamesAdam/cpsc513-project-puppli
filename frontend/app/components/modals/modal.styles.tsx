@@ -22,7 +22,7 @@ export const modalStyleMobile = {
   flexDirection: "column",
   alignItems: "center",
   backgroundColor: "rgba(224, 205, 178, 1)",
-  fontSize: '1em',
+  fontSize: "1em",
   position: "absolute",
   transform: "translate(0%, 10%)",
 };
@@ -72,12 +72,19 @@ export const inputSectionStyle = {
 };
 
 export const inputFieldStyle = {
-  backgroundColor: "var(--bg-color)",
-  borderRadius: "100px",
-  padding: "10px",
-  maxHeight: "59px",
-  borderBottom: "none",
-  border: "1px solid rgba(255, 132, 164, 1)",
+  marginTop: 2,
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "var(--bg-color)",
+    borderRadius: "100px",
+    padding: "10px",
+    maxHeight: "59px",
+    borderBottom: "none",
+    border: "1px solid rgba(255, 132, 164, 1)",
+    color: "inherit",
+    "&.Mui-focused fieldset": {
+      borderColor: "rgba(255, 132, 164, 1)",
+    },
+  },
 };
 
 export const deleteButtonStyle = {

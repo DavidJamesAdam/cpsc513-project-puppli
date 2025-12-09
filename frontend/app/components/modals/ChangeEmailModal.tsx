@@ -22,6 +22,7 @@ import {
   openButtonStyle,
   closeButtonStyle,
   submitButtonStyle,
+  inputFieldStyle,
 } from "./modal.styles.js";
 import { toastStyle } from "~/styles/component-styles";
 
@@ -44,16 +45,21 @@ export default function ChangeEmailModal() {
   const handleSubmit = async () => {
     // keep track of update failures
     let successful = false;
+    const user = auth!.currentUser!;
 
     try {
       // need to use auth for reauthentication
-      const user = auth!.currentUser;
       if (!user) throw new Error("No Firebase user authenticated.");
 
       // reauthenticate with password
       const credential = EmailAuthProvider.credential(user.email!, password);
       await reauthenticateWithCredential(user, credential);
 
+    }catch(e){
+      
+    }
+
+    try{
       // get new ID token with the password entered
       const idToken = await user.getIdToken(true);
 
@@ -130,16 +136,6 @@ export default function ChangeEmailModal() {
   const [hasEmailError, setHasEmailError] = React.useState(true);
   const [passwordErrorMsg, setPasswordErrorMsg] = React.useState("");
   const [hasPasswordError, setHasPasswordError] = React.useState(false);
-
-  // used to validate input
-  const allowedChars = [
-    "-",
-    "_",
-    ".",
-    ..."abcdefghijklmnopqrstuvwxyz",
-    ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    ..."0123456789",
-  ];
 
   // set error messages for the new email field and password field
   React.useEffect(() => {
@@ -227,40 +223,19 @@ export default function ChangeEmailModal() {
                 htmlFor="newEmail"
                 style={{ paddingLeft: "15px", fontSize: "2vw" }}
               >
-                Please enter new email address:{" "}
+                Please enter new email address:
               </label>
-              <input
-                type="text"
-                name="newEmail"
+              <TextField
+                required
+                label="Required"
+                sx={inputFieldStyle}
                 onChange={onEmailChange}
-                style={{
-                  border: "1px solid rgba(255, 132, 164, 1)",
-                  borderRadius: "100px",
-                  backgroundColor: "white",
-                  width: "100%",
-                  padding: "8px 12px",
-                  boxSizing: "border-box",
+                slotProps={{
+                  htmlInput: {
+                    maxLength: maxCharacters,
+                  },
                 }}
-                maxLength={maxCharacters}
               />
-              <p
-                style={{
-                  fontSize: "1.3vw",
-                  color: "red",
-                  paddingLeft: "5px",
-                }}
-              >
-                {emailErrorMsg}
-              </p>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: 0,
-                gap: "8px",
-              }}
-            >
               <label
                 htmlFor="confirmPass"
                 style={{ paddingLeft: "15px", fontSize: "2vw" }}
@@ -268,21 +243,13 @@ export default function ChangeEmailModal() {
                 Please confirm current password:
               </label>
               <TextField
-                name="confirmPass"
-                style={{
-                  border: "1px solid rgba(255, 132, 164, 1)",
-                  borderRadius: "100px",
-                  backgroundColor: "white",
-                  width: "100%",
-                  padding: "8px 12px",
-                  boxSizing: "border-box",
-                }}
-                variant="standard"
+                required
+                label="Required"
+                sx={inputFieldStyle}
                 onChange={onPasswordChange}
                 type={show ? "text" : "password"}
                 slotProps={{
                   input: {
-                    disableUnderline: true,
                     style: { color: "#675844" },
                     endAdornment: (
                       <InputAdornment position="end">
@@ -298,15 +265,6 @@ export default function ChangeEmailModal() {
                   },
                 }}
               />
-              <p
-                style={{
-                  fontSize: "1.3vw",
-                  color: "red",
-                  paddingLeft: "5px",
-                }}
-              >
-                {passwordErrorMsg}
-              </p>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
