@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import SettingOption from "../settings/SettingOption";
 import {
   TextField,
@@ -28,38 +28,44 @@ import { toastStyle } from "~/styles/component-styles";
 
 export default function ChangeEmailModal() {
   const matches = useMediaQuery("(min-width: 600px)");
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  // reset all error catching on modal close
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState(null);
+  const [show, setShow] = useState(false);
+
+  // max 50 characters, no special characters
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const maxCharacters = 50;
+
+  // keeps track of error and error messages
+  const [hasEmailError, setHasEmailError] = useState(true);
+  const [hasPasswordError, setHasPasswordError] = useState(true);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   const handleClose = () => {
-    setHasEmailError(true);
-    setEmailErrorMsg("");
-    setHasPasswordError(false);
-    setPasswordErrorMsg("");
-    // reset show password toggle
+    setEmail("");
+    setPassword("");
     setShow(false);
     setOpen(false);
+    setMessage("");
+    setError(null);
   };
 
   // This function would send off the user's request to change email
   const handleSubmit = async () => {
-    // keep track of update failures
-    let successful = false;
-    const user = auth!.currentUser!;
-
     try {
       // need to use auth for reauthentication
+      const user = auth!.currentUser;
       if (!user) throw new Error("No Firebase user authenticated.");
 
       // reauthenticate with password
       const credential = EmailAuthProvider.credential(user.email!, password);
       await reauthenticateWithCredential(user, credential);
 
-    }catch(e){
-      
-    }
-
-    try{
       // get new ID token with the password entered
       const idToken = await user.getIdToken(true);
 
@@ -77,16 +83,18 @@ export default function ChangeEmailModal() {
         }
       );
 
-      // catch errors
       if (!updateEmailResponse.ok) {
-        console.log("Error updating email.");
-      } else {
-        successful = true;
-        // automatically log user in again to get new session cookie with the new email if update was successful
-        // this prevents getting user logged out after the chnage
-        handleLogIn(auth, email, password);
+        const parsed = await updateEmailResponse.json();
+        const message = (parsed as any).detail[0];
+        console.log(parsed);
+        throw new Error(
+          message
+        );
       }
-
+      // automatically log user in again to get new session cookie
+      // with the new email if update was successful
+      // this prevents getting user logged out after the chnage
+      handleLogIn(auth, email, password);
       // show the temp notificaiton if successful
       toast.promise(
         Promise.resolve(updateEmailResponse),
@@ -100,61 +108,34 @@ export default function ChangeEmailModal() {
           duration: 3000,
         }
       );
-    } catch (e) {
-      console.error(e);
-    }
-
-    // if the whole operation was successful, close the modal
-    if (successful) {
       // close modal when done
       setOpen(false);
       // reset everything in the modal
       setHasEmailError(true);
-      setEmailErrorMsg("");
       setHasPasswordError(false);
-      setPasswordErrorMsg("");
       // reset show password toggle
       setShow(false);
       setOpen(false);
-    } else {
-      // authentication must have gone wrong
-      setHasPasswordError(true);
-      setPasswordErrorMsg("Incorrect password.");
+    } catch (error) {
+      console.log(error);
+      setError(error);
+      setMessage(`${error.message}`);
     }
   };
 
-  // controls state of the password input field
-  const [show, setShow] = React.useState(false);
-  const maxCharacters = 50;
-
-  // max 50 characters, no special characters
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  // keeps track of error and error messages
-  const [emailErrorMsg, setEmailErrorMsg] = React.useState("");
-  const [hasEmailError, setHasEmailError] = React.useState(true);
-  const [passwordErrorMsg, setPasswordErrorMsg] = React.useState("");
-  const [hasPasswordError, setHasPasswordError] = React.useState(false);
-
   // set error messages for the new email field and password field
-  React.useEffect(() => {
+  useEffect(() => {
+    // validate each field independently so the submit button
+    // remains disabled unless BOTH fields are filled
     if (email === "") {
-      setEmailErrorMsg("Email cannot be empty.");
-      setHasEmailError(true);
-    } else if (!validateEmailStructure(email)) {
-      setEmailErrorMsg("Email structure incorrect (ex. yourname@example.com).");
       setHasEmailError(true);
     } else {
-      setEmailErrorMsg("");
       setHasEmailError(false);
     }
 
     if (password === "") {
-      setPasswordErrorMsg("");
-      setHasPasswordError(false);
-    } else if (password) {
-      setPasswordErrorMsg("");
+      setHasPasswordError(true);
+    } else {
       setHasPasswordError(false);
     }
   }, [email, password]);
@@ -166,12 +147,6 @@ export default function ChangeEmailModal() {
 
   function onPasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
     setPassword(event.currentTarget.value);
-  }
-
-  // used to validate structure of the email input
-  function validateEmailStructure(email: string) {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(email);
   }
 
   return (
@@ -272,11 +247,13 @@ export default function ChangeEmailModal() {
                 id="submit"
                 sx={submitButtonStyle}
                 onClick={handleSubmit}
-                disabled={hasEmailError}
+                disabled={hasEmailError || hasPasswordError}
               >
                 Submit
               </Button>
             </div>
+            {/* Display error message */}
+            {error && <p style={{ color: "red" }}>{message}</p>}{" "}
           </form>
         </Box>
       </Modal>
