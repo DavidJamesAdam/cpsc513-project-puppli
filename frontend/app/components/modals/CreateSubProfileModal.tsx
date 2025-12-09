@@ -1,9 +1,5 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
+import { IconButton, TextField, CardContent, Card, Modal, Button } from "@mui/material";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import {
   modalStyle,
@@ -222,9 +218,9 @@ export default function CreateSubProfileModal() {
         aria-describedby="Modal that allows user to create a new sub-profile"
       >
         <Card sx={modalStyle}>
-          <Button sx={closeButtonStyle} onClick={handleClose}>
-            <img src={closeIcon} />
-          </Button>
+          <IconButton sx={closeButtonStyle} onClick={handleClose}>
+            <img style={{ height: "100%"}} src={closeIcon} />
+          </IconButton>
           <h1
             style={{
               paddingLeft: "15px",

@@ -1,10 +1,6 @@
 import React, { useRef, useState } from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
+import { TextField, Box, Modal, Button, useMediaQuery } from "@mui/material";
 import { PetSelectionMenu } from "../dropdown menus/PetSelectionMenu";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebase";
 import toast from "react-hot-toast";

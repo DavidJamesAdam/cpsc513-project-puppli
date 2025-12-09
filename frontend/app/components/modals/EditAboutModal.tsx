@@ -1,11 +1,7 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
+import { TextField, CardContent, Card, Modal, Button } from "@mui/material";
 import editIcon from "~/assets/icons/username.svg";
 import closeIcon from "~/assets/icons/close_icon.svg";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
 import {
   modalStyle,
   modalStyleMobile,

@@ -1,14 +1,23 @@
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useState } from "react";
+import {
+  useMediaQuery,
+  Typography,
+  Box,
+  Modal,
+  Button,
+  IconButton,
+} from "@mui/material";
 import disabledCommentIcon from "~/assets/icons/disabled_comment.svg";
-import messageIcon from "~/assets/icons/message_icon.svg"
+import messageIcon from "~/assets/icons/message_icon.svg";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import fallbackImage from "~/assets/icons/ant-design--picture-outlined.svg";
-import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, buttonStyle } from "./modal.styles.js"
+import {
+  modalStyle,
+  modalStyleMobile,
+  openButtonStyle,
+  closeButtonStyle,
+  buttonStyle,
+} from "./modal.styles.js";
 
 interface Comment {
   text: string;
@@ -34,7 +43,6 @@ export default function CommentModal({
   onCommentAdded,
   onOpen,
 }: CommentModalProps) {
-
   const [open, setOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,12 +163,9 @@ export default function CommentModal({
                 >
                   Comments ({comments.length})
                 </Typography>
-                <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img
-                    style={{ height: "100%" }}
-                    src={closeIcon}
-                  />
-                </Button>
+                <IconButton sx={closeButtonStyle} onClick={handleClose}>
+                  <img style={{ height: "100%" }} src={closeIcon} />
+                </IconButton>
               </div>
               <div
                 style={{
@@ -174,9 +179,7 @@ export default function CommentModal({
                 }}
               >
                 <img
-                  src={
-                    imageUrl || fallbackImage
-                  }
+                  src={imageUrl || fallbackImage}
                   alt={caption || "Post image"}
                   style={{
                     maxWidth: "100%",
@@ -316,7 +319,11 @@ export default function CommentModal({
       ) : (
         <div>
           {authorized ? (
-            <Button onClick={handleOpen} sx={openButtonStyle} style={{display: 'flex', flexDirection: "column"}}>
+            <Button
+              onClick={handleOpen}
+              sx={openButtonStyle}
+              style={{ display: "flex", flexDirection: "column" }}
+            >
               <div>
                 <img src="assets\icons\Message icon.svg" />
               </div>

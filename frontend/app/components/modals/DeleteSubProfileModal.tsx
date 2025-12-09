@@ -1,7 +1,5 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Card from "@mui/material/Card";
+import { Card, Modal, Button } from "@mui/material";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import {
   modalStyle,

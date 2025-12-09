@@ -1,7 +1,4 @@
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useMediaQuery, Box, Modal, Button } from "@mui/material";
 import { modalStyle, modalStyleMobile, buttonStyle } from "./modal.styles.js"
 
 type Props = {

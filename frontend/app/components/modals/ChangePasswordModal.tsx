@@ -1,12 +1,14 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
 import SettingOption from "../settings/SettingOption";
-import Box from "@mui/material/Box";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+  useMediaQuery,
+  Box,
+  Modal,
+  Button,
+} from "@mui/material";
 import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
@@ -14,7 +16,13 @@ import handleLogIn from "~/utils/loginFunction";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import showIcon from "~/assets/icons/show.svg";
 import hideIcon from "~/assets/icons/hide.svg";
-import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, submitButtonStyle } from "./modal.styles.js"
+import {
+  modalStyle,
+  modalStyleMobile,
+  openButtonStyle,
+  closeButtonStyle,
+  submitButtonStyle,
+} from "./modal.styles.js";
 
 export default function ChangePasswordModal() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -149,8 +157,6 @@ export default function ChangePasswordModal() {
   const [show, setShow] = React.useState(false);
   const [showNewPass, setShowNewPass] = React.useState(false);
   const [showReEnterPass, setShowReEnterPass] = React.useState(false);
-
-
 
   // needs at least one letter, any characters allowed
   const [newPassword, setNewPassword] = React.useState("");

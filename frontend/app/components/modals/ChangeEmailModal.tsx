@@ -1,12 +1,14 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
 import SettingOption from "../settings/SettingOption";
-import Box from "@mui/material/Box";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
+import {
+  TextField,
+  IconButton,
+  InputAdornment,
+  useMediaQuery,
+  Box,
+  Modal,
+  Button,
+} from "@mui/material";
 import { auth } from "firebase";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import toast from "react-hot-toast";
@@ -21,6 +23,7 @@ import {
   closeButtonStyle,
   submitButtonStyle,
 } from "./modal.styles.js";
+import { toastStyle } from "~/styles/component-styles";
 
 export default function ChangeEmailModal() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -87,13 +90,7 @@ export default function ChangeEmailModal() {
           error: (err: Error) => `Email update failed: ${err.message}`,
         },
         {
-          style: {
-            borderRadius: "100px",
-            width: "100%",
-            fontSize: "2em",
-            backgroundColor: "#e0cdb2",
-            border: "1px solid rgba(255, 132, 164, 1)",
-          },
+          style: toastStyle,
           duration: 3000,
         }
       );
@@ -182,149 +179,149 @@ export default function ChangeEmailModal() {
   }
 
   return (
-        <div>
-          <Button onClick={handleOpen} sx={openButtonStyle}>
-            <SettingOption settingName={"Change email"}></SettingOption>
-          </Button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="Change Email modal"
-            aria-describedby="Modal that allows user to change their email"
+    <div>
+      <Button onClick={handleOpen} sx={openButtonStyle}>
+        <SettingOption settingName={"Change email"}></SettingOption>
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="Change Email modal"
+        aria-describedby="Modal that allows user to change their email"
+      >
+        <Box sx={matches ? modalStyle : modalStyleMobile}>
+          <div
+            style={{
+              width: "100%",
+              height: "10%",
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "2%",
+              marginRight: "2%",
+            }}
           >
-            <Box sx={matches ? modalStyle : modalStyleMobile}>
-              <div
+            <IconButton sx={closeButtonStyle} onClick={handleClose}>
+              <img style={{ height: "100%" }} src={closeIcon} />
+            </IconButton>
+          </div>
+          <form
+            style={{
+              height: "100%",
+              width: "80%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-evenly",
+              margin: "10px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                margin: 0,
+                gap: "8px",
+                width: "100%",
+              }}
+            >
+              <label
+                htmlFor="newEmail"
+                style={{ paddingLeft: "15px", fontSize: "2vw" }}
+              >
+                Please enter new email address:{" "}
+              </label>
+              <input
+                type="text"
+                name="newEmail"
+                onChange={onEmailChange}
                 style={{
+                  border: "1px solid rgba(255, 132, 164, 1)",
+                  borderRadius: "100px",
+                  backgroundColor: "white",
                   width: "100%",
-                  height: "10%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: "2%",
-                  marginRight: "2%",
+                  padding: "8px 12px",
+                  boxSizing: "border-box",
                 }}
-              >
-                <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img style={{ scale: "50%" }} src={closeIcon} />
-                </Button>
-              </div>
-              <form
+                maxLength={maxCharacters}
+              />
+              <p
                 style={{
-                  height: "100%",
-                  width: "80%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-evenly",
-                  margin: "10px",
+                  fontSize: "1.3vw",
+                  color: "red",
+                  paddingLeft: "5px",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    margin: 0,
-                    gap: "8px",
-                    width: "100%",
-                  }}
-                >
-                  <label
-                    htmlFor="newEmail"
-                    style={{ paddingLeft: "15px", fontSize: "2vw" }}
-                  >
-                    Please enter new email address:{" "}
-                  </label>
-                  <input
-                    type="text"
-                    name="newEmail"
-                    onChange={onEmailChange}
-                    style={{
-                      border: "1px solid rgba(255, 132, 164, 1)",
-                      borderRadius: "100px",
-                      backgroundColor: "white",
-                      width: "100%",
-                      padding: "8px 12px",
-                      boxSizing: "border-box",
-                    }}
-                    maxLength={maxCharacters}
-                  />
-                  <p
-                    style={{
-                      fontSize: "1.3vw",
-                      color: "red",
-                      paddingLeft: "5px",
-                    }}
-                  >
-                    {emailErrorMsg}
-                  </p>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    margin: 0,
-                    gap: "8px",
-                  }}
-                >
-                  <label
-                    htmlFor="confirmPass"
-                    style={{ paddingLeft: "15px", fontSize: "2vw" }}
-                  >
-                    Please confirm current password:
-                  </label>
-                  <TextField
-                    name="confirmPass"
-                    style={{
-                      border: "1px solid rgba(255, 132, 164, 1)",
-                      borderRadius: "100px",
-                      backgroundColor: "white",
-                      width: "100%",
-                      padding: "8px 12px",
-                      boxSizing: "border-box",
-                    }}
-                    variant="standard"
-                    onChange={onPasswordChange}
-                    type={show ? "text" : "password"}
-                    slotProps={{
-                      input: {
-                        disableUnderline: true,
-                        style: { color: "#675844" },
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton onClick={() => setShow(!show)}>
-                              {show ? (
-                                <img src={showIcon} alt="Show" />
-                              ) : (
-                                <img src={hideIcon} alt="Hide" />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                  />
-                  <p
-                    style={{
-                      fontSize: "1.3vw",
-                      color: "red",
-                      paddingLeft: "5px",
-                    }}
-                  >
-                    {passwordErrorMsg}
-                  </p>
-                </div>
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    variant="contained"
-                    id="submit"
-                    sx={submitButtonStyle}
-                    onClick={handleSubmit}
-                    disabled={hasEmailError}
-                  >
-                    Submit
-                  </Button>
-                </div>
-              </form>
-            </Box>
-          </Modal>
-        </div>
+                {emailErrorMsg}
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                margin: 0,
+                gap: "8px",
+              }}
+            >
+              <label
+                htmlFor="confirmPass"
+                style={{ paddingLeft: "15px", fontSize: "2vw" }}
+              >
+                Please confirm current password:
+              </label>
+              <TextField
+                name="confirmPass"
+                style={{
+                  border: "1px solid rgba(255, 132, 164, 1)",
+                  borderRadius: "100px",
+                  backgroundColor: "white",
+                  width: "100%",
+                  padding: "8px 12px",
+                  boxSizing: "border-box",
+                }}
+                variant="standard"
+                onChange={onPasswordChange}
+                type={show ? "text" : "password"}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    style: { color: "#675844" },
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShow(!show)}>
+                          {show ? (
+                            <img src={showIcon} alt="Show" />
+                          ) : (
+                            <img src={hideIcon} alt="Hide" />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <p
+                style={{
+                  fontSize: "1.3vw",
+                  color: "red",
+                  paddingLeft: "5px",
+                }}
+              >
+                {passwordErrorMsg}
+              </p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="contained"
+                id="submit"
+                sx={submitButtonStyle}
+                onClick={handleSubmit}
+                disabled={hasEmailError}
+              >
+                Submit
+              </Button>
+            </div>
+          </form>
+        </Box>
+      </Modal>
+    </div>
   );
 }

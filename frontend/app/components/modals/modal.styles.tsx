@@ -39,8 +39,7 @@ export const openButtonStyle = {
 
 export const closeButtonStyle = {
   borderRadius: "100px",
-  height: "4vh",
-  padding: 0,
+  height: "5vh",
 };
 
 export const buttonStyle = {

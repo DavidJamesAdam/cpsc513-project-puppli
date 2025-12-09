@@ -1,9 +1,5 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useMediaQuery, Typography, Box, Modal, Button, IconButton } from "@mui/material";
 import SettingOption from "../settings/SettingOption";
 import {
   modalStyle,
@@ -11,8 +7,8 @@ import {
   openButtonStyle,
   closeButtonStyle,
 } from "./modal.styles.js";
-import CancelIcon from '@mui/icons-material/Cancel';
-import IconButton from "@mui/material/IconButton";
+import closeIcon from "~/assets/icons/close_icon.svg";
+
 
 export default function FAQModal() {
   const matches = useMediaQuery("(min-width: 600px)");
@@ -43,8 +39,7 @@ export default function FAQModal() {
             }}
           >
             <IconButton sx={closeButtonStyle} onClick={handleClose}>
-              <CancelIcon />
-              {/* <img style={{ height: "100%" }} src={closeIcon} /> */}
+              <img style={{ height: "100%" }} src={closeIcon} />
             </IconButton>
           </div>
           <div style={{ textAlign: "center", margin: "20px" }}>
