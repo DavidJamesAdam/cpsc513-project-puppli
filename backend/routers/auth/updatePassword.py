@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ValidationError, field_validator
 from firebase_admin import auth
 import re
 
@@ -42,6 +42,12 @@ async def update_password(request: Request, update: PassUpdate):
 
         return {"status": "success", "message": "Password updated successfully"}
     except auth.InvalidPasswordError:
-        raise HTTPException(status_code=400, detail="Invalid password")
+        raise HTTPException(status_code=409, detail="Invalid password")
+    except ValidationError as e:
+        error_messages = []
+        for error in e.errors():
+            message = error["msg"]
+            error_messages.append(f"{message}")
+        raise HTTPException(status_code=422, detail=error_messages)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e.errors))
