@@ -117,16 +117,13 @@ export default function ChangeEmailModal() {
       setShow(false);
       setOpen(false);
     } catch (error) {
-      console.log(error);
       setError(error);
       setMessage(`${error.message}`);
     }
   };
 
-  // set error messages for the new email field and password field
+  // Sets errors if email or password field is empty
   useEffect(() => {
-    // validate each field independently so the submit button
-    // remains disabled unless BOTH fields are filled
     if (email === "") {
       setHasEmailError(true);
     } else {
@@ -253,7 +250,7 @@ export default function ChangeEmailModal() {
               </Button>
             </div>
             {/* Display error message */}
-            {error && <p style={{ color: "red" }}>{message}</p>}{" "}
+            {error && <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>}{" "}
           </form>
         </Box>
       </Modal>
