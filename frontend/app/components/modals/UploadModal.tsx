@@ -1,14 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TextField, Box, Modal, Button, useMediaQuery } from "@mui/material";
 import { PetSelectionMenu } from "../dropdown menus/PetSelectionMenu";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../firebase";
 import toast from "react-hot-toast";
 import { toastStyle } from "~/styles/component-styles";
-import uploadIcon from "~/assets/icons/upload_icon.svg"
-import closeIcon from "~/assets/icons/close_icon.svg"
-import fallbackImage from "~/assets/icons/ant-design--picture-outlined.svg"
-import { modalStyle, modalStyleMobile, openButtonStyle, closeButtonStyle, buttonStyle } from "./modal.styles.js"
+import uploadIcon from "~/assets/icons/upload_icon.svg";
+import closeIcon from "~/assets/icons/close_icon.svg";
+import fallbackImage from "~/assets/icons/ant-design--picture-outlined.svg";
+import {
+  modalStyle,
+  modalStyleMobile,
+  openButtonStyle,
+  closeButtonStyle,
+  buttonStyle,
+  container,
+  mobileContainer
+} from "./modal.styles.js";
 
 type UploadModalProps = {
   open?: boolean;
@@ -31,6 +39,7 @@ export default function UploadModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string>("");
   const [caption, setCaption] = useState<string>("");
+
   const isControlled = propOpen !== undefined;
   const open = isControlled ? propOpen! : internalOpen;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +65,6 @@ export default function UploadModal({
   const handlePicturePreview = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("Selected file:", file.name);
       setSelectedFile(file);
       setImage(URL.createObjectURL(file));
     }
@@ -144,257 +152,124 @@ export default function UploadModal({
     handleClose();
   };
 
+  useEffect(() => {
+    
+  })
+
   return (
-    <>
-      {matches ? (
-        <div>
-          {!hideTrigger && (
-            <Button onClick={handleOpen} sx={openButtonStyle}>
-              <div className="menu-icon">
-                <img src={uploadIcon} />
-              </div>
-              Upload
-            </Button>
-          )}
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="Upload modal"
-            aria-describedby="Modal that allows user to upload photo"
-            keepMounted
-          >
-            <Box sx={modalStyle}>
-              <div
-                style={{
-                  width: "100%",
-                  height: "10%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginRight: "2%",
-                  marginLeft: "2%",
-                }}
-              >
-                <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img
-                    style={{ height: "100%" }}
-                    src={closeIcon}
-                  />
-                </Button>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingBottom: "5%",
-                  height: "80%",
-                  width: "80%",
-                }}
-              >
-                <input
-                  type="file"
-                  accept=".png, .jpg, .jpeg, .pdf"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handlePicturePreview}
-                />
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    // boxSizing: "border-box",
-                  }}
-                >
-                  <img
-                    src={
-                      image || fallbackImage
-                    }
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100%",
-                      objectFit: "contain",
-                      borderRadius: "40px",
-                      border: "1px solid rgba(255, 132, 164, 1)",
-                      backgroundColor: "rgba(217, 217, 217, 1)",
-                    }}
-                    alt="Image Preview"
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-evenly",
-                    width: "30%",
-                    gap: "8px",
-                    boxSizing: "border-box",
-                    paddingLeft: "3%",
-                  }}
-                >
-                  <PetSelectionMenu onPetChange={handlePetChange} />
-                  <TextField
-                    placeholder="Add a caption..."
-                    value={caption}
-                    onChange={handleCaptionChange}
-                    multiline
-                    rows={2}
-                    variant="outlined"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        style: {
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          borderRadius: "8px",
-                        },
-                      },
-                    }}
-                  />
-                  <Button sx={buttonStyle} onClick={handleFileBrowser}>
-                    Select Picture
-                  </Button>
-                  <Button
-                    id="uploadButton"
-                    sx={buttonStyle}
-                    onClick={handlePictureUpload}
-                    style={{
-                      backgroundColor: "rgba(195, 189, 187, 1)",
-                      border: "1px solid rgba(120, 114, 111, 1)",
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </div>
-              </div>
-            </Box>
-          </Modal>
-        </div>
-      ) : (
-        <div>
-          {!hideTrigger && (
-            <Button onClick={handleOpen} sx={openButtonStyle}>
-              <div className="menu-icon">
-                <img src={uploadIcon} />
-              </div>
-              Upload
-            </Button>
-          )}
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="Upload modal"
-            aria-describedby="Modal that allows user to upload photo"
-            keepMounted
-          >
-            <Box sx={modalStyleMobile}>
-              <div
-                style={{
-                  width: "100%",
-                  height: "10%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginRight: "2%",
-                  marginLeft: "2%",
-                }}
-              >
-                <Button sx={closeButtonStyle} onClick={handleClose}>
-                  <img
-                    style={{ height: "100%" }}
-                    src={closeIcon}
-                  />
-                </Button>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  height: "80%",
-                  width: "80%",
-                }}
-              >
-                <input
-                  type="file"
-                  accept=".png, .jpg, .jpeg, .pdf"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handlePicturePreview}
-                />
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    maxHeight: "70%",
-                    // boxSizing: "border-box",
-                  }}
-                >
-                  <img
-                    src={
-                      image || fallbackImage
-                    }
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100%",
-                      objectFit: "contain",
-                      borderRadius: "40px",
-                      border: "1px solid rgba(255, 132, 164, 1)",
-                      backgroundColor: "rgba(217, 217, 217, 1)",
-                    }}
-                    alt="Image Preview"
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-around",
-                    width: "80%",
-                    height: "30%",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  <PetSelectionMenu onPetChange={handlePetChange} />
-                  <TextField
-                    placeholder="Add a caption..."
-                    value={caption}
-                    onChange={handleCaptionChange}
-                    multiline
-                    rows={2}
-                    variant="outlined"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        style: {
-                          backgroundColor: "rgba(255, 255, 255, 0.8)",
-                          borderRadius: "8px",
-                        },
-                      },
-                    }}
-                  />
-                  <Button sx={buttonStyle} onClick={handleFileBrowser}>
-                    Select Picture
-                  </Button>
-                  <Button
-                    id="uploadButton"
-                    sx={buttonStyle}
-                    onClick={handlePictureUpload}
-                    style={{
-                      backgroundColor: "rgba(195, 189, 187, 1)",
-                      border: "1px solid rgba(120, 114, 111, 1)",
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </div>
-              </div>
-            </Box>
-          </Modal>
-        </div>
+    <div>
+      {!hideTrigger && (
+        <Button onClick={handleOpen} sx={openButtonStyle}>
+          <div className="menu-icon">
+            <img src={uploadIcon} />
+          </div>
+          Upload
+        </Button>
       )}
-    </>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="Upload modal"
+        aria-describedby="Modal that allows user to upload photo"
+        keepMounted
+      >
+        <Box sx={matches ? modalStyle : modalStyleMobile}>
+          <div
+            style={{
+              width: "100%",
+              height: "10%",
+              display: "flex",
+              justifyContent: "flex-end",
+              marginRight: "2%",
+              marginLeft: "2%",
+            }}
+          >
+            <Button sx={closeButtonStyle} onClick={handleClose}>
+              <img style={{ height: "100%" }} src={closeIcon} />
+            </Button>
+          </div>
+          <div
+            style={matches ? container : mobileContainer}
+          >
+            <input
+              type="file"
+              accept=".png, .jpg, .jpeg, .pdf"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handlePicturePreview}
+            />
+            <div
+              style={{
+                height: "60vh",
+                width: "100%",
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                // boxSizing: "border-box",
+              }}
+            >
+              <img
+                src={image || fallbackImage}
+                style={{
+                  maxWidth: "100%", // never wider than wrapper
+                  maxHeight: "100%", // never taller than wrapper
+                  width: "auto",
+                  height: "auto",
+                  objectFit: "contain",
+                  borderRadius: "40px",
+                  border: "1px solid rgba(255, 132, 164, 1)",
+                  backgroundColor: "rgba(217, 217, 217, 1)",
+                }}
+                alt="Image Preview"
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
+                gap: "8px",
+                boxSizing: "border-box",
+                paddingLeft: "3%",
+              }}
+            >
+              <PetSelectionMenu onPetChange={handlePetChange} />
+              <Button sx={buttonStyle} onClick={handleFileBrowser}>
+                Select Picture
+              </Button>
+              <TextField
+                placeholder="Add a caption..."
+                value={caption}
+                onChange={handleCaptionChange}
+                multiline
+                rows={2}
+                variant="outlined"
+                fullWidth
+                slotProps={{
+                  input: {
+                    style: {
+                      backgroundColor: "rgba(255, 255, 255, 0.8)",
+                      borderRadius: "8px",
+                    },
+                  },
+                }}
+              />
+              <Button
+                id="uploadButton"
+                sx={buttonStyle}
+                onClick={handlePictureUpload}
+                style={{
+                  backgroundColor: "rgba(195, 189, 187, 1)",
+                  border: "1px solid rgba(120, 114, 111, 1)",
+                }}
+              >
+                Upload
+              </Button>
+            </div>
+          </div>
+        </Box>
+      </Modal>
+    </div>
   );
 }

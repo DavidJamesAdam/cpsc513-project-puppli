@@ -44,8 +44,8 @@ export const closeButtonStyle = {
 
 export const buttonStyle = {
   borderRadius: "100px",
-  border: "1px solid rgba(147, 191, 191, 1)",
-  backgroundColor: "rgba(179, 232, 232, 1)",
+  border: "1px solid rgba(255, 132, 164, 1)",
+  backgroundColor: "#ffc2cf",
   color: "inherit",
   font: "inherit",
   display: "flex",
@@ -97,3 +97,21 @@ export const deleteButtonStyle = {
   justifyContent: "flex-end",
   margin: "10px",
 };
+
+export const container = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  paddingBottom: "5%",
+  height: "80%",
+  width: "80%",
+};
+
+export const mobileContainer = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  paddingBottom: "5%",
+  height: "80%",
+  width: "80%",
+}
