@@ -1,26 +1,27 @@
 export const modalStyle = {
   borderRadius: "40px",
   border: "1px solid rgba(255, 132, 164, 1)",
-  height: "auto",
-  width: "50%",
   boxShadow: "5px 10px 10px",
+  backgroundColor: "rgba(224, 205, 178, 1)",
+  height: "90%",
+  width: "50%",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  backgroundColor: "rgba(224, 205, 178, 1)",
+  justifyContent: "space-around",
   position: "absolute",
   transform: "translate(50%, 20%)",
+  maxHeight: "80vh",
 };
 
 export const modalStyleMobile = {
   borderRadius: "40px",
   border: "1px solid rgba(255, 132, 164, 1)",
-  height: "auto",
+  height: "80%",
   width: "100%",
   boxShadow: "5px 10px 10px",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
+  justifyContent: "space-around",
   backgroundColor: "rgba(224, 205, 178, 1)",
   fontSize: "1em",
   position: "absolute",
@@ -46,9 +47,10 @@ export const buttonStyle = {
   borderRadius: "100px",
   border: "1px solid rgba(255, 132, 164, 1)",
   backgroundColor: "#ffc2cf",
-  color: "inherit",
-  font: "inherit",
   display: "flex",
+  width: "50%",
+  height: "100%",
+  padding: "10px",
 };
 
 export const submitButtonStyle = {
@@ -114,4 +116,4 @@ export const mobileContainer = {
   paddingBottom: "5%",
   height: "80%",
   width: "80%",
-}
+};

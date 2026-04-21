@@ -11,7 +11,7 @@
    cd backend
 
 2. Start the FastAPI development server:
-   python3 -m fastapi dev main.py --port 8000
+   python -m fastapi dev main.py --port 8000
 
 ## Database Setup
 

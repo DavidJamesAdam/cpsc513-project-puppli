@@ -18,6 +18,8 @@ import {
   closeButtonStyle,
   buttonStyle,
 } from "./modal.styles.js";
+import toast from "react-hot-toast";
+import { toastStyle } from "~/styles/component-styles";
 
 interface Comment {
   text: string;
@@ -99,8 +101,13 @@ export default function CommentModal({
           },
           credentials: "include",
           body: JSON.stringify({ text: commentText }),
-        }
+        },
       );
+
+    toast.success("Comment successfully posted!", {
+      style: toastStyle,
+      duration: 1500,
+    });
 
       if (!response.ok) {
         throw new Error("Failed to add comment");
@@ -122,171 +129,202 @@ export default function CommentModal({
   };
 
   return (
-        <div>
-          {authorized ? (
-            <Button onClick={handleOpen} sx={openButtonStyle}>
-              <div>
-                <img src={messageIcon} />
-              </div>
-              <Typography variant="caption" sx={{ ml: 0.5 }}>
-                {comments.length}
-              </Typography>
-            </Button>
-          ) : (
-            <Button sx={openButtonStyle}>
-              <img src={disabledCommentIcon} />
-            </Button>
-          )}
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="Comment modal"
-            aria-describedby="Modal that allows user comment on a picture"
+    <div>
+      {authorized ? (
+        <Button onClick={handleOpen} sx={openButtonStyle}>
+          <div>
+            <img src={messageIcon} />
+          </div>
+          <Typography variant="caption" sx={{ ml: 0.5 }}>
+            {comments.length}
+          </Typography>
+        </Button>
+      ) : (
+        <Button sx={openButtonStyle}>
+          <img src={disabledCommentIcon} />
+        </Button>
+      )}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="Comment modal"
+        aria-describedby="Modal that allows user comment on a picture"
+      >
+        <Box sx={matches ? modalStyle : modalStyleMobile}>
+          {/* header */}
+          <div
+            style={{
+              width: "100%",
+              height: "10%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+            }}
           >
-            <Box sx={matches ? modalStyle : modalStyleMobile}>
-              <div
-                style={{
-                  width: "100%",
-                  height: "10%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
-                }}
-              >
+            <Typography
+              variant="h6"
+              sx={{ color: "#675844", fontFamily: "Itim" }}
+            >
+              Comments ({comments.length})
+            </Typography>
+            <IconButton sx={closeButtonStyle} onClick={handleClose}>
+              <img style={{ height: "100%" }} src={closeIcon} />
+            </IconButton>
+          </div>
+
+          {/* image */}
+          <div
+            style={{
+              width: "100%",
+              maxHeight: "55%",
+              display: "flex",
+              justifyContent: "center",
+              paddingBottom: "5px",
+            }}
+          >
+            <img
+              src={imageUrl || fallbackImage}
+              alt={caption || "Post image"}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                borderRadius: "40px",
+                border: "1px solid rgba(255, 132, 164, 1)",
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              height: "30%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between"
+            }}
+          >
+            {/* Comments List */}
+            <div
+              style={{
+                paddingRight: "10px",
+                paddingLeft: "10px",
+                overflowY: "auto",
+                height: "55%",
+              }}
+            >
+              {sortedComments.length === 0 ? (
                 <Typography
-                  variant="h6"
-                  sx={{ color: "#675844", fontFamily: "Itim" }}
+                  variant="body2"
+                  sx={{
+                    color: "#675844",
+                    textAlign: "center",
+                    fontFamily: "Itim",
+                  }}
                 >
-                  Comments ({comments.length})
+                  No comments yet. Be the first to comment!
                 </Typography>
-                <IconButton sx={closeButtonStyle} onClick={handleClose}>
-                  <img style={{ height: "100%" }} src={closeIcon} />
-                </IconButton>
-              </div>
+              ) : (
+                sortedComments.map((comment, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: "10px",
+                      marginBottom: "8px",
+                      backgroundColor: index % 2 === 0 ? "#FFECF0" : "#FFC2CF",
+                      border: index % 2 === 0 ? "1px solid rgba(255, 132, 164, 1)" : "1px solid rgba(147, 191, 191, 1)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      sx={{ color: "#675844", fontFamily: "Itim" }}
+                    >
+                      {comment.text}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "#8F7A60", fontSize: "10px" }}
+                    >
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </Typography>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Comment Input Form */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                paddingRight: "10px",
+                paddingLeft: "10px",
+                width: "100%",
+                height: "40%",
+              }}
+            >
               <div
                 style={{
-                  width: "90%",
-                  height: "auto",
-                  maxHeight: "55%",
-                  marginBottom: "20px",
                   display: "flex",
-                  alignItems: "center",
+                  flexDirection: "row",
                   justifyContent: "center",
+                  alignItems: "center",
+                  height: "50%",
                 }}
               >
-                <img
-                  src={imageUrl || fallbackImage}
-                  alt={caption || "Post image"}
+                <textarea
+                  placeholder="Add your comment..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  disabled={isSubmitting}
+                  maxLength={MAX_CHARS}
                   style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                    borderRadius: "40px",
+                    backgroundColor: "white",
+                    borderRadius: "20px",
                     border: "1px solid rgba(255, 132, 164, 1)",
+                    width: "100%",
+                    height: "100%",
+                    padding: "9px",
+                    fontFamily: "inherit",
+                    fontSize: "11px",
+                    resize: "none",
+                    overflow: "hidden",
                   }}
                 />
-              </div>
-
-              {/* Comments List */}
-              <div
-                style={{
-                  width: "90%",
-                  marginBottom: "15px",
-                  padding: "10px",
-                }}
-              >
-                {sortedComments.length === 0 ? (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "#675844",
-                      textAlign: "center",
-                      fontFamily: "Itim",
-                    }}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Button
+                    sx={buttonStyle}
+                    onClick={submitComment}
+                    disabled={isSubmitting || !commentText.trim()}
                   >
-                    No comments yet. Be the first to comment!
-                  </Typography>
-                ) : (
-                  sortedComments.map((comment, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        padding: "10px",
-                        marginBottom: "8px",
-                        backgroundColor:
-                          index % 2 === 0 ? "#FFECF0" : "#FFC2CF",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#675844", fontFamily: "Itim" }}
-                      >
-                        {comment.text}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "#8F7A60", fontSize: "10px" }}
-                      >
-                        {new Date(comment.createdAt).toLocaleString()}
-                      </Typography>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Comment Input Form */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-evenly",
-                  margin: "10px",
-                  width: "50%",
-                }}
-              >
-                <div>
-                  <textarea
-                    placeholder="Add your comment..."
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    disabled={isSubmitting}
-                    maxLength={MAX_CHARS}
-                    rows={3}
-                    style={{
-                      backgroundColor: "white",
-                      borderRadius: "20px",
-                      border: "1px solid rgba(255, 132, 164, 1)",
-                      width: "100%",
-                      padding: "12px",
-                      boxSizing: "border-box",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      resize: "none",
-                    }}
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "#675844",
-                      marginLeft: "12px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        textAlign: "center",
-                        fontSize: "1.5em",
-                        fontFamily: "Itim",
-                        color: "inherit",
-                      }}
-                    >
-                      {remainingChars} characters remaining
-                    </p>
-                  </Typography>
+                    {isSubmitting ? "..." : "Submit"}
+                  </Button>
                 </div>
+              </div>
+              <div>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "#675844",
+                    marginLeft: "12px",
+                    fontSize: "12px",
+                    textAlign: "left",
+                    fontFamily: "Itim",
+                    paddingLeft: "5px",
+                    padding: 0,
+                  }}
+                >
+                  {remainingChars} characters remaining
+                </Typography>
                 {error && (
                   <Typography
                     variant="body2"
@@ -295,24 +333,11 @@ export default function CommentModal({
                     {error}
                   </Typography>
                 )}
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Button
-                    sx={buttonStyle}
-                    onClick={submitComment}
-                    disabled={isSubmitting || !commentText.trim()}
-                  >
-                    {isSubmitting ? "Posting..." : "Submit comment"}
-                  </Button>
-                </div>
               </div>
-            </Box>
-          </Modal>
-        </div>
+            </div>
+          </div>
+        </Box>
+      </Modal>
+    </div>
   );
 }
