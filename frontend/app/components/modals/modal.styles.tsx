@@ -103,17 +103,18 @@ export const deleteButtonStyle = {
 export const container = {
   display: "flex",
   flexDirection: "row",
-  justifyContent: "space-between",
-  paddingBottom: "5%",
+  alignItems: "center",
+  padding: "5%",
   height: "80%",
-  width: "80%",
+  width: "100%",
 };
 
 export const mobileContainer = {
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
+  justifyContent: "center",
+  padding: "5%",
   paddingBottom: "5%",
-  height: "80%",
-  width: "80%",
+  height: "100%",
+  width: "100%",
 };
