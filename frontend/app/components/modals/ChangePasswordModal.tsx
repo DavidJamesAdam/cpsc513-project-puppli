@@ -85,7 +85,7 @@ export default function ChangePasswordModal() {
 
       // proceed with the password update
       const updatePassResponse = await fetch(
-        "http://localhost:8000/user/update-password",
+        "http://localhost:8000/auth/user/update-password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

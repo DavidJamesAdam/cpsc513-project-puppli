@@ -6,8 +6,10 @@ from pydantic import BaseModel
 
 from firebase_service import db
 
-from routers.auth.login import router as auth_login_router
-from routers.auth.logout import router as auth_logout_router
+# from routers.auth.login import router as auth_login_router
+# from routers.auth.logout import router as auth_logout_router
+
+from routers.auth import router as auth_router
 
 from routers.posts.createPost import router as create_post_router
 from routers.posts.getPosts import router as get_posts_router
@@ -31,8 +33,8 @@ from routers.pets.createSubprofile import router as create_subprofile_router
 from routers.pets.getPetByID import router as get_pet_by_id_router
 from routers.pets.deleteSubprofile import router as delete_subprofile_router
 
-from routers.auth.updateEmail import router as update_email_router
-from routers.auth.updatePassword import router as update_password_router
+# from routers.auth.updateEmail import router as update_email_router
+# from routers.auth.updatePassword import router as update_password_router
 
 from utils.authCheck import router as auth_check_router
 
@@ -61,8 +63,8 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth_login_router)
-app.include_router(auth_logout_router)
+
+app.include_router(auth_router)
 
 app.include_router(get_posts_router)
 app.include_router(get_user_posts_router)
@@ -83,9 +85,6 @@ app.include_router(rank_province_router)
 app.include_router(rank_city_router)
 
 app.include_router(auth_check_router)
-
-app.include_router(update_email_router)
-app.include_router(update_password_router)
 
 app.include_router(post_vote_router)
 app.include_router(post_favourite_router)

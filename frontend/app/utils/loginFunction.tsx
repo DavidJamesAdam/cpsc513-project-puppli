@@ -22,6 +22,8 @@ export default async function handleLogIn(
     /* forceRefresh */ true
   );
 
+  console.log(`Id token: ${idToken}`);
+
   try {
     // 3) Send idToken to backend to exchange for session cookie
     const resp = await fetch("http://localhost:8000/auth/sessionLogin", {
