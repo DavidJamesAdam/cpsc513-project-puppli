@@ -34,15 +34,15 @@ export default function FAQModal() {
               height: "10%",
               display: "flex",
               justifyContent: "flex-end",
-              marginTop: "2%",
-              marginRight: "2%",
+              paddingLeft: "20px",
+              paddingRight: "20px",
             }}
           >
             <IconButton sx={closeButtonStyle} onClick={handleClose}>
               <img style={{ height: "100%" }} src={closeIcon} />
             </IconButton>
           </div>
-          <div style={{ textAlign: "center", margin: "20px" }}>
+          <div style={{ textAlign: "center", margin: "20px", overflow: "auto" }}>
             <Typography className="question" variant="h6" component="h2">
               Q: How can I change my account information (username or password)?
             </Typography>

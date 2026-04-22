@@ -190,13 +190,12 @@ export default function ChangeEmailModal() {
                   display: "flex",
                   flexDirection: "column",
                   margin: 0,
-                  // gap: "8px",
                   width: "100%",
                 }}
               >
                 <label
                   htmlFor="newEmail"
-                  style={{ paddingLeft: "2%", fontSize: "2vw" }}
+                  style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
                 >
                   Please enter new email address:
                 </label>
@@ -213,7 +212,7 @@ export default function ChangeEmailModal() {
                 />
                 <label
                   htmlFor="confirmPass"
-                  style={{ paddingLeft: "2%", paddingTop: "2%", fontSize: "2vw" }}
+                  style={{ paddingLeft: "2%", paddingTop: "2%", fontSize: "calc(1vh + 1vw)" }}
                 >
                   Please confirm current password:
                 </label>

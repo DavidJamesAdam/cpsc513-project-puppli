@@ -1,5 +1,14 @@
 import * as React from "react";
-import { TextField, CardContent, Card, Modal, Button } from "@mui/material";
+import {
+  TextField,
+  CardContent,
+  Card,
+  Modal,
+  Button,
+  IconButton,
+  Box,
+  useMediaQuery,
+} from "@mui/material";
 import editIcon from "~/assets/icons/username.svg";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import {
@@ -12,7 +21,7 @@ import {
   inputFieldStyle,
 } from "./modal.styles.js";
 
-interface EditAboutModalProps {
+interface EditAboutPetModalProps {
   onPetOneSubPage: boolean;
   petInfo: {
     name: string;
@@ -46,15 +55,18 @@ interface EditAboutModalProps {
   onUpdateSuccess?: () => void;
 }
 
-export default function EditAboutModal({
+export default function EditAboutPetModal({
   onPetOneSubPage,
   petInfo,
   userInfo,
   onUpdateSuccess,
-}: EditAboutModalProps) {
+}: EditAboutPetModalProps) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const matches = useMediaQuery("(min-width: 600px)");
+  const [message, setMessage] = React.useState<string>("");
+  const [error, setError] = React.useState(null);
   // This function would send off the user's request to update the pets information
   const handleSubmit = async () => {
     try {
@@ -87,7 +99,7 @@ export default function EditAboutModal({
               favouriteToy: toy,
               favouriteTreat: treat,
             }),
-          }
+          },
         );
 
         // if successful, call the callback to refresh data
@@ -103,7 +115,7 @@ export default function EditAboutModal({
           console.error(
             "Error updating pet information:",
             updatePetResponse.status,
-            errorData
+            errorData,
           );
           alert("Failed to update pet information. Please try again.");
         }
@@ -214,115 +226,150 @@ export default function EditAboutModal({
         aria-labelledby="Edit about modal"
         aria-describedby="Modal that allows user to edit pet information"
       >
-        <Card sx={modalStyle}>
-          <Button sx={closeButtonStyle} onClick={handleClose}>
-            <img src={closeIcon} />
-          </Button>
-          <h1
+        <Box sx={matches ? modalStyle : modalStyleMobile}>
+          <div
             style={{
-              paddingLeft: "15px",
-              paddingRight: "15px",
-              fontSize: "32px",
+              width: "100%",
+              height: "10%",
+              display: "flex",
+              justifyContent: "flex-end",
+              paddingLeft: "20px",
+              paddingRight: "20px",
             }}
           >
-            Edit your pet's information!
-          </h1>
-          <CardContent sx={inputSectionStyle}>
-            <p style={{ fontSize: "24px" }}>Breed:</p>
-            <TextField
-              sx={inputFieldStyle}
-              variant="standard"
-              defaultValue={petInfo.breed}
-              onChange={onBreedChange}
-              slotProps={{
-                input: {
-                  disableUnderline: true,
-                  style: { color: "#675844" },
-                },
-                htmlInput: { maxLength: maxCharacters },
-              }}
-            />
-            <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
-              {breedErrorMsg}
-            </p>
-            <br></br>
-            <p style={{ fontSize: "24px" }}>Birthday:</p>
-            <TextField
-              sx={inputFieldStyle}
-              variant="standard"
-              type="date"
-              defaultValue={petInfo.bday}
-              value={bday}
-              onChange={onBdayChange}
-              slotProps={{
-                input: {
-                  disableUnderline: true,
-                  style: { color: "#675844" },
-                },
-                htmlInput: {
-                  pattern: "\\d{4}-\\d{2}-\\d{2}",
-                },
-              }}
-            />
-            <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
-              {bdayErrorMsg}
-            </p>
-            <br></br>
-            <p style={{ fontSize: "24px" }}>Favourite Treat:</p>
-            <TextField
-              sx={inputFieldStyle}
-              variant="standard"
-              defaultValue={petInfo.treat}
-              onChange={onTreatChange}
-              slotProps={{
-                input: {
-                  disableUnderline: true,
-                  style: { color: "#675844" },
-                },
-                htmlInput: { maxLength: maxCharacters },
-              }}
-            />
-            <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
-              {treatErrorMsg}
-            </p>
-            <br></br>
-            <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
-              <p style={{ fontSize: "24px" }}>
-                Owner: {userInfo.name} - {userInfo.username}
-              </p>
-            </div>
-            <br></br>
-            <p style={{ fontSize: "24px" }}>Favourite Toy:</p>
-            <TextField
-              sx={inputFieldStyle}
-              variant="standard"
-              defaultValue={petInfo.toy}
-              onChange={onToyChange}
-              slotProps={{
-                input: {
-                  disableUnderline: true,
-                  style: { color: "#675844" },
-                },
-                htmlInput: { maxLength: maxCharacters },
-              }}
-            />
-            <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
-              {toyErrorMsg}
-            </p>
-            <br></br>
-          </CardContent>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="contained"
-              id="submit"
-              sx={submitButtonStyle}
-              onClick={handleSubmit}
-              disabled={hasFormErrors}
-            >
-              Submit
-            </Button>
+            <IconButton sx={closeButtonStyle} onClick={handleClose}>
+              <img style={{ height: "100%" }} src={closeIcon} />
+            </IconButton>
           </div>
-        </Card>
+          <div style={{ overflow: "auto" }}>
+            <div>
+              <h1
+                style={{
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                  fontSize: "32px",
+                }}
+              >
+                Edit your pet's information!
+              </h1>
+            </div>
+            <form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
+                paddingLeft: "5%",
+                paddingRight: "5%",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <label
+                htmlFor="breed"
+                style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+              >
+                Breed:
+              </label>
+              <TextField
+                sx={inputFieldStyle}
+                placeholder={"Breed"}
+                onChange={onBreedChange}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    style: { color: "#675844" },
+                  },
+                  htmlInput: { maxLength: maxCharacters },
+                }}
+              />
+              <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
+                {breedErrorMsg}
+              </p>
+              <label
+                htmlFor="birthday"
+                style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+              >
+                Birthday:
+              </label>
+              <TextField
+                sx={inputFieldStyle}
+                type="date"
+                placeholder="YYYY-MM-DD"
+                value={bday}
+                onChange={onBdayChange}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    style: { color: "#675844" },
+                  },
+                  htmlInput: {
+                    pattern: "\\d{4}-\\d{2}-\\d{2}",
+                  },
+                }}
+              />
+              <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
+                {bdayErrorMsg}
+              </p>
+              <label
+                htmlFor="favouriteTreat"
+                style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+              >
+                Favourite treat:
+              </label>
+              <TextField
+                sx={inputFieldStyle}
+                placeholder={"Favourite Treat"}
+                onChange={onTreatChange}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    style: { color: "#675844" },
+                  },
+                  htmlInput: { maxLength: maxCharacters },
+                }}
+              />
+              <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
+                {treatErrorMsg}
+              </p>
+                            <label
+                htmlFor="favouriteToy"
+                style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+              >
+                Favourite toy:
+              </label>
+              <TextField
+                sx={inputFieldStyle}
+                placeholder={"Favourite Toy"}
+                onChange={onToyChange}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    style: { color: "#675844" },
+                  },
+                  htmlInput: { maxLength: maxCharacters },
+                }}
+              />
+              <p style={{ fontSize: "14px", color: "red", paddingLeft: "5px" }}>
+                {toyErrorMsg}
+              </p>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="contained"
+                  id="submit"
+                  sx={submitButtonStyle}
+                  onClick={handleSubmit}
+                  disabled={hasFormErrors}
+                >
+                  <p style={{ fontSize: "calc(.5vw + 1vh)" }}>Submit</p>
+                </Button>
+              </div>
+              {/* Display error message */}
+              {error && (
+                <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>
+              )}{" "}
+            </form>
+          </div>
+        </Box>
       </Modal>
     </div>
   );

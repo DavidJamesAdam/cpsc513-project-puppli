@@ -94,7 +94,7 @@ export default function ChangePasswordModal() {
             id_token: idToken,
             new_password: newPassword,
           }),
-        }
+        },
       );
 
       if (!updatePassResponse.ok) {
@@ -118,7 +118,7 @@ export default function ChangePasswordModal() {
         {
           style: toastStyle,
           duration: 3000,
-        }
+        },
       );
       // reset everything in modal
       setHasFormErrors(false);
@@ -203,163 +203,164 @@ export default function ChangePasswordModal() {
               height: "10%",
               display: "flex",
               justifyContent: "flex-end",
-              marginTop: "2%",
-              marginRight: "2%",
+              paddingLeft: "20px",
+              paddingRight: "20px",
             }}
           >
             <IconButton sx={closeButtonStyle} onClick={handleClose}>
-              <img style={{ scale: "50%" }} src={closeIcon} />
+              <img style={{ height: "100%" }} src={closeIcon} />
             </IconButton>
           </div>
-          <form
-            style={{
-              height: "inherit",
-              width: "80%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              margin: "10px",
-            }}
-          >
-            <div
+          <div style={{ height: "90%", width: "100%"}}>
+            <form
               style={{
                 display: "flex",
                 flexDirection: "column",
-                margin: 0,
-                gap: "8px",
+                justifyContent: "space-evenly",
+                paddingLeft: "5%",
+                paddingRight: "5%",
+                height: "100%",
+                width: "100%"
               }}
             >
-              <label
-                htmlFor="currentPass"
-                style={{ paddingLeft: "15px", fontSize: "calc(1vh + 1vw)" }}
-              >
-                Please enter current password:
-              </label>
-              <TextField
-                required
-                label="Required"
-                sx={inputFieldStyle}
-                onChange={onPasswordChange}
-                type={show ? "text" : "password"}
-                slotProps={{
-                  input: {
-                    disableUnderline: true,
-                    style: { color: "#675844" },
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShow(!show)}>
-                          {show ? (
-                            <img src={showIcon} alt="Show" />
-                          ) : (
-                            <img src={hideIcon} alt="Hide" />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: 0,
+                  width: "100%",
                 }}
-              />
-              <br></br>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: 0,
-                gap: "8px",
-              }}
-            >
-              <label
-                htmlFor="newPass"
-                style={{ paddingLeft: "15px", fontSize: "calc(1vh + 1vw)" }}
               >
-                Please enter new password:
-              </label>
-              <TextField
-                required
-                label="Required"
-                sx={inputFieldStyle}
-                onChange={onNewPasswordChange}
-                type={showNewPass ? "text" : "password"}
-                slotProps={{
-                  input: {
-                    disableUnderline: true,
-                    style: { color: "#675844" },
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowNewPass(!showNewPass)}
-                        >
-                          {showNewPass ? (
-                            <img src={showIcon} alt="Show" />
-                          ) : (
-                            <img src={hideIcon} alt="Hide" />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+                <label
+                  htmlFor="currentPass"
+                  style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+                >
+                  Please enter current password:
+                </label>
+                <TextField
+                  required
+                  label="Required"
+                  sx={inputFieldStyle}
+                  onChange={onPasswordChange}
+                  type={show ? "text" : "password"}
+                  slotProps={{
+                    input: {
+                      disableUnderline: true,
+                      style: { color: "#675844" },
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShow(!show)}>
+                            {show ? (
+                              <img src={showIcon} alt="Show" />
+                            ) : (
+                              <img src={hideIcon} alt="Hide" />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+                <br></br>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: 0,
                 }}
-              />
-              <br></br>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: 0,
-                gap: "8px",
-              }}
-            >
-              <label
-                htmlFor="reenterPass"
-                style={{ paddingLeft: "15px", fontSize: "calc(1vh + 1vw)" }}
               >
-                Please re-enter new password:
-              </label>
-              <TextField
-                type={showReEnterPass ? "text" : "password"}
-                required
-                label="Required"
-                sx={inputFieldStyle}
-                onChange={onReEnteredPassChange}
-                slotProps={{
-                  input: {
-                    disableUnderline: true,
-                    style: { color: "#675844" },
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowReEnterPass(!showReEnterPass)}
-                        >
-                          {showReEnterPass ? (
-                            <img src={showIcon} alt="Show" />
-                          ) : (
-                            <img src={hideIcon} alt="Hide" />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+                <label
+                  htmlFor="newPass"
+                  style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+                >
+                  Please enter new password:
+                </label>
+                <TextField
+                  required
+                  label="Required"
+                  sx={inputFieldStyle}
+                  onChange={onNewPasswordChange}
+                  type={showNewPass ? "text" : "password"}
+                  slotProps={{
+                    input: {
+                      disableUnderline: true,
+                      style: { color: "#675844" },
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowNewPass(!showNewPass)}
+                          >
+                            {showNewPass ? (
+                              <img src={showIcon} alt="Show" />
+                            ) : (
+                              <img src={hideIcon} alt="Hide" />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+                <br></br>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: 0,
                 }}
-              />
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                variant="contained"
-                id="submit"
-                sx={submitButtonStyle}
-                onClick={handleSubmit}
-                disabled={hasFormErrors}
               >
-                <p style={{ fontSize: "calc(.5vw + 1vh)" }}>Submit</p>
-              </Button>
-            </div>
-            {/* Display error message */}
-            {error && (
-              <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>
-            )}{" "}
-          </form>
+                <label
+                  htmlFor="reenterPass"
+                  style={{ paddingLeft: "2%", fontSize: "calc(1vh + 1vw)" }}
+                >
+                  Please re-enter new password:
+                </label>
+                <TextField
+                  type={showReEnterPass ? "text" : "password"}
+                  required
+                  label="Required"
+                  sx={inputFieldStyle}
+                  onChange={onReEnteredPassChange}
+                  slotProps={{
+                    input: {
+                      disableUnderline: true,
+                      style: { color: "#675844" },
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowReEnterPass(!showReEnterPass)}
+                          >
+                            {showReEnterPass ? (
+                              <img src={showIcon} alt="Show" />
+                            ) : (
+                              <img src={hideIcon} alt="Hide" />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="contained"
+                  id="submit"
+                  sx={submitButtonStyle}
+                  onClick={handleSubmit}
+                  disabled={hasFormErrors}
+                >
+                  <p style={{ fontSize: "calc(.5vw + 1vh)" }}>Submit</p>
+                </Button>
+              </div>
+              {/* Display error message */}
+              {error && (
+                <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>
+              )}{" "}
+            </form>
+          </div>
         </Box>
       </Modal>
     </div>

@@ -5,7 +5,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
-import EditAboutModal from "~/components/modals/EditAboutModal";
+import EditAboutPetModal from "~/components/modals/EditAboutPetModal";
 import CreateSubProfileModal from "~/components/modals/CreateSubProfileModal";
 import TextField from "@mui/material/TextField";
 import SaveAndCancelButtons from "~/components/saveAndCancelButtons";
@@ -674,7 +674,7 @@ export default function Profile() {
         ) : (
           <>
             <div id="petInfoContainer">
-              <EditAboutModal
+              <EditAboutPetModal
                 onPetOneSubPage={onPetOneSubPage}
                 petInfo={currentPet}
                 userInfo={userInfo}

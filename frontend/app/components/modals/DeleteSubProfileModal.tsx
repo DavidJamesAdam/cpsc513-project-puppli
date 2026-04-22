@@ -1,11 +1,19 @@
 import * as React from "react";
-import { Card, Modal, Button } from "@mui/material";
+import {
+  Card,
+  Modal,
+  Button,
+  IconButton,
+  Box,
+  useMediaQuery,
+} from "@mui/material";
 import closeIcon from "~/assets/icons/close_icon.svg";
 import {
   modalStyle,
   modalStyleMobile,
   closeButtonStyle,
   deleteButtonStyle,
+  buttonStyle,
 } from "./modal.styles.js";
 
 interface DeleteSubProfileModalProps {
@@ -27,6 +35,7 @@ export default function DeleteSubProfileModal({
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = propOpen !== undefined;
   const open = isControlled ? propOpen! : internalOpen;
+  const matches = useMediaQuery("(min-width: 600px)");
   // handles what happens when user closes the modal
   const handleClose = () => {
     if (onClose) onClose();
@@ -40,7 +49,7 @@ export default function DeleteSubProfileModal({
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
 
       if (response.ok) {
@@ -65,29 +74,75 @@ export default function DeleteSubProfileModal({
         aria-labelledby="Delete sub-profile modal"
         aria-describedby="Modal that allows user to delete a sub-profile"
       >
-        <Card sx={modalStyle}>
-          <Button sx={closeButtonStyle} onClick={handleClose}>
-            <img src={closeIcon} />
-          </Button>
-          <h1
+        <Box
+          sx={matches ? modalStyle : modalStyleMobile}
+          style={{ height: "40%" }}
+        >
+          <div
             style={{
-              paddingLeft: "15px",
-              paddingRight: "15px",
-              fontSize: "32px",
+              width: "100%",
+              height: "10%",
+              display: "flex",
+              justifyContent: "flex-end",
+              paddingLeft: "20px",
+              paddingRight: "20px",
             }}
           >
-            Are you sure you want to delete <b>{petName}'s</b> profile?
-          </h1>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="contained"
-              sx={deleteButtonStyle}
-              onClick={handleDelete}
-            >
-              DELETE
-            </Button>
+            <IconButton sx={closeButtonStyle} onClick={handleClose}>
+              <img style={{ height: "100%" }} src={closeIcon} />
+            </IconButton>
           </div>
-        </Card>
+          <div style={{width: "100%", height: "80%", display: "flex", flexDirection: "column", justifyContent: "space-around"}}>
+            <div style={{width: "100%", textAlign: "center"}}>
+              <h1
+                style={{
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                  fontSize: "4vh",
+                }}
+              >
+                Are you sure you want to delete <b>{petName}'s</b> profile?
+              </h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  width: "30%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  sx={buttonStyle}
+                  onClick={() => {
+                    handleDelete;
+                  }}
+                  style={{ backgroundColor: "red", color: "white" }}
+                >
+                  Yes
+                </Button>
+              </div>
+              <div
+                style={{
+                  width: "30%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Button sx={buttonStyle} onClick={onClose}>
+                  No
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Box>
       </Modal>
     </div>
   );
