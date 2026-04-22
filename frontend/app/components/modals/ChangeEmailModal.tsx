@@ -80,16 +80,14 @@ export default function ChangeEmailModal() {
             id_token: idToken,
             new_email: email,
           }),
-        }
+        },
       );
 
       if (!updateEmailResponse.ok) {
         const parsed = await updateEmailResponse.json();
         const message = (parsed as any).detail[0];
         console.log(parsed);
-        throw new Error(
-          message
-        );
+        throw new Error(message);
       }
       // automatically log user in again to get new session cookie
       // with the new email if update was successful
@@ -106,7 +104,7 @@ export default function ChangeEmailModal() {
         {
           style: toastStyle,
           duration: 3000,
-        }
+        },
       );
       // close modal when done
       setOpen(false);
@@ -157,101 +155,109 @@ export default function ChangeEmailModal() {
         aria-labelledby="Change Email modal"
         aria-describedby="Modal that allows user to change their email"
       >
-        <Box sx={matches ? modalStyle : modalStyleMobile}>
+        <Box
+          sx={matches ? modalStyle : modalStyleMobile}
+          style={{ height: "50%" }}
+        >
           <div
             style={{
               width: "100%",
               height: "10%",
               display: "flex",
               justifyContent: "flex-end",
-              marginTop: "2%",
-              marginRight: "2%",
+              paddingLeft: "20px",
+              paddingRight: "20px",
             }}
           >
             <IconButton sx={closeButtonStyle} onClick={handleClose}>
               <img style={{ height: "100%" }} src={closeIcon} />
             </IconButton>
           </div>
-          <form
-            style={{
-              height: "100%",
-              width: "80%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              margin: "10px",
-            }}
-          >
-            <div
+          <div style={{ height: "90%", width: "100%"}}>
+            <form
               style={{
                 display: "flex",
                 flexDirection: "column",
-                margin: 0,
-                gap: "8px",
-                width: "100%",
+                justifyContent: "space-evenly",
+                paddingLeft: "5%",
+                paddingRight: "5%",
+                height: "100%",
+                width: "100%"
               }}
             >
-              <label
-                htmlFor="newEmail"
-                style={{ paddingLeft: "15px", fontSize: "2vw" }}
-              >
-                Please enter new email address:
-              </label>
-              <TextField
-                required
-                label="Required"
-                sx={inputFieldStyle}
-                onChange={onEmailChange}
-                slotProps={{
-                  htmlInput: {
-                    maxLength: maxCharacters,
-                  },
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: 0,
+                  // gap: "8px",
+                  width: "100%",
                 }}
-              />
-              <label
-                htmlFor="confirmPass"
-                style={{ paddingLeft: "15px", fontSize: "2vw" }}
               >
-                Please confirm current password:
-              </label>
-              <TextField
-                required
-                label="Required"
-                sx={inputFieldStyle}
-                onChange={onPasswordChange}
-                type={show ? "text" : "password"}
-                slotProps={{
-                  input: {
-                    style: { color: "#675844" },
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShow(!show)}>
-                          {show ? (
-                            <img src={showIcon} alt="Show" />
-                          ) : (
-                            <img src={hideIcon} alt="Hide" />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                variant="contained"
-                id="submit"
-                sx={submitButtonStyle}
-                onClick={handleSubmit}
-                disabled={hasEmailError || hasPasswordError}
-              >
-                Submit
-              </Button>
-            </div>
-            {/* Display error message */}
-            {error && <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>}{" "}
-          </form>
+                <label
+                  htmlFor="newEmail"
+                  style={{ paddingLeft: "2%", fontSize: "2vw" }}
+                >
+                  Please enter new email address:
+                </label>
+                <TextField
+                  required
+                  label="Required"
+                  sx={inputFieldStyle}
+                  onChange={onEmailChange}
+                  slotProps={{
+                    htmlInput: {
+                      maxLength: maxCharacters,
+                    },
+                  }}
+                />
+                <label
+                  htmlFor="confirmPass"
+                  style={{ paddingLeft: "2%", paddingTop: "2%", fontSize: "2vw" }}
+                >
+                  Please confirm current password:
+                </label>
+                <TextField
+                  required
+                  label="Required"
+                  sx={inputFieldStyle}
+                  onChange={onPasswordChange}
+                  type={show ? "text" : "password"}
+                  slotProps={{
+                    input: {
+                      style: { color: "#675844" },
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShow(!show)}>
+                            {show ? (
+                              <img src={showIcon} alt="Show" />
+                            ) : (
+                              <img src={hideIcon} alt="Hide" />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="contained"
+                  id="submit"
+                  sx={submitButtonStyle}
+                  onClick={handleSubmit}
+                  disabled={hasEmailError || hasPasswordError}
+                >
+                  Submit
+                </Button>
+              </div>
+              {/* Display error message */}
+              {error && (
+                <p style={{ color: "red", fontSize: "1.5em" }}>{message}</p>
+              )}{" "}
+            </form>
+          </div>
         </Box>
       </Modal>
     </div>

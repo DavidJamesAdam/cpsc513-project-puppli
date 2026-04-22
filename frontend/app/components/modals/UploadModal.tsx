@@ -208,7 +208,7 @@ export default function UploadModal({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "5%"
+                // padding: "5%"
               }}
             >
               <img

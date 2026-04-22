@@ -78,7 +78,6 @@ export const inputFieldStyle = {
   "& .MuiOutlinedInput-root": {
     backgroundColor: "var(--bg-color)",
     borderRadius: "100px",
-    padding: "10px",
     maxHeight: "59px",
     borderBottom: "none",
     border: "1px solid rgba(255, 132, 164, 1)",
@@ -104,7 +103,8 @@ export const container = {
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  padding: "5%",
+  paddingLeft: "5%",
+  paddingRight: "5%",
   height: "80%",
   width: "100%",
 };
