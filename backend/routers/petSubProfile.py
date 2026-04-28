@@ -1,10 +1,97 @@
+from pydantic import BaseModel
 from firebase_service import db
 from fastapi import APIRouter, Request, HTTPException
 from firebase_admin import auth
 
-router = APIRouter()
+router = APIRouter(tags=["petSubProfile"])
 
-@router.get("/pets")
+class PetCreate(BaseModel):
+    name: str
+    breed: str
+    birthday: str
+    favouriteToy: str
+    favouriteTreat: str
+
+# Tested
+@router.post("/pet/create")
+async def create_subprofile(pet: PetCreate, request: Request):
+    """
+    Create a new pet profile for the authenticated user
+    """
+    # Get session cookie and verify authentication
+    session_cookie = request.cookies.get("session")
+    if not session_cookie:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        # Verify session and get user ID
+        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        user_id = decoded.get("uid")
+
+        # Create a new document with auto-generated ID
+        pets_collection = db.collection("pets")
+        pet_ref = pets_collection.document()
+
+        pet_data = {
+            "userId": user_id,
+            "name": pet.name,
+            "breed": pet.breed,
+            "birthday": pet.birthday,
+            "favouriteToy": pet.favouriteToy,
+            "favouriteTreat": pet.favouriteTreat,
+        }
+
+        # Save to Firestore
+        pet_ref.set(pet_data)
+
+        return {
+            "id": pet_ref.id,
+            **pet_data,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Tested
+@router.delete("/pet/delete/{pet_id}")
+#delete pet subprofile
+async def delete_pet(pet_id: str):
+
+    try:
+        #reference to pet in db
+        doc_ref = db.collection('pets').document(pet_id)
+        #actual pet object
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Pet not found")
+
+        #delete the pet
+        doc_ref.delete()
+
+        return {"message": "Pet deleted successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting pet: {str(e)}")
+
+# tested
+@router.get("/pet/{pet_id}")
+#fix class use if location stored as JSON instead of string
+async def get_pet(pet_id: str):
+
+    try:
+        pet = db.collection('pets').document(pet_id).get().to_dict()
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+
+        return pet
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching pet: {str(e)}")
+
+# tested
+@router.get("/pet")
 async def get_pets(request: Request):
     """
     Retrieve all pets for the authenticated user
@@ -34,6 +121,7 @@ async def get_pets(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# tested
 @router.get("/pet/{pet_id}/last-image")
 async def get_last_pet_image(pet_id: str):
     """
@@ -63,6 +151,7 @@ async def get_last_pet_image(pet_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching pet image: {str(e)}")
 
+# tested
 @router.get("/pet/{pet_id}/images")
 async def get_pet_images(pet_id: str):
     """
@@ -102,3 +191,26 @@ async def get_pet_images(pet_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching pet images: {str(e)}")
+
+# tested
+@router.patch("/pet/update/{pet_id}")
+#update pet info
+#accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
+async def update_pet(pet_id: str, updated_fields: dict):
+
+    try:
+        #reference to pet in db
+        doc_ref = db.collection('pets').document(pet_id)
+        #actual pet object
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        #update user with provided fields
+        doc_ref.update(updated_fields)
+
+        return {"message": "Pet updated successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating pet: {str(e)}")

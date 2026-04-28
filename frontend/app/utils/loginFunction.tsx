@@ -6,7 +6,7 @@ export default async function handleLogIn(
   auth: any,
   email: any,
   password: any,
-  navigate?: (to: string) => void
+  navigate?: (to: string) => void,
 ) {
   let userCredential;
   // 1) Sign in with Firebase client SDK
@@ -19,7 +19,7 @@ export default async function handleLogIn(
   }
   // 2) Get fresh ID token
   const idToken = await userCredential!.user.getIdToken(
-    /* forceRefresh */ true
+    /* forceRefresh */ true,
   );
 
   console.log(`Id token: ${idToken}`);

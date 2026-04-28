@@ -71,7 +71,7 @@ export default function EditAboutPetModal({
   const handleSubmit = async () => {
     try {
       // Fetch pets for the logged-in user
-      const petsResponse = await fetch("http://localhost:8000/pets", {
+      const petsResponse = await fetch("http://localhost:8000/pet", {
         credentials: "include",
       });
 

@@ -147,7 +147,7 @@ export default function Profile() {
         }
 
         // Fetch pets for the logged-in user
-        const petsResponse = await fetch("http://localhost:8000/pets", {
+        const petsResponse = await fetch("http://localhost:8000/pet", {
           credentials: "include",
         });
 
@@ -293,7 +293,7 @@ export default function Profile() {
       }
 
       // Fetch pets for the logged-in user
-      const petsResponse = await fetch("http://localhost:8000/pets", {
+      const petsResponse = await fetch("http://localhost:8000/pet", {
         credentials: "include",
       });
 
@@ -402,7 +402,7 @@ export default function Profile() {
   // refreshes pet data from the backend
   const refreshPetData = async () => {
     try {
-      const petsResponse = await fetch("http://localhost:8000/pets", {
+      const petsResponse = await fetch("http://localhost:8000/pet", {
         credentials: "include",
       });
 

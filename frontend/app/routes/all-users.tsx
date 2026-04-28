@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader(_: Route.LoaderArgs) {
   // fetch all users (could be optimized server-side)
-  const resp = await fetch("http://localhost:8000/users", {
+  const resp = await fetch("http://localhost:8000/user", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -91,7 +91,7 @@ export default function AllUsers() {
     }
 
     try {
-      const resp = await fetch(`http://localhost:8000/users/${uid}`, {
+      const resp = await fetch(`http://localhost:8000/user/${uid}`, {
         method: "DELETE",
       });
 
