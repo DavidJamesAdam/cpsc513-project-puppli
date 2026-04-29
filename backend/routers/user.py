@@ -11,8 +11,6 @@ router = APIRouter(tags=["User"])
 
 COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
 
-router = APIRouter()
-
 class User(BaseModel):
     userName: str
     email: str

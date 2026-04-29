@@ -9,7 +9,7 @@ from firebase_service import db
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 SESSION_EXPIRES_DAYS = 5
 

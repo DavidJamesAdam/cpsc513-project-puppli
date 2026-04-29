@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from firebase_admin import auth
 from utils.authCheck import auth_check
 
-router = APIRouter(tags=["petSubProfile"], dependencies= [Depends(auth_check)])
+router = APIRouter(tags=["Pet Sub Profile"], dependencies= [Depends(auth_check)])
 
 class PetCreate(BaseModel):
     name: str
