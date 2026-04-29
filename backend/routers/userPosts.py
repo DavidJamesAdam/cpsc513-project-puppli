@@ -1,19 +1,25 @@
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from firebase_admin import auth
-from pydantic import BaseModel
+import firebase_admin.firestore as firestore
+from pydantic import BaseModel, Field
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
+from classes.location import Location
 
 router = APIRouter(tags=["User Posts"])
+
 
 class PostCreate(BaseModel):
     caption: str
     petId: str
     imageUrl: str
 
+
 # Tested
+# TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
+# TODO: Separate photo upload logic and actual post/text field logic
 @router.post("/posts")
 async def create_post(post: PostCreate, request: Request):
     """
@@ -38,7 +44,7 @@ async def create_post(post: PostCreate, request: Request):
             "caption": post.caption,
             "createdAt": datetime.utcnow().isoformat() + "Z",
             "voteCount": 0,
-            "favouriteCount": 0
+            "favouriteCount": 0,
         }
 
         # Add document to posts collection
@@ -48,7 +54,7 @@ async def create_post(post: PostCreate, request: Request):
         return {
             "id": doc_ref.id,
             "message": "Post created successfully",
-            "post": post_data
+            "post": post_data,
         }
 
     except HTTPException:
@@ -56,6 +62,41 @@ async def create_post(post: PostCreate, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# Tested
+@router.get("/posts/user")
+async def get_posts(request: Request):
+    """
+    Retrieve all posts for the authenticated user
+    """
+    print("Test")
+    # Get session cookie and verify authentication
+    session_cookie = request.cookies.get("session")
+    if not session_cookie:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        # Verify session and get user ID
+        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        user_id = decoded.get("uid")
+
+        # Query posts collection filtered by userId
+        docs = db.collection("posts").where("userId", "==", user_id).stream()
+
+        results = []
+        for doc in docs:
+            post_data = doc.to_dict()
+            post_data["id"] = doc.id
+            results.append(post_data)
+
+        return results
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Tested
 @router.get("/posts/{post_id}")
 async def get_post_by_id(post_id: str):
     """
@@ -64,7 +105,7 @@ async def get_post_by_id(post_id: str):
     """
     try:
         # Get the specific document from 'posts' collection
-        doc_ref = db.collection('posts').document(post_id)
+        doc_ref = db.collection("posts").document(post_id)
         doc = doc_ref.get()
 
         if not doc.exists:
@@ -72,11 +113,11 @@ async def get_post_by_id(post_id: str):
 
         # Convert document to dictionary format
         doc_data = doc.to_dict()
-        doc_data['id'] = doc.id  # Include document ID
+        doc_data["id"] = doc.id  # Include document ID
 
         # Ensure comments field exists (initialize as empty array if missing)
-        if 'comments' not in doc_data:
-            doc_data['comments'] = []
+        if "comments" not in doc_data:
+            doc_data["comments"] = []
 
         return doc_data
 
@@ -85,6 +126,9 @@ async def get_post_by_id(post_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching post: {str(e)}")
 
+
+# TODO: Update and clarify this endpoint. Get all posts instead of "posts user voted".
+# This endpoint retrieves two posts at random to be diplayed on voting page
 @router.get("/posts")
 async def read_posts(request: Request):
     """
@@ -94,16 +138,16 @@ async def read_posts(request: Request):
     """
     try:
         # Get all documents from 'posts' collection
-        docs = db.collection('posts').stream()
+        docs = db.collection("posts").stream()
 
         # Convert documents to dictionary format
         results = []
         for doc in docs:
             doc_data = doc.to_dict()
-            doc_data['id'] = doc.id  # Include document ID
+            doc_data["id"] = doc.id  # Include document ID
             # Ensure comments field exists (initialize as empty array if missing)
-            if 'comments' not in doc_data:
-                doc_data['comments'] = []
+            if "comments" not in doc_data:
+                doc_data["comments"] = []
             results.append(doc_data)
 
         # Try to get user_id from session cookie
@@ -120,7 +164,9 @@ async def read_posts(request: Request):
 
         # If user authenticated, filter out posts voted on today
         if user_id:
-            voted_posts_ref = db.collection('users').document(user_id).collection('votedPosts')
+            voted_posts_ref = (
+                db.collection("users").document(user_id).collection("votedPosts")
+            )
             voted_docs = await run_in_threadpool(voted_posts_ref.stream)
 
             voted_today = set()
@@ -129,18 +175,406 @@ async def read_posts(request: Request):
 
             for voted_doc in voted_docs:
                 voted_data = voted_doc.to_dict()
-                voted_at = voted_data.get('votedAt')
+                voted_at = voted_data.get("votedAt")
 
                 if voted_at and voted_at >= today_start:
                     voted_today.add(voted_doc.id)
 
             # Filter out posts voted on today
-            results = [post for post in results if post['id'] not in voted_today]
+            results = [post for post in results if post["id"] not in voted_today]
 
         # Return 2 random posts from the filtered results
         if len(results) >= 2:
             return random.sample(results, 2)
         else:
             return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
+
+
+# Tested
+class CommentCreate(BaseModel):
+    text: str = Field(..., max_length=56)
+
+
+@router.post("/posts/{post_id}/comment")
+async def add_comment(post_id: str, comment: CommentCreate, request: Request):
+    """Add a comment to a post"""
+    # Authenticate user
+    session_cookie = request.cookies.get("session")
+    if not session_cookie:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    try:
+        # Verify session
+        auth.verify_session_cookie(session_cookie, check_revoked=True)
+
+        # Validate comment text length
+        if len(comment.text) > 56:
+            raise HTTPException(status_code=400, detail="Comment exceeds 56 characters")
+
+        if not comment.text.strip():
+            raise HTTPException(status_code=400, detail="Comment cannot be empty")
+
+        # Create comment object
+        new_comment = {
+            "text": comment.text,
+            "createdAt": datetime.utcnow().isoformat() + "Z",
+        }
+
+        # Update post document using arrayUnion for atomic operation
+        post_ref = db.collection("posts").document(post_id)
+
+        # Check if post exists
+        post = post_ref.get()
+        if not post.exists:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        # Append comment to array using Firestore arrayUnion
+        post_ref.update({"comments": firestore.ArrayUnion([new_comment])})
+
+        return {"message": "Comment added successfully", "comment": new_comment}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
+
+
+# Tested
+# TODO: This should be some sort of lambda function that runs at the end of each week... do we need an endpoint for that?
+@router.post("/admin/award-medals")
+async def award_medals():
+    """
+    Award gold, silver, and bronze medals to top posts based on voteCount.
+    Clears all users' votedPosts subcollections for the new day.
+    """
+    try:
+        # Get all posts
+        posts_ref = db.collection("posts")
+        posts = await run_in_threadpool(posts_ref.stream)
+
+        posts_list = []
+        for post in posts:
+            post_data = post.to_dict()
+            post_data["id"] = post.id
+            posts_list.append(post_data)
+
+        if len(posts_list) == 0:
+            return {"message": "No posts to award medals"}
+
+        # Sort by voteCount
+        posts_list.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
+
+        # Group posts by vote count
+        vote_groups = []
+        i = 0
+        while i < len(posts_list):
+            current_votes = posts_list[i].get("voteCount", 0)
+            group = []
+
+            while (
+                i < len(posts_list)
+                and posts_list[i].get("voteCount", 0) == current_votes
+            ):
+                group.append(posts_list[i].get("userId"))
+                i += 1
+
+            vote_groups.append(group)
+
+        # Award medals with Olympic tie rules
+        gold_users = []
+        silver_users = []
+        bronze_users = []
+
+        # First place gets gold
+        if len(vote_groups) > 0:
+            gold_users = vote_groups[0]
+
+        # Second place gets silver or bronze depending on first place ties
+        if len(vote_groups) > 1:
+            # If only 1 gold, second place gets silver
+            if len(gold_users) == 1:
+                silver_users = vote_groups[1]
+            # If multiple golds, second place gets bronze
+            else:
+                bronze_users = vote_groups[1]
+
+        # Third place gets bronze if not already awarded
+        if len(vote_groups) > 2:
+            # 1 gold, 1 silver: third place gets bronze
+            if len(gold_users) == 1 and len(silver_users) == 1:
+                bronze_users = vote_groups[2]
+            # 1 gold, multiple silvers: skip bronze
+            elif len(gold_users) == 1 and len(silver_users) > 1:
+                pass
+            # Multiple golds, no bronze yet: third place gets bronze
+            elif len(gold_users) > 1 and len(bronze_users) == 0:
+                bronze_users = vote_groups[2]
+
+        # Update user totals
+        for user_id in gold_users:
+            user_ref = db.collection("users").document(user_id)
+            await run_in_threadpool(
+                user_ref.update, {"totalGold": firestore.Increment(1)}
+            )
+
+        for user_id in silver_users:
+            user_ref = db.collection("users").document(user_id)
+            await run_in_threadpool(
+                user_ref.update, {"totalSilver": firestore.Increment(1)}
+            )
+
+        for user_id in bronze_users:
+            user_ref = db.collection("users").document(user_id)
+            await run_in_threadpool(
+                user_ref.update, {"totalBronze": firestore.Increment(1)}
+            )
+
+        # Clear votedPosts
+        users_ref = db.collection("users")
+        users = await run_in_threadpool(users_ref.stream)
+
+        cleared_count = 0
+        for user in users:
+            voted_posts_ref = user.reference.collection("votedPosts")
+            voted_docs = await run_in_threadpool(voted_posts_ref.stream)
+
+            for voted_doc in voted_docs:
+                await run_in_threadpool(voted_doc.reference.delete)
+                cleared_count += 1
+
+        # TODO: Reset voteCount for all posts to 0 for new day
+        # Discuss with team before implementing
+        # for post in posts_list:
+        #     post_ref = db.collection('posts').document(post['id'])
+        #     await run_in_threadpool(post_ref.update, {'voteCount': 0})
+
+        return {
+            "message": "Medals awarded successfully",
+            "gold": len(gold_users),
+            "silver": len(silver_users),
+            "bronze": len(bronze_users),
+            "voted_posts_cleared": cleared_count,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error awarding medals: {str(e)}")
+
+
+# Tested
+# TODO: Need to figure out what to do with this endpoint. IE have a gallery for user to view favs? Is there an easier way to increase/decrease fav count?
+@router.post("/posts/favourite/{postId}")
+# favourite toggle (add or remove)
+async def post_favourite(postId: str, request: Request):
+    try:
+        print("Backend test")
+        # Get user ID from session cookie for authentication
+        session_cookie = request.cookies.get("session")
+        if not session_cookie:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        try:
+            decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
+            user_id = decoded.get("uid")
+        except Exception:
+            raise HTTPException(status_code=401, detail="Invalid session")
+
+        doc_ref = db.collection("posts").document(postId)
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        data = doc.to_dict()
+        favourited_by = data.get("favouritedBy", [])
+
+        # Toggle: if user already favorited, remove; otherwise add
+        if user_id in favourited_by:
+            # Remove favorite
+            doc_ref.update(
+                {
+                    "favouriteCount": firestore.Increment(-1),
+                    "favouritedBy": firestore.ArrayRemove([user_id]),
+                }
+            )
+            return {"message": "Favourite removed", "favourited": False}
+        else:
+            # Add favorite
+            doc_ref.update(
+                {
+                    "favouriteCount": firestore.Increment(1),
+                    "favouritedBy": firestore.ArrayUnion([user_id]),
+                }
+            )
+            return {"message": "Favourite added", "favourited": True}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error toggling favourite: {str(e)}"
+        )
+
+
+# Tested
+# TODO: Similar to adding favourites, is there an easier way? Can we just use this as a "favourite gallery"? Do we even need a favourite function in that case?
+@router.post("/posts/vote/{postId}")
+# vote count increase
+async def post_vote(postId: str, request: Request):
+    try:
+        # Get user ID from session cookie
+        session_cookie = request.cookies.get("session")
+        if not session_cookie:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        try:
+            decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
+            user_id = decoded.get("uid")
+        except Exception:
+            raise HTTPException(status_code=401, detail="Invalid session")
+
+        doc_ref = db.collection("posts").document(postId)
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        data = doc.to_dict()
+        current_votes = data.get("votes", 0)
+
+        # increment vote count
+        doc_ref.update({"voteCount": firestore.Increment(1)})
+
+        # Record that user voted on this post with timestamp
+        user_voted_ref = (
+            db.collection("users")
+            .document(user_id)
+            .collection("votedPosts")
+            .document(postId)
+        )
+        user_voted_ref.set({"votedAt": datetime.now(timezone.utc)})
+
+        return {"message": "Vote recorded successfully"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error recording vote: {str(e)}")
+
+# TODO: Figure out better way to sort by City
+# Organize top voted by city
+@router.get("/posts/rank/city/{location}")
+# fix class use if location stored as JSON instead of string
+async def rank_city(location: str):
+
+    try:
+        # convert user's location to Location object
+        user_location = Location.from_string(location)
+
+        # Get all documents from 'posts' collection
+        docs = db.collection("posts").stream()
+
+        # Convert documents to dictionary format
+        results = []
+        for doc in docs:
+
+            # get post's (other user's) location and convert to Location object
+            doc_data = doc.to_dict()
+            post_user_id = doc_data.get("userId")
+            user_doc = db.collection("users").document(post_user_id).get()
+            post_user = user_doc.to_dict()
+
+            # skip missing/empty user docs
+            if not post_user:
+                continue
+
+            # skip if user has not entered a location
+            post_loc_str = post_user.get("location")
+            if not post_loc_str:
+                continue
+
+            # get the location as object
+            post_location = post_user["location"]
+            post_location = Location.from_string(post_location)
+
+            # match 'location' to user's 'location'
+            if post_location.city == user_location.city:
+                doc_data["id"] = doc.id  # Include document ID
+                results.append(doc_data)
+
+        # sort from highest to lowest number of votes
+        results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
+
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
+
+# TODO: Figure out better way to sort by Global
+@router.get("/posts/rank/global")
+async def rank_global():
+
+    try:
+        # Get all documents from 'posts' collection
+        docs = db.collection("posts").stream()
+
+        # Convert documents to dictionary format
+        results = []
+        for doc in docs:
+            doc_data = doc.to_dict()
+            doc_data["id"] = doc.id  # Include document ID
+            results.append(doc_data)
+
+        # sort from highest to lowest number of votes
+        results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
+
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
+
+# TODO: Figure out better way to sort by province
+@router.get("/posts/rank/province/{location}")
+#fix class use if location stored as JSON instead of string
+async def rank_province(location: str):
+
+    try:
+        #convert user's location to Location object
+        location = Location.from_string(location)
+
+        # Get all documents from 'posts' collection
+        docs = db.collection('posts').stream()
+
+        # Convert documents to dictionary format
+        results = []
+        for doc in docs:
+
+            #get post's (other user's) location and convert to Location object
+            doc_data = doc.to_dict()
+            post_user_id = doc_data.get('userId')
+            user_doc = db.collection('users').document(post_user_id).get()
+            post_user = user_doc.to_dict()
+
+            #skip missing/empty user docs
+            if not post_user:
+                continue
+
+            #skip if user has not entered a location
+            post_loc_str = post_user.get('location')
+            if not post_loc_str:
+                continue
+
+            #get the location as object
+            post_location = post_user['location']
+            post_location = Location.from_string(post_location)
+
+            #match 'location' to user's 'location'
+            if post_location.province == location.province:
+                doc_data['id'] = doc.id  # Include document ID
+                results.append(doc_data)
+
+        #sort from highest to lowest number of votes
+        results.sort(key=lambda x: x.get('voteCount', 0), reverse=True)
+
+        return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
