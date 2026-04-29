@@ -7,8 +7,9 @@ from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from classes.location import Location
+from utils.authCheck import auth_check
 
-router = APIRouter(tags=["User Posts"])
+router = APIRouter(tags=["User Posts"], dependencies= [Depends(auth_check)])
 
 
 class PostCreate(BaseModel):
@@ -17,7 +18,7 @@ class PostCreate(BaseModel):
     imageUrl: str
 
 
-# Tested
+
 # TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
 # TODO: Separate photo upload logic and actual post/text field logic
 @router.post("/posts")
@@ -63,7 +64,7 @@ async def create_post(post: PostCreate, request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Tested
+
 @router.get("/posts/user")
 async def get_posts(request: Request):
     """
@@ -96,7 +97,7 @@ async def get_posts(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Tested
+
 @router.get("/posts/{post_id}")
 async def get_post_by_id(post_id: str):
     """
@@ -192,7 +193,7 @@ async def read_posts(request: Request):
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
 
 
-# Tested
+
 class CommentCreate(BaseModel):
     text: str = Field(..., max_length=56)
 
@@ -241,7 +242,7 @@ async def add_comment(post_id: str, comment: CommentCreate, request: Request):
         raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
 
-# Tested
+
 # TODO: This should be some sort of lambda function that runs at the end of each week... do we need an endpoint for that?
 @router.post("/admin/award-medals")
 async def award_medals():
@@ -362,7 +363,7 @@ async def award_medals():
         raise HTTPException(status_code=500, detail=f"Error awarding medals: {str(e)}")
 
 
-# Tested
+
 # TODO: Need to figure out what to do with this endpoint. IE have a gallery for user to view favs? Is there an easier way to increase/decrease fav count?
 @router.post("/posts/favourite/{postId}")
 # favourite toggle (add or remove)
@@ -417,7 +418,7 @@ async def post_favourite(postId: str, request: Request):
         )
 
 
-# Tested
+
 # TODO: Similar to adding favourites, is there an easier way? Can we just use this as a "favourite gallery"? Do we even need a favourite function in that case?
 @router.post("/posts/vote/{postId}")
 # vote count increase

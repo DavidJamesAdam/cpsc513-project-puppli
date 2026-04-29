@@ -5,6 +5,7 @@ from firebase_admin import auth
 import re
 from pydantic import BaseModel, field_validator
 from google.cloud import firestore as gcfirestore
+from utils.authCheck import auth_check
 
 router = APIRouter(tags=["User"])
 
@@ -37,7 +38,8 @@ class User(BaseModel):
             raise ValueError("Password is too common")
         return v
 
-# tested
+
+# TODO: find a way to protect this route. Clearly, we can't get a session cookie if the user is signing up for the first time
 @router.post("/user")
 async def create_user(user: User):
     user_dict = user.model_dump()
@@ -93,12 +95,10 @@ async def create_user(user: User):
     # Success — do not return password or any sensitive info
     return {"id": uid, "userName": username, "email": email, "displayName": user_dict.get("displayName", "")}
 
-# tested
 # Gets all users
 # TODO: Not sure if I want this accessible to average user
 @router.get("/user")
-# def read_users(user=Depends(check_auth)): Use this to protect route
-def read_users():
+def read_users(user=Depends(auth_check)):
     try:
         # Get all documents from 'users' collection
         docs = db.collection('users').stream()
@@ -114,9 +114,9 @@ def read_users():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
 
-# Tested
+# Get currrent user
 @router.get("/user/me")
-async def get_current_user(request: Request):
+async def get_current_user(request: Request, user=Depends(auth_check)):
     """
     Retrieve the current authenticated user's profile data
     """
@@ -144,11 +144,9 @@ async def get_current_user(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# tested
 # TODO: Not sure if I want this avaialble to all users
-#temp get user (move or remove later)
 @router.get("/user/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, user=Depends(auth_check)):
 
     try:
         #get user from db
@@ -163,12 +161,11 @@ async def get_user(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
 
-# Tested
 # TODO: Add authentication so that currently logged in user can only update their own bio
 #update user info
 #accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
 @router.patch("/user/update/{user_id}")
-async def update_user(user_id: str, updated_fields: dict):
+async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_check)):
     try:
         #reference to user in db
         doc_ref = db.collection('users').document(user_id)
@@ -186,11 +183,11 @@ async def update_user(user_id: str, updated_fields: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")
 
-# tested
+
 # TODO: Need to protect this route for admin only
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
 @router.delete("/user/{user_id}")
-async def delete_user(user_id: str):
+async def delete_user(user_id: str, user=Depends(auth_check)):
 
     try:
         # Make sure user exists

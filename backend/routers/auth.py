@@ -7,11 +7,13 @@ import re
 from firebase_admin import auth
 from firebase_service import db
 from google.cloud import firestore as gcfirestore
+from utils.authCheck import auth_check
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 SESSION_EXPIRES_DAYS = 5
 
+# TODO: Do I need to protect this route?
 @router.post("/sessionLogin")
 async def session_login(request: Request):
     """
@@ -79,6 +81,7 @@ async def session_login(request: Request):
 #         login_url = origin.rstrip("/") + "/login"
 #         return RedirectResponse(url=login_url, status_code=302)
 
+# TODO: Do I need to protect this route?
 @router.post("/logout")
 async def session_logout(request: Request):
     # expect session cookie - read and verify it to get uid
@@ -100,24 +103,33 @@ async def session_logout(request: Request):
     response.delete_cookie("session")
     return response
 
+# TODO: This already exists as a function, figure out a way to use this route and include user=Depends(auth_check)
+@router.get("/check")
+def check_auth(request: Request):
+    session_cookie = request.cookies.get("session")
+    # if not session_cookie:
+    #     raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        return {"status": "ok", "uid": decoded["uid"]}
+    except Exception:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
 class EmailUpdate(BaseModel):
-    id_token: str
     new_email: EmailStr
 
+
 @router.post("/user/update-email")
-async def update_email(request: Request):
+async def update_email(request: Request, user: dict = Depends(auth_check)):
     try:
         data = await request.json()
         update = EmailUpdate(**data)
-        #verify user identity token, must be a new one!!! (not days old)
-        decoded = auth.verify_id_token(update.id_token)
-        uid = decoded["uid"]
 
         #update email in Firebase Auth
-        auth.update_user(uid, email=update.new_email)
+        auth.update_user(user["uid"], email=update.new_email)
 
         #update profile document in firestore
-        user_ref = db.collection("users").document(uid)
+        user_ref = db.collection("users").document(user["uid"])
         user_ref.update({"email": update.new_email})
 
         return {"status": "success", "message": "Email updated successfully"}
@@ -131,12 +143,11 @@ async def update_email(request: Request):
             error_messages.append(f"{message}")
         raise HTTPException(status_code=422, detail=error_messages)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e.errors()))
+        raise HTTPException(status_code=500, detail=str(e))
 
 COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
 
 class PassUpdate(BaseModel):
-    id_token: str
     new_password: str
 
     # Password Validation
@@ -157,18 +168,13 @@ class PassUpdate(BaseModel):
         return v
 
 @router.post("/user/update-password")
-async def update_password(request: Request, update: PassUpdate):
+async def update_password(request: Request, update: PassUpdate, user: dict = Depends(auth_check)):
     try:
         data = await request.json()
         update = PassUpdate(**data)
-        #verify user identity token, must be a new one!!! (not days old)
-        decoded = auth.verify_id_token(update.id_token)
-        uid = decoded["uid"]
-
-        print(uid)
 
         #update password in Firebase Auth
-        auth.update_user(uid, password=update.new_password)
+        auth.update_user(user["uid"], password=update.new_password)
 
         return {"status": "success", "message": "Password updated successfully"}
     except auth.InvalidPasswordError:
@@ -180,4 +186,4 @@ async def update_password(request: Request, update: PassUpdate):
             error_messages.append(f"{message}")
         raise HTTPException(status_code=422, detail=error_messages)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e.errors))
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,8 +1,10 @@
 fastapi[standard]
 uvicorn
 pydantic
+pydantic-settings
 firebase-admin
 google-cloud-firestore
 Faker
 passlib
 argon2-cffi
+python-dotenv

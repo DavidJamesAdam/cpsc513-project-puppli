@@ -1,9 +1,10 @@
 from pydantic import BaseModel
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from firebase_admin import auth
+from utils.authCheck import auth_check
 
-router = APIRouter(tags=["petSubProfile"])
+router = APIRouter(tags=["petSubProfile"], dependencies= [Depends(auth_check)])
 
 class PetCreate(BaseModel):
     name: str
@@ -12,7 +13,7 @@ class PetCreate(BaseModel):
     favouriteToy: str
     favouriteTreat: str
 
-# Tested
+
 @router.post("/pet/create")
 async def create_subprofile(pet: PetCreate, request: Request):
     """
@@ -53,7 +54,7 @@ async def create_subprofile(pet: PetCreate, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Tested
+
 @router.delete("/pet/delete/{pet_id}")
 #delete pet subprofile
 async def delete_pet(pet_id: str):
@@ -75,7 +76,7 @@ async def delete_pet(pet_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting pet: {str(e)}")
 
-# tested
+
 @router.get("/pet/{pet_id}")
 #fix class use if location stored as JSON instead of string
 async def get_pet(pet_id: str):
@@ -90,7 +91,7 @@ async def get_pet(pet_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching pet: {str(e)}")
 
-# tested
+
 @router.get("/pet")
 async def get_pets(request: Request):
     """
@@ -121,7 +122,7 @@ async def get_pets(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# tested
+
 @router.get("/pet/{pet_id}/last-image")
 async def get_last_pet_image(pet_id: str):
     """
@@ -151,7 +152,7 @@ async def get_last_pet_image(pet_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching pet image: {str(e)}")
 
-# tested
+
 @router.get("/pet/{pet_id}/images")
 async def get_pet_images(pet_id: str):
     """
@@ -192,7 +193,7 @@ async def get_pet_images(pet_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching pet images: {str(e)}")
 
-# tested
+
 @router.patch("/pet/update/{pet_id}")
 #update pet info
 #accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
