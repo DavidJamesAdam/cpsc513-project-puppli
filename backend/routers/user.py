@@ -182,17 +182,24 @@ async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_chec
         raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")
 
 
-# TODO: Need to protect this route for admin only
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
 @router.delete("/user/{user_id}")
 async def delete_user(user_id: str, user=Depends(auth_check)):
 
     try:
+        current_user_id = user["user_id"]
+        admin_user = db.collection('users').document(current_user_id)
+        doc = admin_user.get()
+        data = doc.to_dict()
+        role = data.get("role")
+        if role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"
+            )
+
         # Make sure user exists
         user_ref = db.collection('users').document(user_id)
         user_doc = await run_in_threadpool(user_ref.get)
-
-        print(user_ref)
 
         if not user_doc.exists:
             raise HTTPException(
