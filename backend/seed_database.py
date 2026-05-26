@@ -311,11 +311,11 @@ def seed_database():
     for post in all_posts:
         post["ref"].set(post["data"])
 
-    print(f"✓ Added {len(all_users)} users, {len(all_pets)} pets, {len(all_posts)} posts")
+    print(f"Added {len(all_users)} users, {len(all_pets)} pets, {len(all_posts)} posts")
 
 if __name__ == "__main__":
     try:
         seed_database()
     except Exception as e:
-        print(f"\n✗ Error seeding database: {e}")
+        print(f"\nError seeding database: {e}")
         raise

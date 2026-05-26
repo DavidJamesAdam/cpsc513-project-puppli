@@ -1,4 +1,5 @@
-import logo from "~/assets/icons/logo.svg"
+import logo from "~/assets/icons/logo.svg";
+import Link from "@mui/material/Link";
 
 export default function LoginHeader() {
   return (
@@ -14,16 +15,38 @@ export default function LoginHeader() {
         outline: "1px #FF84A4 solid",
         alignItems: "center",
         display: "inline-flex",
+        justifyContent: "space-between",
       }}
     >
-      {/* Logo */}
-      <div>
-        <img src={logo} />
-      </div>
+      <div style={{ alignItems: "center", display: "inline-flex" }}>
+        {/* Logo */}
+        <div>
+          <img src={logo} />
+        </div>
 
-      {/* App name */}
-      <div>
-        <h1 style={{ fontSize: "54px", color: "var(--font-color)", paddingLeft: "30px"}}>Puppli</h1>
+        {/* App name */}
+        <div>
+          <h1
+            style={{
+              fontSize: "54px",
+              color: "var(--font-color)",
+              paddingLeft: "30px",
+            }}
+          >
+            Puppli
+          </h1>
+        </div>
+      </div>
+      <div
+        style={{
+          fontSize: "54px",
+          color: "var(--font-color)",
+          paddingLeft: "30px",
+        }}
+      >
+        <Link className="link" href="login">
+          Login
+        </Link>
       </div>
     </div>
   );

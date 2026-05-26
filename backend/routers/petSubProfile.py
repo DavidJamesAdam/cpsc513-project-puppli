@@ -15,19 +15,12 @@ class PetCreate(BaseModel):
 
 
 @router.post("/pet/create")
-async def create_subprofile(pet: PetCreate, request: Request):
+async def create_subprofile(pet: PetCreate, user = Depends(auth_check)):
     """
     Create a new pet profile for the authenticated user
     """
-    # Get session cookie and verify authentication
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
-        # Verify session and get user ID
-        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_id = decoded.get("uid")
+        user_id = user["user_id"]
 
         # Create a new document with auto-generated ID
         pets_collection = db.collection("pets")
@@ -54,58 +47,14 @@ async def create_subprofile(pet: PetCreate, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@router.delete("/pet/delete/{pet_id}")
-#delete pet subprofile
-async def delete_pet(pet_id: str):
-
-    try:
-        #reference to pet in db
-        doc_ref = db.collection('pets').document(pet_id)
-        #actual pet object
-        doc = doc_ref.get()
-
-        if not doc.exists:
-            raise HTTPException(status_code=404, detail="Pet not found")
-
-        #delete the pet
-        doc_ref.delete()
-
-        return {"message": "Pet deleted successfully"}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error deleting pet: {str(e)}")
-
-
-@router.get("/pet/{pet_id}")
-#fix class use if location stored as JSON instead of string
-async def get_pet(pet_id: str):
-
-    try:
-        pet = db.collection('pets').document(pet_id).get().to_dict()
-        if not pet:
-            raise HTTPException(status_code=404, detail="Pet not found")
-
-        return pet
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching pet: {str(e)}")
-
-
 @router.get("/pet")
-async def get_pets(request: Request):
+async def get_pets(user = Depends(auth_check)):
     """
     Retrieve all pets for the authenticated user
     """
-    # Get session cookie and verify authentication
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
         # Verify session and get user ID
-        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_id = decoded.get("uid")
+        user_id = user["user_id"]
 
         # Query pets collection filtered by userId
         docs = db.collection('pets').where('userId', '==', user_id).stream()
@@ -123,8 +72,23 @@ async def get_pets(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/pet/{pet_id}")
+#fix class use if location stored as JSON instead of string
+async def get_pet(pet_id: str, user = Depends(auth_check)):
+
+    try:
+        pet = db.collection('pets').document(pet_id).get().to_dict()
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+
+        return pet
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching pet: {str(e)}")
+
+
 @router.get("/pet/{pet_id}/last-image")
-async def get_last_pet_image(pet_id: str):
+async def get_last_pet_image(pet_id: str, user = Depends(auth_check)):
     """
     Retrieve the most recent post image URL for a specific pet
     Returns the imageUrl of the most recent post, or empty string if no posts exist
@@ -154,7 +118,7 @@ async def get_last_pet_image(pet_id: str):
 
 
 @router.get("/pet/{pet_id}/images")
-async def get_pet_images(pet_id: str):
+async def get_pet_images(pet_id: str, user = Depends(auth_check)):
     """
     Retrieve all post image URLs for a specific pet
     Returns a list of image URLs sorted by createdAt (most recent first)
@@ -197,7 +161,7 @@ async def get_pet_images(pet_id: str):
 @router.patch("/pet/update/{pet_id}")
 #update pet info
 #accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
-async def update_pet(pet_id: str, updated_fields: dict):
+async def update_pet(pet_id: str, updated_fields: dict, user = Depends(auth_check)):
 
     try:
         #reference to pet in db
@@ -215,3 +179,24 @@ async def update_pet(pet_id: str, updated_fields: dict):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating pet: {str(e)}")
+
+@router.delete("/pet/delete/{pet_id}")
+#delete pet subprofile
+async def delete_pet(pet_id: str, user = Depends(auth_check)):
+
+    try:
+        #reference to pet in db
+        doc_ref = db.collection('pets').document(pet_id)
+        #actual pet object
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Pet not found")
+
+        #delete the pet
+        doc_ref.delete()
+
+        return {"message": "Pet deleted successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting pet: {str(e)}")

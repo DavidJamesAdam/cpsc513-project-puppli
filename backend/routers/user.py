@@ -120,8 +120,6 @@ async def get_current_user(request: Request, user=Depends(auth_check)):
     """
     # Get session cookie and verify authentication
     session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     try:
         # Verify session and get user ID
@@ -153,7 +151,6 @@ async def get_user(user_id: str, user=Depends(auth_check)):
         if not doc.exists:
             raise HTTPException(status_code=404, detail="User not found")
 
-        print(doc.to_dict())
         return doc.to_dict()
 
     except Exception as e:
@@ -185,13 +182,10 @@ async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_chec
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
 @router.delete("/user/{user_id}")
 async def delete_user(user_id: str, user=Depends(auth_check)):
-
     try:
         current_user_id = user["user_id"]
-        admin_user = db.collection('users').document(current_user_id)
-        doc = admin_user.get()
-        data = doc.to_dict()
-        role = data.get("role")
+        admin_user = db.collection('users').document(current_user_id).get().to_dict()
+        role = admin_user.get("role")
         if role != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"

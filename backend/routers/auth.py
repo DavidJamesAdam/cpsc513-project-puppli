@@ -23,7 +23,6 @@ async def session_login(request: Request):
     """
     body = await request.json()
     id_token = body.get("idToken")
-    print(id_token)
     if not id_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Missing idToken in body")
@@ -34,7 +33,6 @@ async def session_login(request: Request):
         # verify token to obtain uid for updating lastLogin
         # Not working, not sure why, but not crucial
         # decoded = await run_in_threadpool(admin_auth.verify_id_token, id_token, True)
-        # print("test")
         # uid = decoded.get("uid")
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,

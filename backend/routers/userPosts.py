@@ -9,7 +9,7 @@ import random
 from classes.location import Location
 from utils.authCheck import auth_check
 
-router = APIRouter(tags=["User Posts"], dependencies= [Depends(auth_check)])
+router = APIRouter(tags=["User Posts"], dependencies=[Depends(auth_check)])
 
 
 class PostCreate(BaseModel):
@@ -18,24 +18,16 @@ class PostCreate(BaseModel):
     imageUrl: str
 
 
-
 # TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
 # TODO: Separate photo upload logic and actual post/text field logic
 @router.post("/posts")
-async def create_post(post: PostCreate, request: Request):
+async def create_post(post: PostCreate, user=Depends(auth_check)):
     """
     Create a new post with an image URL, caption, and pet ID
     Requires authentication
     """
-    # Get session cookie and verify authentication
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
-        # Verify session and get user ID
-        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_id = decoded.get("uid")
+        user_id = user["user_id"]
 
         # Create post document
         post_data = {
@@ -64,22 +56,13 @@ async def create_post(post: PostCreate, request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 @router.get("/posts/user")
-async def get_posts(request: Request):
+async def get_posts(user=Depends(auth_check)):
     """
     Retrieve all posts for the authenticated user
     """
-    print("Test")
-    # Get session cookie and verify authentication
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
-        # Verify session and get user ID
-        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_id = decoded.get("uid")
+        user_id = user["user_id"]
 
         # Query posts collection filtered by userId
         docs = db.collection("posts").where("userId", "==", user_id).stream()
@@ -97,9 +80,8 @@ async def get_posts(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 @router.get("/posts/{post_id}")
-async def get_post_by_id(post_id: str):
+async def get_post_by_id(post_id: str, user=Depends(auth_check)):
     """
     Retrieve a single post by its ID
     Returns the post with its ID and comments
@@ -131,13 +113,14 @@ async def get_post_by_id(post_id: str):
 # TODO: Update and clarify this endpoint. Get all posts instead of "posts user voted".
 # This endpoint retrieves two posts at random to be diplayed on voting page
 @router.get("/posts")
-async def read_posts(request: Request):
+async def read_posts(user=Depends(auth_check)):
     """
     Retrieve all documents from the 'posts' collection
     Returns a list of all posts with their IDs and comments
     If user is authenticated, filters out posts the user voted on today
     """
     try:
+        user_id = user["user_id"]
         # Get all documents from 'posts' collection
         docs = db.collection("posts").stream()
 
@@ -150,18 +133,6 @@ async def read_posts(request: Request):
             if "comments" not in doc_data:
                 doc_data["comments"] = []
             results.append(doc_data)
-
-        # Try to get user_id from session cookie
-        session_cookie = request.cookies.get("session")
-        user_id = None
-
-        if session_cookie:
-            try:
-                decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-                user_id = decoded.get("uid")
-            except Exception:
-                # If session invalid, just return all posts without filtering
-                pass
 
         # If user authenticated, filter out posts voted on today
         if user_id:
@@ -192,6 +163,24 @@ async def read_posts(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
 
+# TODO: Users cannot delete posts they have not created. Admin can delete any post
+@router.delete("/posts/{post_id}")
+async def delete_post(post_id: str, user=Depends(auth_check)):
+    try:
+        #reference to pet in db
+        doc_ref = db.collection('posts').document(post_id)
+        #actual pet object
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        #delete the pet
+        doc_ref.delete()
+
+        return {"message": "Post deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting post: {str(e)}")
 
 
 class CommentCreate(BaseModel):
@@ -199,17 +188,9 @@ class CommentCreate(BaseModel):
 
 
 @router.post("/posts/{post_id}/comment")
-async def add_comment(post_id: str, comment: CommentCreate, request: Request):
+async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_check)):
     """Add a comment to a post"""
-    # Authenticate user
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
     try:
-        # Verify session
-        auth.verify_session_cookie(session_cookie, check_revoked=True)
-
         # Validate comment text length
         if len(comment.text) > 56:
             raise HTTPException(status_code=400, detail="Comment exceeds 56 characters")
@@ -241,6 +222,15 @@ async def add_comment(post_id: str, comment: CommentCreate, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
+# TODO: Create Delete Comment Logic.
+# TODO: Users cannot delete comments they have not created. Admin can delete any comment.
+@router.delete("/posts/{post_id}/comment")
+async def delete_comment(post_id: str, user=Depends(auth_check)):
+    try:
+
+        return {"message": "Comment deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting comment: {str(e)}")
 
 
 # TODO: This should be some sort of lambda function that runs at the end of each week... do we need an endpoint for that?
@@ -363,13 +353,11 @@ async def award_medals():
         raise HTTPException(status_code=500, detail=f"Error awarding medals: {str(e)}")
 
 
-
 # TODO: Need to figure out what to do with this endpoint. IE have a gallery for user to view favs? Is there an easier way to increase/decrease fav count?
 @router.post("/posts/favourite/{postId}")
 # favourite toggle (add or remove)
 async def post_favourite(postId: str, request: Request):
     try:
-        print("Backend test")
         # Get user ID from session cookie for authentication
         session_cookie = request.cookies.get("session")
         if not session_cookie:
@@ -418,7 +406,6 @@ async def post_favourite(postId: str, request: Request):
         )
 
 
-
 # TODO: Similar to adding favourites, is there an easier way? Can we just use this as a "favourite gallery"? Do we even need a favourite function in that case?
 @router.post("/posts/vote/{postId}")
 # vote count increase
@@ -462,6 +449,7 @@ async def post_vote(postId: str, request: Request):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error recording vote: {str(e)}")
+
 
 # TODO: Figure out better way to sort by City
 # Organize top voted by city
@@ -511,6 +499,7 @@ async def rank_city(location: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
 
+
 # TODO: Figure out better way to sort by Global
 @router.get("/posts/rank/global")
 async def rank_global():
@@ -533,48 +522,49 @@ async def rank_global():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
 
+
 # TODO: Figure out better way to sort by province
 @router.get("/posts/rank/province/{location}")
-#fix class use if location stored as JSON instead of string
+# fix class use if location stored as JSON instead of string
 async def rank_province(location: str):
 
     try:
-        #convert user's location to Location object
+        # convert user's location to Location object
         location = Location.from_string(location)
 
         # Get all documents from 'posts' collection
-        docs = db.collection('posts').stream()
+        docs = db.collection("posts").stream()
 
         # Convert documents to dictionary format
         results = []
         for doc in docs:
 
-            #get post's (other user's) location and convert to Location object
+            # get post's (other user's) location and convert to Location object
             doc_data = doc.to_dict()
-            post_user_id = doc_data.get('userId')
-            user_doc = db.collection('users').document(post_user_id).get()
+            post_user_id = doc_data.get("userId")
+            user_doc = db.collection("users").document(post_user_id).get()
             post_user = user_doc.to_dict()
 
-            #skip missing/empty user docs
+            # skip missing/empty user docs
             if not post_user:
                 continue
 
-            #skip if user has not entered a location
-            post_loc_str = post_user.get('location')
+            # skip if user has not entered a location
+            post_loc_str = post_user.get("location")
             if not post_loc_str:
                 continue
 
-            #get the location as object
-            post_location = post_user['location']
+            # get the location as object
+            post_location = post_user["location"]
             post_location = Location.from_string(post_location)
 
-            #match 'location' to user's 'location'
+            # match 'location' to user's 'location'
             if post_location.province == location.province:
-                doc_data['id'] = doc.id  # Include document ID
+                doc_data["id"] = doc.id  # Include document ID
                 results.append(doc_data)
 
-        #sort from highest to lowest number of votes
-        results.sort(key=lambda x: x.get('voteCount', 0), reverse=True)
+        # sort from highest to lowest number of votes
+        results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
 
         return results
     except Exception as e:
