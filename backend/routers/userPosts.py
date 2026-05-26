@@ -163,19 +163,20 @@ async def read_posts(user=Depends(auth_check)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching posts: {str(e)}")
 
+
 # TODO: Users cannot delete posts they have not created. Admin can delete any post
 @router.delete("/posts/{post_id}")
 async def delete_post(post_id: str, user=Depends(auth_check)):
     try:
-        #reference to pet in db
-        doc_ref = db.collection('posts').document(post_id)
-        #actual pet object
+        # reference to pet in db
+        doc_ref = db.collection("posts").document(post_id)
+        # actual pet object
         doc = doc_ref.get()
 
         if not doc.exists:
             raise HTTPException(status_code=404, detail="Post not found")
 
-        #delete the pet
+        # delete the pet
         doc_ref.delete()
 
         return {"message": "Post deleted successfully"}
@@ -222,12 +223,13 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
+
 # TODO: Create Delete Comment Logic.
 # TODO: Users cannot delete comments they have not created. Admin can delete any comment.
 @router.delete("/posts/{post_id}/comment")
 async def delete_comment(post_id: str, user=Depends(auth_check)):
     try:
-
+        post_ref = db.collection("posts").document(post_id)
         return {"message": "Comment deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting comment: {str(e)}")
