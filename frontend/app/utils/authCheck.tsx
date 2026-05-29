@@ -1,5 +1,5 @@
 export async function authCheck() {
-  const res = await fetch("http://localhost:8000/auth/check", {
+  const res = await fetch("http://localhost:8000/api/v1/auth/check", {
     credentials: "include",
   });
 

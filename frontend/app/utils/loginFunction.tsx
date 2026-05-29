@@ -26,7 +26,7 @@ export default async function handleLogIn(
 
   try {
     // 3) Send idToken to backend to exchange for session cookie
-    const resp = await fetch("http://localhost:8000/auth/sessionLogin", {
+    const resp = await fetch("http://localhost:8000/api/v1/auth/sessionLogin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // VERY IMPORTANT: accept cookie

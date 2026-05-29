@@ -28,7 +28,7 @@ export function PetSelectionMenu({
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch("http://localhost:8000/pet", {
+        const response = await fetch("http://localhost:8000/api/v1/pet", {
           method: "GET",
           credentials: "include", // Include cookies for authentication
         });

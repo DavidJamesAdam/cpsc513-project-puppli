@@ -58,7 +58,7 @@ export default function CreateSubProfileModal() {
       };
 
       // Send POST request to create pet
-      const response = await fetch("http://localhost:8000/pet/create", {
+      const response = await fetch("http://localhost:8000/api/v1/pet/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

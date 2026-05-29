@@ -43,7 +43,7 @@ export function MainNavMenu() {
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch("http://localhost:8000/user/me", {
+        const res = await fetch("http://localhost:8000/api/v1/user/me", {
           credentials: "include",
         });
         if (!mounted) return;
@@ -72,7 +72,7 @@ export function MainNavMenu() {
     handleClose();
     try {
       // log out logic
-      const resp = await fetch("http://localhost:8000/auth/logout", {
+      const resp = await fetch("http://localhost:8000/api/v1/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // VERY IMPORTANT: accept cookie

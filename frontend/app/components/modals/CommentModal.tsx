@@ -93,7 +93,7 @@ export default function CommentModal({
 
     try {
       const response = await fetch(
-        `http://localhost:8000/posts/${postId}/comment`,
+        `http://localhost:8000/api/v1/posts/${postId}/comment`,
         {
           method: "POST",
           headers: {

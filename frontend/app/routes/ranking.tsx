@@ -42,7 +42,7 @@ export default function Ranking() {
   // fetches the last uploaded image for a specific pet
   const fetchLastPetImage = async (petId: string): Promise<string> => {
     try {
-      const response = await fetch(`http://localhost:8000/pet/${petId}/last-image`, {
+      const response = await fetch(`http://localhost:8000/api/v1/pet/${petId}/last-image`, {
         credentials: "include",
       });
 
@@ -74,7 +74,7 @@ export default function Ranking() {
         setAuthorized(true);
 
         // Fetch user profile data for the logged-in user
-        const userResponse = await fetch("http://localhost:8000/user/me", {
+        const userResponse = await fetch("http://localhost:8000/api/v1/user/me", {
           credentials: "include",
         });
 
@@ -87,7 +87,7 @@ export default function Ranking() {
 
           // Fetch the json for the global rankings
           const globalResponse = await fetch(
-            "http://localhost:8000/posts/rank/global"
+            "http://localhost:8000/api/v1/posts/rank/global"
           );
 
           // extract info if response is ok
@@ -103,7 +103,7 @@ export default function Ranking() {
             const petData = await Promise.all(
               onlyPetIds.map(async (id: any) => {
                 const petResponse = await fetch(
-                  `http://localhost:8000/pet/${id}`
+                  `http://localhost:8000/api/v1/pet/${id}`
                 );
 
                 // if we successfully retrieved the data, extract the name and get the image
@@ -124,7 +124,7 @@ export default function Ranking() {
 
           // Fetch the json for the province rankings based on user's location
           const provinceResponse = await fetch(
-            `http://localhost:8000/posts/rank/province/${userLocation}`
+            `http://localhost:8000/api/v1/posts/rank/province/${userLocation}`
           );
 
           // extract info if response is ok
@@ -140,7 +140,7 @@ export default function Ranking() {
             const petData = await Promise.all(
               onlyPetIds.map(async (id: any) => {
                 const petResponse = await fetch(
-                  `http://localhost:8000/pet/${id}`
+                  `http://localhost:8000/api/v1/pet/${id}`
                 );
 
                 // if we successfully retrieved the data, extract the name and get the image
@@ -161,7 +161,7 @@ export default function Ranking() {
 
           // Fetch the json for the city rankings based on user's location
           const cityResponse = await fetch(
-            `http://localhost:8000/posts/rank/city/${userLocation}`
+            `http://localhost:8000/api/v1/posts/rank/city/${userLocation}`
           );
 
           // extract info if response is ok
@@ -177,7 +177,7 @@ export default function Ranking() {
             const petData = await Promise.all(
               onlyPetIds.map(async (id: any) => {
                 const petResponse = await fetch(
-                  `http://localhost:8000/pet/${id}`
+                  `http://localhost:8000/api/v1/pet/${id}`
                 );
 
                 // if we successfully retrieved the data, extract the name and get the image

@@ -52,7 +52,7 @@ export default function Home() {
       }
 
       try {
-        const response = await fetch("http://localhost:8000/posts", {
+        const response = await fetch("http://localhost:8000/api/v1/posts", {
           credentials: "include",
         });
 
@@ -83,7 +83,7 @@ export default function Home() {
   const handleAnyVote = async () => {
     // Refresh posts from database to get updated vote counts
     try {
-      const response = await fetch("http://localhost:8000/posts", {
+      const response = await fetch("http://localhost:8000/api/v1/posts", {
         credentials: "include",
       });
 

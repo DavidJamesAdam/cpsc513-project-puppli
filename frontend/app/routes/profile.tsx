@@ -92,7 +92,7 @@ export default function Profile() {
   const fetchLastPetImage = async (petId: string): Promise<string> => {
     try {
       const response = await fetch(
-        `http://localhost:8000/pet/${petId}/last-image`,
+        `http://localhost:8000/api/v1/pet/${petId}/last-image`,
         {
           credentials: "include",
         }
@@ -127,7 +127,7 @@ export default function Profile() {
         setAuthorized(true);
 
         // Fetch user profile data for the logged-in user
-        const userResponse = await fetch("http://localhost:8000/user/me", {
+        const userResponse = await fetch("http://localhost:8000/api/v1/user/me", {
           credentials: "include",
         });
 
@@ -147,7 +147,7 @@ export default function Profile() {
         }
 
         // Fetch pets for the logged-in user
-        const petsResponse = await fetch("http://localhost:8000/pet", {
+        const petsResponse = await fetch("http://localhost:8000/api/v1/pet", {
           credentials: "include",
         });
 
@@ -213,7 +213,7 @@ export default function Profile() {
       setUserInfo((prev) => ({ ...prev, bio: editedBio }));
 
       // Fetch user profile data for the logged-in user
-      const userResponse = await fetch("http://localhost:8000/user/me", {
+      const userResponse = await fetch("http://localhost:8000/api/v1/user/me", {
         credentials: "include",
       });
 
@@ -223,7 +223,7 @@ export default function Profile() {
 
         // save the bio in the text field to the DB based on the current user id
         const updateBioResponse = await fetch(
-          `http://localhost:8000/user/update/${userData.id}`,
+          `http://localhost:8000/api/v1/user/update/${userData.id}`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -250,7 +250,7 @@ export default function Profile() {
       setUserInfo((prev) => ({ ...prev, name: editedName }));
 
       // Fetch user profile data for the logged-in user
-      const userResponse = await fetch("http://localhost:8000/user/me", {
+      const userResponse = await fetch("http://localhost:8000/api/v1/user/me", {
         credentials: "include",
       });
 
@@ -260,7 +260,7 @@ export default function Profile() {
 
         // save the display name in the text field to the DB based on the current user id
         const updateNameResponse = await fetch(
-          `http://localhost:8000/user/update/${userData.id}`,
+          `http://localhost:8000/api/v1/user/update/${userData.id}`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -293,7 +293,7 @@ export default function Profile() {
       }
 
       // Fetch pets for the logged-in user
-      const petsResponse = await fetch("http://localhost:8000/pet", {
+      const petsResponse = await fetch("http://localhost:8000/api/v1/pet", {
         credentials: "include",
       });
 
@@ -311,7 +311,7 @@ export default function Profile() {
 
         // save the pet's name in the text field to the DB based on the pet id
         const updateNameResponse = await fetch(
-          `http://localhost:8000/pet/update/${petID}`,
+          `http://localhost:8000/api/v1/pet/update/${petID}`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -402,7 +402,7 @@ export default function Profile() {
   // refreshes pet data from the backend
   const refreshPetData = async () => {
     try {
-      const petsResponse = await fetch("http://localhost:8000/pet", {
+      const petsResponse = await fetch("http://localhost:8000/api/v1/pet", {
         credentials: "include",
       });
 

@@ -71,7 +71,7 @@ export default function EditAboutPetModal({
   const handleSubmit = async () => {
     try {
       // Fetch pets for the logged-in user
-      const petsResponse = await fetch("http://localhost:8000/pet", {
+      const petsResponse = await fetch("http://localhost:8000/api/v1/pet", {
         credentials: "include",
       });
 
@@ -89,7 +89,7 @@ export default function EditAboutPetModal({
 
         // save all the fields in the modal to the DB based on the pet id
         const updatePetResponse = await fetch(
-          `http://localhost:8000/pet/update/${petID}`,
+          `http://localhost:8000/api/v1/pet/update/${petID}`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },

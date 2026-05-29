@@ -97,7 +97,7 @@ export default function VotingCard({
     if (!post?.id) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/posts/${post.id}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/posts/${post.id}`, {
         credentials: "include",
       });
 
@@ -123,7 +123,7 @@ export default function VotingCard({
 
     try {
       const response = await fetch(
-        `http://localhost:8000/posts/favourite/${post.id}`,
+        `http://localhost:8000/api/v1/posts/favourite/${post.id}`,
         {
           method: "POST",
           credentials: "include",
@@ -138,7 +138,7 @@ export default function VotingCard({
 
         // Fetch the updated post data directly by ID
         const postResponse = await fetch(
-          `http://localhost:8000/posts/${post.id}`,
+          `http://localhost:8000/api/v1/posts/${post.id}`,
           {
             method: "GET",
             credentials: "include",
@@ -204,7 +204,7 @@ export default function VotingCard({
 
     try {
       const response = await fetch(
-        `http://localhost:8000/posts/vote/${post.id}`,
+        `http://localhost:8000/api/v1/posts/vote/${post.id}`,
         {
           method: "POST",
           credentials: "include",

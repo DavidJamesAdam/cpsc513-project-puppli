@@ -109,7 +109,7 @@ export default function UploadModal({
 
     try {
       // Create post via backend API. Build the fetch promise first (do not await yet)
-      const uploadPromise = fetch("http://localhost:8000/posts", {
+      const uploadPromise = fetch("http://localhost:8000/api/v1/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

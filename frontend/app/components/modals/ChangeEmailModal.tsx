@@ -71,7 +71,7 @@ export default function ChangeEmailModal() {
 
       // proceed with the email update
       const updateEmailResponse = await fetch(
-        "http://localhost:8000/auth/user/update-email",
+        "http://localhost:8000/api/v1/auth/user/update-email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

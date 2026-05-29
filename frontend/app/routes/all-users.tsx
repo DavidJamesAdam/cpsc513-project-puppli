@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader(_: Route.LoaderArgs) {
   // fetch all users (could be optimized server-side)
-  const resp = await fetch("http://localhost:8000/user", {
+  const resp = await fetch("http://localhost:8000/api/v1/user", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -60,7 +60,7 @@ export default function AllUsers() {
         await authCheck();
 
         // fetch current user profile
-        const resp = await fetch("http://localhost:8000/user/me", {
+        const resp = await fetch("http://localhost:8000/api/v1/user/me", {
           credentials: "include",
         });
 
@@ -91,7 +91,7 @@ export default function AllUsers() {
     }
 
     try {
-      const resp = await fetch(`http://localhost:8000/user/${uid}`, {
+      const resp = await fetch(`http://localhost:8000/api/v1/user/${uid}`, {
         method: "DELETE",
       });
 

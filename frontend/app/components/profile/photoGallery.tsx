@@ -47,7 +47,7 @@ export default function PhotoGallery({ petIds }: PhotoGalleryProps) {
       for (const petId of petIds) {
         if (!petId) continue;
 
-        const response = await fetch(`http://localhost:8000/pet/${petId}/images`, {
+        const response = await fetch(`http://localhost:8000/api/v1/pet/${petId}/images`, {
           credentials: "include",
         });
 
@@ -104,7 +104,7 @@ export default function PhotoGallery({ petIds }: PhotoGalleryProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/posts/${selectedImage.id}/comment`,
+        `http://localhost:8000/api/v1/posts/${selectedImage.id}/comment`,
         {
           method: "POST",
           headers: {
@@ -122,7 +122,7 @@ export default function PhotoGallery({ petIds }: PhotoGalleryProps) {
       setCommentText("");
       // Fetch the updated post directly by ID
       const postResponse = await fetch(
-        `http://localhost:8000/posts/${selectedImage.id}`,
+        `http://localhost:8000/api/v1/posts/${selectedImage.id}`,
         {
           credentials: "include",
         }

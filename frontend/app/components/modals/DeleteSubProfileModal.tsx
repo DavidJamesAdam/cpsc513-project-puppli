@@ -45,7 +45,7 @@ export default function DeleteSubProfileModal({
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/pet/delete/${petId}`,
+        `http://localhost:8000/api/v1/pet/delete/${petId}`,
         {
           method: "DELETE",
           credentials: "include",
