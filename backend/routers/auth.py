@@ -8,6 +8,7 @@ from firebase_admin import auth
 from firebase_service import db
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
+from models import EmailUpdate, PassUpdate
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -113,10 +114,6 @@ def check_auth(request: Request):
     except Exception:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-class EmailUpdate(BaseModel):
-    new_email: EmailStr
-
-
 @router.post("/user/update-email")
 async def update_email(request: Request, user: dict = Depends(auth_check)):
     try:
@@ -142,28 +139,6 @@ async def update_email(request: Request, user: dict = Depends(auth_check)):
         raise HTTPException(status_code=422, detail=error_messages)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
-
-class PassUpdate(BaseModel):
-    new_password: str
-
-    # Password Validation
-    @field_validator("new_password")
-    def validate_password(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        if not re.search(r"[A-Z]", v):
-            raise ValueError("Password must contain an uppercase letter")
-        if not re.search(r"[a-z]", v):
-            raise ValueError("Password must contain a lowercase letter")
-        if not re.search(r"[0-9]", v):
-            raise ValueError("Password must contain a digit")
-        if not re.search(r"[^A-Za-z0-9]", v):
-            raise ValueError("Password must contain a symbol")
-        if v.lower() in COMMON_PASSWORDS:
-            raise ValueError("Password is too common")
-        return v
 
 @router.post("/user/update-password")
 async def update_password(request: Request, update: PassUpdate, user: dict = Depends(auth_check)):
