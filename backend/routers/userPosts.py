@@ -1,5 +1,5 @@
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException, Depends
+from fastapi import APIRouter, Request, HTTPException, Depends, status
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
 from pydantic import BaseModel, Field
@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import random
 from classes.location import Location
 from utils.authCheck import auth_check
+import uuid
 
 router = APIRouter(tags=["User Posts"], dependencies=[Depends(auth_check)])
 
@@ -188,10 +189,17 @@ class CommentCreate(BaseModel):
     text: str = Field(..., max_length=56)
 
 
-@router.post("/posts/{post_id}/comment")
+@router.post("/posts/{post_id}/comment/")
 async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_check)):
     """Add a comment to a post"""
     try:
+        post_ref = db.collection("posts").document(post_id)
+        post = post_ref.get()
+        if not post.exists:
+            raise HTTPException(
+                  status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+              )
+
         # Validate comment text length
         if len(comment.text) > 56:
             raise HTTPException(status_code=400, detail="Comment exceeds 56 characters")
@@ -201,20 +209,15 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
 
         # Create comment object
         new_comment = {
+            "user": user["user_id"],
+            "post_id": post_id,
             "text": comment.text,
             "createdAt": datetime.utcnow().isoformat() + "Z",
         }
 
-        # Update post document using arrayUnion for atomic operation
-        post_ref = db.collection("posts").document(post_id)
-
-        # Check if post exists
-        post = post_ref.get()
-        if not post.exists:
-            raise HTTPException(status_code=404, detail="Post not found")
-
-        # Append comment to array using Firestore arrayUnion
-        post_ref.update({"comments": firestore.ArrayUnion([new_comment])})
+        comment_collection = db.collection("comments")
+        comment_ref = comment_collection.document()
+        comment_ref.set(new_comment)
 
         return {"message": "Comment added successfully", "comment": new_comment}
 
@@ -226,11 +229,38 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
 
 # TODO: Create Delete Comment Logic.
 # TODO: Users cannot delete comments they have not created. Admin can delete any comment.
-@router.delete("/posts/{post_id}/comment")
-async def delete_comment(post_id: str, user=Depends(auth_check)):
+@router.delete("/posts/{post_id}/comment/{comment_uid}")
+async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check)):
     try:
-        post_ref = db.collection("posts").document(post_id)
-        return {"message": "Comment deleted successfully"}
+        user_id = user["user_id"]
+
+        post_collection = db.collection("posts").document(post_id)
+        post_ref = post_collection.get()
+        if not post_ref.exists:
+            raise HTTPException(
+                  status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+              )
+
+        comment_collection = db.collection("comments").document(comment_uid)
+        comment_ref = comment_collection.get().to_dict()
+        # comment_data = comment_ref
+        if not comment_ref:
+            raise HTTPException(
+                  status_code=status.HTTP_404_NOT_FOUND, detail=f"Comment not found"
+              )
+
+        admin_user = db.collection('users').document(user_id).get().to_dict()
+        role = admin_user.get("role")
+        if role != "admin" and comment_ref['user'] != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"
+            )
+
+        comment_collection.delete()
+
+        return {"status": "success", "message": "Comment deleted"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting comment: {str(e)}")
 
