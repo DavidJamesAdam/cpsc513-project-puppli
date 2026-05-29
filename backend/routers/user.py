@@ -2,44 +2,15 @@ from firebase_service import db
 from fastapi import APIRouter, HTTPException, Request, status, Depends
 from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
-import re
-from pydantic import BaseModel, field_validator
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
+import models
 
 router = APIRouter(tags=["User"])
 
-COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
-
-class User(BaseModel):
-    userName: str
-    email: str
-    password: str
-    displayName: str | None = None
-    provinceName: str
-    cityName: str
-
-    # Password Validation
-    @field_validator("password")
-    def validate_password(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        if not re.search(r"[A-Z]", v):
-            raise ValueError("Password must contain an uppercase letter")
-        if not re.search(r"[a-z]", v):
-            raise ValueError("Password must contain a lowercase letter")
-        if not re.search(r"[0-9]", v):
-            raise ValueError("Password must contain a digit")
-        if not re.search(r"[^A-Za-z0-9]", v):
-            raise ValueError("Password must contain a symbol")
-        if v.lower() in COMMON_PASSWORDS:
-            raise ValueError("Password is too common")
-        return v
-
-
 # TODO: find a way to protect this route. Clearly, we can't get a session cookie if the user is signing up for the first time
 @router.post("/user")
-async def create_user(user: User):
+async def create_user(user: models.User):
     user_dict = user.model_dump()
     email = user_dict["email"].strip().lower()
     password = user_dict["password"]
@@ -114,17 +85,12 @@ def read_users(user=Depends(auth_check)):
 
 # Get currrent user
 @router.get("/user/me")
-async def get_current_user(request: Request, user=Depends(auth_check)):
+async def get_current_user(user=Depends(auth_check)):
     """
     Retrieve the current authenticated user's profile data
     """
-    # Get session cookie and verify authentication
-    session_cookie = request.cookies.get("session")
-
     try:
-        # Verify session and get user ID
-        decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_id = decoded.get("uid")
+        user_id = user["uid"]
 
         # Get user document by ID
         doc = db.collection('users').document(user_id).get()
