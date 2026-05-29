@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, ValidationError, field_validator, Field
 import re
+from datetime import datetime, timezone
 
 COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
 
@@ -27,3 +28,11 @@ class User(BaseModel):
         if v.lower() in COMMON_PASSWORDS:
             raise ValueError("Password is too common")
         return v
+
+class PostCreate(BaseModel):
+    caption: str
+    petId: str
+    imageUrl: str
+
+class CommentCreate(BaseModel):
+  text: str = Field(..., max_length=56)

@@ -4,13 +4,13 @@ from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
-import models
+from models import User
 
 router = APIRouter(tags=["User"])
 
 # TODO: find a way to protect this route. Clearly, we can't get a session cookie if the user is signing up for the first time
 @router.post("/user")
-async def create_user(user: models.User):
+async def create_user(user: User):
     user_dict = user.model_dump()
     email = user_dict["email"].strip().lower()
     password = user_dict["password"]

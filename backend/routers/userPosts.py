@@ -9,15 +9,9 @@ import random
 from classes.location import Location
 from utils.authCheck import auth_check
 import uuid
+from models import PostCreate, CommentCreate
 
 router = APIRouter(tags=["User Posts"], dependencies=[Depends(auth_check)])
-
-
-class PostCreate(BaseModel):
-    caption: str
-    petId: str
-    imageUrl: str
-
 
 # TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
 # TODO: Separate photo upload logic and actual post/text field logic
@@ -183,10 +177,6 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
         return {"message": "Post deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting post: {str(e)}")
-
-
-class CommentCreate(BaseModel):
-    text: str = Field(..., max_length=56)
 
 
 @router.post("/posts/{post_id}/comment/")
