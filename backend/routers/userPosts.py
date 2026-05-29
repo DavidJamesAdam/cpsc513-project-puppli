@@ -2,20 +2,18 @@ from firebase_service import db
 from fastapi import APIRouter, Request, HTTPException, Depends, status
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
-from pydantic import BaseModel, Field
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from classes.location import Location
 from utils.authCheck import auth_check
-import uuid
 from models import PostCreate, CommentCreate
 
-router = APIRouter(tags=["User Posts"], dependencies=[Depends(auth_check)])
+router = APIRouter()
 
 # TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
 # TODO: Separate photo upload logic and actual post/text field logic
-@router.post("/posts")
+@router.post("/")
 async def create_post(post: PostCreate, user=Depends(auth_check)):
     """
     Create a new post with an image URL, caption, and pet ID
@@ -51,7 +49,7 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/posts/user")
+@router.get("/user")
 async def get_posts(user=Depends(auth_check)):
     """
     Retrieve all posts for the authenticated user
@@ -75,7 +73,7 @@ async def get_posts(user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/posts/{post_id}")
+@router.get("/{post_id}")
 async def get_post_by_id(post_id: str, user=Depends(auth_check)):
     """
     Retrieve a single post by its ID
@@ -107,7 +105,7 @@ async def get_post_by_id(post_id: str, user=Depends(auth_check)):
 
 # TODO: Update and clarify this endpoint. Get all posts instead of "posts user voted".
 # This endpoint retrieves two posts at random to be diplayed on voting page
-@router.get("/posts")
+@router.get("")
 async def read_posts(user=Depends(auth_check)):
     """
     Retrieve all documents from the 'posts' collection
@@ -160,7 +158,7 @@ async def read_posts(user=Depends(auth_check)):
 
 
 # TODO: Users cannot delete posts they have not created. Admin can delete any post
-@router.delete("/posts/{post_id}")
+@router.delete("/{post_id}")
 async def delete_post(post_id: str, user=Depends(auth_check)):
     try:
         # reference to pet in db
@@ -179,7 +177,7 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=f"Error deleting post: {str(e)}")
 
 
-@router.post("/posts/{post_id}/comment/")
+@router.post("/{post_id}/comment/")
 async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_check)):
     """Add a comment to a post"""
     try:
@@ -219,7 +217,7 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
 
 # TODO: Create Delete Comment Logic.
 # TODO: Users cannot delete comments they have not created. Admin can delete any comment.
-@router.delete("/posts/{post_id}/comment/{comment_uid}")
+@router.delete("/{post_id}/comment/{comment_uid}")
 async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check)):
     try:
         user_id = user["user_id"]
@@ -376,7 +374,7 @@ async def award_medals():
 
 
 # TODO: Need to figure out what to do with this endpoint. IE have a gallery for user to view favs? Is there an easier way to increase/decrease fav count?
-@router.post("/posts/favourite/{postId}")
+@router.post("/favourite/{postId}")
 # favourite toggle (add or remove)
 async def post_favourite(postId: str, request: Request):
     try:
@@ -429,7 +427,7 @@ async def post_favourite(postId: str, request: Request):
 
 
 # TODO: Similar to adding favourites, is there an easier way? Can we just use this as a "favourite gallery"? Do we even need a favourite function in that case?
-@router.post("/posts/vote/{postId}")
+@router.post("/vote/{postId}")
 # vote count increase
 async def post_vote(postId: str, request: Request):
     try:
@@ -475,7 +473,7 @@ async def post_vote(postId: str, request: Request):
 
 # TODO: Figure out better way to sort by City
 # Organize top voted by city
-@router.get("/posts/rank/city/{location}")
+@router.get("/rank/city/{location}")
 # fix class use if location stored as JSON instead of string
 async def rank_city(location: str):
 
@@ -523,7 +521,7 @@ async def rank_city(location: str):
 
 
 # TODO: Figure out better way to sort by Global
-@router.get("/posts/rank/global")
+@router.get("/rank/global")
 async def rank_global():
 
     try:
@@ -546,7 +544,7 @@ async def rank_global():
 
 
 # TODO: Figure out better way to sort by province
-@router.get("/posts/rank/province/{location}")
+@router.get("/rank/province/{location}")
 # fix class use if location stored as JSON instead of string
 async def rank_province(location: str):
 

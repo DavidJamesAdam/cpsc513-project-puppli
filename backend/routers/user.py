@@ -6,10 +6,10 @@ from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
 from models import User
 
-router = APIRouter(tags=["User"])
+router = APIRouter()
 
 # TODO: find a way to protect this route. Clearly, we can't get a session cookie if the user is signing up for the first time
-@router.post("/user")
+@router.post("/")
 async def create_user(user: User):
     user_dict = user.model_dump()
     email = user_dict["email"].strip().lower()
@@ -66,7 +66,7 @@ async def create_user(user: User):
 
 # Gets all users
 # TODO: Not sure if I want this accessible to average user
-@router.get("/user")
+@router.get("/")
 def read_users(user=Depends(auth_check)):
     try:
         # Get all documents from 'users' collection
@@ -84,7 +84,7 @@ def read_users(user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
 
 # Get currrent user
-@router.get("/user/me")
+@router.get("/me")
 async def get_current_user(user=Depends(auth_check)):
     """
     Retrieve the current authenticated user's profile data
@@ -107,7 +107,7 @@ async def get_current_user(user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # TODO: Not sure if I want this avaialble to all users
-@router.get("/user/{user_id}")
+@router.get("/{user_id}")
 async def get_user(user_id: str, user=Depends(auth_check)):
 
     try:
@@ -125,7 +125,7 @@ async def get_user(user_id: str, user=Depends(auth_check)):
 # TODO: Add authentication so that currently logged in user can only update their own bio
 #update user info
 #accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
-@router.patch("/user/update/{user_id}")
+@router.patch("/update/{user_id}")
 async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_check)):
     try:
         #reference to user in db
@@ -146,7 +146,7 @@ async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_chec
 
 
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
-@router.delete("/user/{user_id}")
+@router.delete("/{user_id}")
 async def delete_user(user_id: str, user=Depends(auth_check)):
     try:
         current_user_id = user["user_id"]

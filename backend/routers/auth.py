@@ -1,16 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fastapi import APIRouter, Request, Depends, HTTPException, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
-from pydantic import BaseModel, EmailStr, ValidationError, field_validator
-import re
+from pydantic import ValidationError
 from firebase_admin import auth
 from firebase_service import db
-from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check
 from models import EmailUpdate, PassUpdate
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter()
 
 SESSION_EXPIRES_DAYS = 5
 

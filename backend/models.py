@@ -1,8 +1,7 @@
-from pydantic import BaseModel, EmailStr, ValidationError, field_validator, Field
+from pydantic import BaseModel, EmailStr, field_validator, Field
 import re
 
 COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
-
 
 class User(BaseModel):
     userName: str

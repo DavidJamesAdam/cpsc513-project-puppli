@@ -1,12 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from firebase_service import db
-
-from routers.auth import router as auth_router
-from routers.petSubProfile import router as pet_profile_router
-from routers.user import router as user_router
-from routers.userPosts import router as user_posts_router
+from api import api_router
 
 
 @asynccontextmanager
@@ -32,10 +27,5 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
-
-# Include routers
-app.include_router(auth_router)
-app.include_router(pet_profile_router)
-app.include_router(user_router)
-app.include_router(user_posts_router)
+app.include_router(api_router, prefix="/api/v1")
 

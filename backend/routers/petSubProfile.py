@@ -1,14 +1,11 @@
-from pydantic import BaseModel
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException, Depends
-from firebase_admin import auth
+from fastapi import APIRouter, HTTPException, Depends
 from utils.authCheck import auth_check
 from models import PetCreate
 
-router = APIRouter(tags=["Pet Sub Profile"], dependencies=[Depends(auth_check)])
+router = APIRouter()
 
-
-@router.post("/pet/create")
+@router.post("/create")
 async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
     """
     Create a new pet profile for the authenticated user
@@ -42,7 +39,7 @@ async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/pet")
+@router.get("")
 async def get_pets(user=Depends(auth_check)):
     """
     Retrieve all pets for the authenticated user
@@ -67,7 +64,7 @@ async def get_pets(user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/pet/{pet_id}")
+@router.get("/{pet_id}")
 # fix class use if location stored as JSON instead of string
 async def get_pet(pet_id: str, user=Depends(auth_check)):
 
@@ -82,7 +79,7 @@ async def get_pet(pet_id: str, user=Depends(auth_check)):
         raise HTTPException(status_code=500, detail=f"Error fetching pet: {str(e)}")
 
 
-@router.get("/pet/{pet_id}/last-image")
+@router.get("/{pet_id}/last-image")
 async def get_last_pet_image(pet_id: str, user=Depends(auth_check)):
     """
     Retrieve the most recent post image URL for a specific pet
@@ -112,7 +109,7 @@ async def get_last_pet_image(pet_id: str, user=Depends(auth_check)):
         )
 
 
-@router.get("/pet/{pet_id}/images")
+@router.get("/{pet_id}/images")
 async def get_pet_images(pet_id: str, user=Depends(auth_check)):
     """
     Retrieve all post image URLs for a specific pet
@@ -155,7 +152,7 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
         )
 
 
-@router.patch("/pet/update/{pet_id}")
+@router.patch("/update/{pet_id}")
 # update pet info
 # accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
 async def update_pet(pet_id: str, updated_fields: dict, user=Depends(auth_check)):
@@ -178,7 +175,7 @@ async def update_pet(pet_id: str, updated_fields: dict, user=Depends(auth_check)
         raise HTTPException(status_code=500, detail=f"Error updating pet: {str(e)}")
 
 
-@router.delete("/pet/delete/{pet_id}")
+@router.delete("/delete/{pet_id}")
 # delete pet subprofile
 async def delete_pet(pet_id: str, user=Depends(auth_check)):
 
