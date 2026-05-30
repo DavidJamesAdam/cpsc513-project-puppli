@@ -6,13 +6,13 @@ from api import api_router
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Lifespan event handler for startup and shutdown"""
-    # Startup
-    print("FastAPI application started")
-    print("Firebase connection ready")
-    yield
-    # Shutdown (if needed in the future)
-    print("Application shutting down")
+  """Lifespan event handler for startup and shutdown"""
+  # Startup
+  print("FastAPI application started")
+  print("Firebase connection ready")
+  yield
+  # Shutdown (if needed in the future)
+  print("Application shutting down")
 
 
 app = FastAPI(lifespan=lifespan)
@@ -28,4 +28,3 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 app.include_router(api_router, prefix="/api/v1")
-
