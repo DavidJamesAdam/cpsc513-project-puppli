@@ -3,13 +3,16 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
-from utils.authCheck import auth_check
+from utils.authCheck import auth_check, require_admin
 from models import User
 
 router = APIRouter()
 
 @router.post("/")
 async def create_user(user: User):
+  """
+  Creates user in Firebase database.
+  """
   user_dict = user.model_dump()
   email = user_dict["email"].strip().lower()
   password = user_dict["password"]
@@ -63,12 +66,11 @@ async def create_user(user: User):
   # Success — do not return password or any sensitive info
   return {"id": uid, "userName": username, "email": email, "displayName": user_dict.get("displayName", "")}
 
-# Gets all users
-# TODO: Not sure if I want this accessible to average user
-
-
-@router.get("/")
-def read_users(user=Depends(auth_check)):
+@router.get("/", dependencies=[Depends(require_admin)])
+def read_users():
+  """
+  Gets all users. Admin only function.
+  """
   try:
     # Get all documents from 'users' collection
     docs = db.collection('users').stream()
@@ -81,11 +83,13 @@ def read_users(user=Depends(auth_check)):
       results.append(doc_data)
 
     return results
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching data: {str(e)}")
 
-# Get currrent user
+# Get current user
 
 
 @router.get("/me")
@@ -110,33 +114,45 @@ async def get_current_user(user=Depends(auth_check)):
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
 
-# TODO: Not sure if I want this avaialble to all users
-
-
 @router.get("/{user_id}")
 async def get_user(user_id: str, user=Depends(auth_check)):
+  """
+  Get specific user using Firebase UID. Only Admin can get any user.
+  """
+  current_user_id = user["uid"]
 
   try:
-    # get user from db
-    doc = db.collection('users').document(user_id).get()
+    auth_doc = db.collection('users').document(current_user_id).get()
+    if not auth_doc.exists:
+      raise HTTPException(
+          status_code=401, detail="Authenticated user profile not found")
 
+    role = auth_doc.to_dict().get("role")
+    target_user_id = user_id if role == "admin" else current_user_id
+
+    doc = db.collection('users').document(target_user_id).get()
     if not doc.exists:
       raise HTTPException(status_code=404, detail="User not found")
 
     return doc.to_dict()
-
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching user: {str(e)}")
 
-# TODO: Add authentication so that currently logged in user can only update their own bio
-# update user info
-# accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
-
-
 @router.patch("/update/{user_id}")
 async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_check)):
+  """
+  Update user info.
+  Accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing.
+  """
   try:
+    current_user_id = user["uid"]
+    if current_user_id != user_id:
+      raise HTTPException(
+          status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"
+      )
     # reference to user in db
     doc_ref = db.collection('users').document(user_id)
     # the actual user document object
@@ -150,24 +166,17 @@ async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_chec
 
     return {"message": "User updated successfully"}
 
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error updating user: {str(e)}")
 
 
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
-@router.delete("/{user_id}")
-async def delete_user(user_id: str, user=Depends(auth_check)):
+@router.delete("/{user_id}", dependencies=[Depends(require_admin)])
+async def delete_user(user_id: str):
   try:
-    current_user_id = user["user_id"]
-    admin_user = db.collection('users').document(
-        current_user_id).get().to_dict()
-    role = admin_user.get("role")
-    if role != "admin":
-      raise HTTPException(
-          status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"
-      )
-
     # Make sure user exists
     user_ref = db.collection('users').document(user_id)
     user_doc = await run_in_threadpool(user_ref.get)
