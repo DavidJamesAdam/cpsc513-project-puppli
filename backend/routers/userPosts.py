@@ -11,8 +11,6 @@ from models import PostCreate, CommentCreate
 
 router = APIRouter()
 
-# TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
-# TODO: Separate photo upload logic and actual post/text field logic
 
 
 @router.post("/")
@@ -21,6 +19,8 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
   Create a new post with an image URL, caption, and pet ID
   Requires authentication
   """
+# TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
+# TODO: Separate photo upload logic and actual post/text field logic
   try:
     user_id = user["user_id"]
 

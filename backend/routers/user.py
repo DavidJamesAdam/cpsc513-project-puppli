@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
-from utils.authCheck import auth_check, require_admin
+from utils.authCheck import auth_check, require_admin, require_owner_or_admin
 from models import User, UpdateUser
 
 router = APIRouter()
@@ -151,11 +151,6 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
   Accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing.
   """
   try:
-    current_user_id = user["uid"]
-    if current_user_id != user_id:
-      raise HTTPException(
-          status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized"
-      )
     # reference to user in db
     doc_ref = db.collection('users').document(user_id)
     # the actual user document object
@@ -163,6 +158,13 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
 
     if not doc.exists:
       raise HTTPException(status_code=404, detail="User not found")
+
+    user_data = doc.to_dict()
+
+    await require_owner_or_admin(
+        owner_id=user_data["uid"],
+        user=user
+    )
 
     # Convert Pydantic model to a plain dict before updating Firestore
     update_data = updated_fields.model_dump(exclude_none=True)
