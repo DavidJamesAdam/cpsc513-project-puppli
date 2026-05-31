@@ -5,11 +5,11 @@ COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
 
 
 class User(BaseModel):
-  email: EmailStr
+  email: EmailStr = Field(...)
   password: str
-  displayName: str | None = None
-  cityName: str
-  provinceName: str
+  displayName: str = Field(..., min_length=1)
+  cityName: str = Field(..., min_length=1)
+  provinceName: str = Field(..., min_length=1)
 
   # Password Validation
   @field_validator("password")
@@ -28,6 +28,12 @@ class User(BaseModel):
       raise ValueError("Password is too common")
     return v
 
+class UserInfo(BaseModel):
+  email: EmailStr
+  displayName: str
+  cityName: str
+  provinceName: str
+
 class UpdateUser(BaseModel):
   displayName: str | None = None
   bio: str | None = None
@@ -35,7 +41,7 @@ class UpdateUser(BaseModel):
   cityName: str | None = None
 
 class PostCreate(BaseModel):
-  caption: str
+  caption: str = Field(...)
   petId: str
   imageUrl: str
 
@@ -45,11 +51,11 @@ class CommentCreate(BaseModel):
 
 
 class PetCreate(BaseModel):
-  name: str
-  breed: str
-  birthday: str
-  favouriteToy: str
-  favouriteTreat: str
+  name: str = Field(..., min_length=1)
+  breed: str = Field(..., min_length=1)
+  birthday: str = Field(...)
+  favouriteToy: str = Field(..., min_length=1)
+  favouriteTreat: str = Field(..., min_length=1)
 
 
 class UpdatePet(BaseModel):

@@ -12,3 +12,8 @@ api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(pet_profile_router, prefix="/pet", tags=["Pet Sub Profile"], dependencies=[Depends(auth_check)])
 api_router.include_router(user_router, prefix="/user", tags=["User"])
 api_router.include_router(user_posts_router, prefix="/posts", tags=["User Posts"], dependencies=[Depends(auth_check)])
+
+@api_router.get("/healthCheck")
+async def health_check():
+  return {"status": "healthy"}
+

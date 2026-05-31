@@ -4,19 +4,21 @@ from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check, require_admin, require_owner_or_admin
-from models import User, UpdateUser
+from models import User, UpdateUser, UserInfo
 
 router = APIRouter()
 
 
 @router.post("/")
-async def create_user(user: User):
+async def create_user(user: User) -> User:
   """
   Creates user in Firebase database.
   """
   user_dict = user.model_dump()
+
   email = user_dict["email"].strip().lower()
   password = user_dict["password"]
+  displayName = user_dict["displayName"]
   province = user_dict["provinceName"]
   city = user_dict["cityName"]
 
@@ -34,28 +36,28 @@ async def create_user(user: User):
 
   # 2) Finalize: within a transaction confirm reservation matches and write profile + attach uid to username doc
   @gcfirestore.transactional
-  def _finalize_txn(transaction, user_ref, uid, user_dict, email, city, province):
+  def _finalize_txn(transaction, user_ref, email, displayName, city, province):
     transaction.set(
         user_ref,
         {
-            "uid": uid,
-            "avatarUrl": "",
             "bio": "",
             "email": email,
-            "displayName": user_dict.get("displayName") or "",
-            "createdAt": gcfirestore.SERVER_TIMESTAMP,
+            "displayName": displayName,
             "cityName": city,
             "provinceName": province,
             "role": "user",
             "totalBronze": 0,
             "totalSilver": 0,
-            "totalGold": 0
+            "totalGold": 0,
+            "createdAt": gcfirestore.SERVER_TIMESTAMP,
+            "updatedAt": None,
+            "deleteAt": None
         },
     )
 
   try:
     txn2 = db.transaction()
-    await run_in_threadpool(_finalize_txn, txn2, user_ref, uid, user_dict, email, city, province)
+    await run_in_threadpool(_finalize_txn, txn2, user_ref, email, displayName, city, province)
   except ValueError as ve:
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT, detail=str(ve))
@@ -64,10 +66,10 @@ async def create_user(user: User):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error writing profile: {e}")
 
   # Success — do not return password or any sensitive info
-  return {"id": uid, "email": email, "displayName": user_dict.get("displayName", "")}
+  return user
 
 
-@router.get("/", dependencies=[Depends(require_admin)])
+@router.get("/", response_model=list[UserInfo], dependencies=[Depends(require_admin)])
 def read_users():
   """
   Gets all users. Admin only function.
@@ -77,20 +79,19 @@ def read_users():
     docs = db.collection('users').stream()
 
     # Convert documents to dictionary format
-    results = []
-    for doc in docs:
-      doc_data = doc.to_dict()
-      doc_data['id'] = doc.id  # Include document ID
-      results.append(doc_data)
+    users = [
+        UserInfo.model_validate({
+            **doc.to_dict()
+        })
+        for doc in docs
+    ]
 
-    return results
+    return users
   except HTTPException:
     raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching data: {str(e)}")
-
-# Get current user
 
 
 @router.get("/me")
