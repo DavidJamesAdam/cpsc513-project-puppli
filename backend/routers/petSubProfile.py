@@ -1,7 +1,7 @@
 from firebase_service import db
 from fastapi import APIRouter, HTTPException, Depends
-from utils.authCheck import auth_check
-from models import PetCreate
+from utils.authCheck import auth_check, require_owner_or_admin
+from models import PetCreate, UpdatePet
 
 router = APIRouter()
 
@@ -70,18 +70,16 @@ async def get_pet(pet_id: str, user=Depends(auth_check)):
   """Retrieves pet by ID
 
   Admin can retrieve any pet, users who own a pet may only access their own pets"""
-  user_id = user["uid"]
   try:
-    user_doc = db.collection("users").document(user_id).get()
-    user_data = user_doc.to_dict() or {}
-    role = user_data.get("role")
-
-    pet = db.collection("pets").document(pet_id).get().to_dict()
-    if role != "admin" and pet['userId'] != user_id:
-      raise HTTPException(status_code=403,
-                          detail="Unauthorized access")
-    if not pet:
+    pet_doc = db.collection("pets").document(pet_id).get()
+    if not pet_doc.exists:
       raise HTTPException(status_code=404, detail="Pet not found")
+
+    pet = pet_doc.to_dict()
+    await require_owner_or_admin(
+        owner_id=pet["userId"],
+        user=user
+    )
 
     return pet
 
@@ -102,10 +100,14 @@ async def get_last_pet_image(pet_id: str, user=Depends(auth_check)):
     # Query posts collection filtered by petId
     posts_query = db.collection("posts").where("petId", "==", pet_id)
     docs = list(posts_query.stream())
-
     # If no posts found, return empty string
     if not docs:
       return {"imageUrl": ""}
+
+    await require_owner_or_admin(
+        owner_id=docs["userId"],
+        user=user
+    )
 
     # Sort posts by createdAt in Python (to avoid needing a Firestore index)
     sorted_posts = sorted(
@@ -116,6 +118,8 @@ async def get_last_pet_image(pet_id: str, user=Depends(auth_check)):
     post_data = sorted_posts[0].to_dict()
     return {"imageUrl": post_data.get("imageUrl", "")}
 
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching pet image: {str(e)}"
@@ -132,10 +136,15 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
     # Query posts collection filtered by petId
     posts_query = db.collection("posts").where("petId", "==", pet_id)
     docs = list(posts_query.stream())
-
     # If no posts found, return empty list
     if not docs:
       return {"images": []}
+
+    await require_owner_or_admin(
+        owner_id=docs["userId"],
+        user=user
+    )
+
 
     # Sort posts by createdAt (most recent first)
     sorted_posts = sorted(
@@ -159,6 +168,8 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
 
     return {"images": images}
 
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching pet images: {str(e)}"
@@ -168,45 +179,51 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
 @router.patch("/update/{pet_id}")
 # update pet info
 # accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
-async def update_pet(pet_id: str, updated_fields: dict, user=Depends(auth_check)):
+async def update_pet(pet_id: str, updated_fields: UpdatePet, user=Depends(auth_check)):
 
   try:
-    # reference to pet in db
     doc_ref = db.collection("pets").document(pet_id)
-    # actual pet object
     doc = doc_ref.get()
-
     if not doc.exists:
       raise HTTPException(status_code=404, detail="User not found")
 
-    # update user with provided fields
+    pet = doc.to_dict()
+    await require_owner_or_admin(
+        owner_id=pet["userId"],
+        user=user
+    )
+
     doc_ref.update(updated_fields)
 
     return {"message": "Pet updated successfully"}
 
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error updating pet: {str(e)}")
 
 
-@router.delete("/delete/{pet_id}")
+@router.delete("/delete/{pet_id}", status_code=204)
 # delete pet subprofile
 async def delete_pet(pet_id: str, user=Depends(auth_check)):
 
   try:
-    # reference to pet in db
     doc_ref = db.collection("pets").document(pet_id)
-    # actual pet object
     doc = doc_ref.get()
-
     if not doc.exists:
       raise HTTPException(status_code=404, detail="Pet not found")
 
-    # delete the pet
+    pet = doc.to_dict()
+    await require_owner_or_admin(
+        owner_id=pet["userId"],
+        user=user
+    )
+
     doc_ref.delete()
 
-    return {"message": "Pet deleted successfully"}
-
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error deleting pet: {str(e)}")

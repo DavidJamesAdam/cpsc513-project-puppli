@@ -184,7 +184,7 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
 
 
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
-@router.delete("/{user_id}", dependencies=[Depends(require_admin)])
+@router.delete("/{user_id}", dependencies=[Depends(require_admin)], status_code=204)
 async def delete_user(user_id: str):
   try:
     # Make sure user exists
@@ -239,11 +239,6 @@ async def delete_user(user_id: str):
       await run_in_threadpool(auth.delete_user, user_id)
     except auth.UserNotFoundError:
       pass
-
-    return {
-        "message": f"User {user_id} and all associated data deleted successfully",
-        "summary": deletion_summary
-    }
 
   except HTTPException:
     raise

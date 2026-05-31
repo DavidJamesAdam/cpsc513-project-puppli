@@ -29,3 +29,28 @@ async def require_admin(user: dict = Depends(auth_check)):
                         detail="Admin permission required")
 
   return user
+
+async def require_owner_or_admin(
+    owner_id: str,
+    user: dict = Depends(auth_check)
+):
+    uid = user["uid"]
+
+    user_doc = db.collection("users").document(uid).get()
+
+    if not user_doc.exists:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authenticated user profile not found"
+        )
+
+    role = user_doc.to_dict().get("role")
+
+    if role == "admin":
+        return
+
+    if owner_id != uid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unauthorized access"
+        )

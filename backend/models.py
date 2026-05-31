@@ -52,6 +52,14 @@ class PetCreate(BaseModel):
   favouriteTreat: str
 
 
+class UpdatePet(BaseModel):
+  name: str | None = None
+  breed: str | None = None,
+  birthday: str | None = None,
+  favouriteToy: str | None = None,
+  favouriteTreat: str | None = None
+
+
 class EmailUpdate(BaseModel):
   new_email: EmailStr
 
