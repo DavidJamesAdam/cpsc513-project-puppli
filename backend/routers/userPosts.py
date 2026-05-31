@@ -1,10 +1,11 @@
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException, Depends, status
+from fastapi import APIRouter, Request, HTTPException, Depends, status, Query
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
+from typing import Optional, Literal
 from classes.location import Location
 from utils.authCheck import auth_check, require_owner_or_admin
 from models import PostCreate, CommentCreate
@@ -607,3 +608,49 @@ async def rank_province(location: str):
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error fetching posts: {str(e)}")
+
+@router.get("/rank/")
+async def rank_posts_by_location(
+    scope: Literal["global", "province", "city"] = "global",
+    province: Optional[str] = None,
+    city: Optional[str] = None,
+):
+    print("test")
+    try:
+        if scope == "global":
+            query = db.collection("posts").order_by(
+                "voteCount",
+                direction="DESCENDING"
+            )
+            print(query)
+
+        elif scope == "province":
+            if not province:
+                raise HTTPException(400, "province is required")
+
+            query = (
+                db.collection("posts")
+                .where("provinceName", "==", province)
+                .order_by("voteCount", direction="DESCENDING")
+            )
+
+        elif scope == "city":
+            if not city or not province:
+                raise HTTPException(400, "city and province required")
+
+            query = (
+                db.collection("posts")
+                .where("cityName", "==", city)
+                .where("provinceName", "==", province)
+                .order_by("voteCount", direction="DESCENDING")
+            )
+
+        docs = query.stream()
+
+        return [
+            {"id": doc.id, **doc.to_dict()}
+            for doc in docs
+        ]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
