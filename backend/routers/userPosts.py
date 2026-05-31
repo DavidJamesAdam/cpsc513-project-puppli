@@ -6,7 +6,7 @@ from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from classes.location import Location
-from utils.authCheck import auth_check
+from utils.authCheck import auth_check, require_owner_or_admin
 from models import PostCreate, CommentCreate
 
 router = APIRouter()
@@ -161,7 +161,7 @@ async def read_posts(user=Depends(auth_check)):
         status_code=500, detail=f"Error fetching posts: {str(e)}")
 
 
-@router.delete("/{post_id}")
+@router.delete("/{post_id}", status_code=204)
 async def delete_post(post_id: str, user=Depends(auth_check)):
   """Delete a post if the requester is the post owner or an admin.
 
@@ -169,9 +169,6 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
   the requesting user's role/ownership before deleting.
   """
   try:
-    user_id = user["user_id"]
-
-    # Fetch post and ensure it exists
     post_ref = db.collection("posts").document(post_id)
     post_doc = post_ref.get()
     if not post_doc.exists:
@@ -180,20 +177,13 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
 
     post = post_doc.to_dict() or {}
 
-    # Fetch requesting user's role (if any)
-    user_doc = db.collection("users").document(user_id).get()
-    user_data = user_doc.to_dict() or {}
-    role = user_data.get("role")
+    await require_owner_or_admin(
+        owner_id=post["userId"],
+        user=user
+    )
 
-    # Only admins or the post owner may delete
-    if role != "admin" and post.get("userId") != user_id:
-      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                          detail="Unauthorized to delete post")
-
-    # delete the post
     post_ref.delete()
 
-    return {"message": "Post deleted successfully"}
   except HTTPException:
     raise
   except Exception as e:
@@ -241,7 +231,7 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
         status_code=500, detail=f"Error adding comment: {str(e)}")
 
 
-@router.delete("/{post_id}/comment/{comment_uid}")
+@router.delete("/{post_id}/comment/{comment_uid}", status_code=204)
 async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check)):
   """Delete a comment if the requester is the comment owner or an admin.
 
@@ -249,9 +239,6 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
   the requesting user's role/ownership before deleting.
   """
   try:
-    user_id = user["user_id"]
-
-    # Fetch comment and ensure it exists
     comment_ref = db.collection("comments").document(comment_uid)
     comment_doc = comment_ref.get()
     if not comment_doc.exists:
@@ -260,25 +247,18 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
 
     comment = comment_doc.to_dict() or {}
 
-    # Ensure the comment belongs to the provided post_id
     if comment.get("post_id") != post_id:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                           detail="Comment not found for this post")
 
-    # Fetch requesting user's role (if any)
-    user_doc = db.collection("users").document(user_id).get()
-    user_data = user_doc.to_dict() or {}
-    role = user_data.get("role")
-
-    # Only admins or the comment owner may delete
-    if role != "admin" and comment.get("user") != user_id:
-      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                          detail="Unauthorized to delete comment")
+    await require_owner_or_admin(
+        owner_id=comment["userId"],
+        user=user
+    )
 
     # Delete the comment
     comment_ref.delete()
 
-    return {"status": "success", "message": "Comment deleted"}
   except HTTPException:
     raise
   except Exception as e:
