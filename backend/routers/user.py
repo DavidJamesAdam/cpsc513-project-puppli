@@ -4,9 +4,10 @@ from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check, require_admin
-from models import User
+from models import User, UpdateUser
 
 router = APIRouter()
+
 
 @router.post("/")
 async def create_user(user: User):
@@ -16,7 +17,6 @@ async def create_user(user: User):
   user_dict = user.model_dump()
   email = user_dict["email"].strip().lower()
   password = user_dict["password"]
-  username = user_dict["userName"].strip()
   province = user_dict["provinceName"]
   city = user_dict["cityName"]
 
@@ -34,7 +34,7 @@ async def create_user(user: User):
 
   # 2) Finalize: within a transaction confirm reservation matches and write profile + attach uid to username doc
   @gcfirestore.transactional
-  def _finalize_txn(transaction, user_ref, uid, user_dict, email, username, city, province):
+  def _finalize_txn(transaction, user_ref, uid, user_dict, email, city, province):
     transaction.set(
         user_ref,
         {
@@ -42,10 +42,10 @@ async def create_user(user: User):
             "avatarUrl": "",
             "bio": "",
             "email": email,
-            "userName": username,
             "displayName": user_dict.get("displayName") or "",
             "createdAt": gcfirestore.SERVER_TIMESTAMP,
-            "location": f"{city}, {province}",
+            "cityName": city,
+            "provinceName": province,
             "role": "user",
             "totalBronze": 0,
             "totalSilver": 0,
@@ -55,7 +55,7 @@ async def create_user(user: User):
 
   try:
     txn2 = db.transaction()
-    await run_in_threadpool(_finalize_txn, txn2, user_ref, uid, user_dict, email, username, city, province)
+    await run_in_threadpool(_finalize_txn, txn2, user_ref, uid, user_dict, email, city, province)
   except ValueError as ve:
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT, detail=str(ve))
@@ -64,7 +64,8 @@ async def create_user(user: User):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error writing profile: {e}")
 
   # Success — do not return password or any sensitive info
-  return {"id": uid, "userName": username, "email": email, "displayName": user_dict.get("displayName", "")}
+  return {"id": uid, "email": email, "displayName": user_dict.get("displayName", "")}
+
 
 @router.get("/", dependencies=[Depends(require_admin)])
 def read_users():
@@ -114,6 +115,7 @@ async def get_current_user(user=Depends(auth_check)):
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.get("/{user_id}")
 async def get_user(user_id: str, user=Depends(auth_check)):
   """
@@ -141,8 +143,9 @@ async def get_user(user_id: str, user=Depends(auth_check)):
     raise HTTPException(
         status_code=500, detail=f"Error fetching user: {str(e)}")
 
+
 @router.patch("/update/{user_id}")
-async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_check)):
+async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(auth_check)):
   """
   Update user info.
   Accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing.
@@ -161,8 +164,15 @@ async def update_user(user_id: str, updated_fields: dict, user=Depends(auth_chec
     if not doc.exists:
       raise HTTPException(status_code=404, detail="User not found")
 
-    # update user with provided fields
-    doc_ref.update(updated_fields)
+    # Convert Pydantic model to a plain dict before updating Firestore
+    update_data = updated_fields.model_dump(exclude_none=True)
+    if not update_data:
+      raise HTTPException(
+          status_code=status.HTTP_400_BAD_REQUEST,
+          detail="No fields provided for update"
+      )
+
+    doc_ref.update(update_data)
 
     return {"message": "User updated successfully"}
 

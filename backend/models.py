@@ -5,12 +5,11 @@ COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
 
 
 class User(BaseModel):
-  userName: str
-  email: str
+  email: EmailStr
   password: str
   displayName: str | None = None
-  provinceName: str
   cityName: str
+  provinceName: str
 
   # Password Validation
   @field_validator("password")
@@ -29,6 +28,11 @@ class User(BaseModel):
       raise ValueError("Password is too common")
     return v
 
+class UpdateUser(BaseModel):
+  displayName: str | None = None
+  bio: str | None = None
+  provinceName: str | None = None
+  cityName: str | None = None
 
 class PostCreate(BaseModel):
   caption: str
