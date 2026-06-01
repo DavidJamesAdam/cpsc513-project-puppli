@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from firebase_service import db
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.concurrency import run_in_threadpool
@@ -76,7 +78,7 @@ def read_users():
   """
   try:
     # Get all documents from 'users' collection
-    docs = db.collection('users').stream()
+    docs = db.collection('users').where("deletedAt", "==", None).stream()
 
     # Convert documents to dictionary format
     users = [
@@ -117,7 +119,7 @@ async def get_current_user(user=Depends(auth_check)):
     raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=UserInfo)
 async def get_user(user_id: str, user=Depends(auth_check)):
   """
   Get specific user using Firebase UID. Only Admin can get any user.
@@ -133,11 +135,12 @@ async def get_user(user_id: str, user=Depends(auth_check)):
     role = auth_doc.to_dict().get("role")
     target_user_id = user_id if role == "admin" else current_user_id
 
-    doc = db.collection('users').document(target_user_id).get()
-    if not doc.exists:
+    doc = db.collection('users').document(target_user_id).get().to_dict()
+
+    if doc["deletedAt"] != None:
       raise HTTPException(status_code=404, detail="User not found")
 
-    return doc.to_dict()
+    return doc
   except HTTPException:
     raise
   except Exception as e:
@@ -155,20 +158,19 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
     # reference to user in db
     doc_ref = db.collection('users').document(user_id)
     # the actual user document object
-    doc = doc_ref.get()
+    doc = doc_ref.get().to_dict()
 
-    if not doc.exists:
+    if doc["deletedAt"] != None:
       raise HTTPException(status_code=404, detail="User not found")
 
-    user_data = doc.to_dict()
-
     await require_owner_or_admin(
-        owner_id=user_data["uid"],
+        owner_id=user["uid"],
         user=user
     )
 
     # Convert Pydantic model to a plain dict before updating Firestore
     update_data = updated_fields.model_dump(exclude_none=True)
+    update_data["updatedAt"] = datetime.utcnow().isoformat()
     if not update_data:
       raise HTTPException(
           status_code=status.HTTP_400_BAD_REQUEST,
@@ -193,28 +195,41 @@ async def delete_user(user_id: str):
     # Make sure user exists
     user_ref = db.collection('users').document(user_id)
     user_doc = await run_in_threadpool(user_ref.get)
-
-    if not user_doc.exists:
+    user_data = user_doc.to_dict()
+    if user_data["deletedAt"]:
       raise HTTPException(
           status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {user_id} not found"
       )
 
-    user_data = user_doc.to_dict()
     user_name = user_data.get("displayName", "Unknown")
 
+    # Will use this for logging
     deletion_summary = {
         "user_id": user_id,
         "user_name": user_name,
+        "comments_deleted": 0,
         "posts_deleted": 0,
         "pets_deleted": 0
     }
+
+    # Delete comments
+    comments_query = db.collection('comments').where('user', '==', user_id)
+    comments = await run_in_threadpool(comments_query.stream)
+
+    for comment in comments:
+      await run_in_threadpool(comment.reference.update, {
+          "deletedAt": datetime.utcnow().isoformat()
+      })
+      deletion_summary["comments_deleted"] += 1
 
     # Delete posts
     posts_query = db.collection('posts').where('userId', '==', user_id)
     posts = await run_in_threadpool(posts_query.stream)
 
     for post in posts:
-      await run_in_threadpool(post.reference.delete)
+      await run_in_threadpool(post.reference.update, {
+          "deletedAt": datetime.utcnow().isoformat()
+      })
       deletion_summary["posts_deleted"] += 1
 
     # Delete pets
@@ -222,20 +237,15 @@ async def delete_user(user_id: str):
     pets = await run_in_threadpool(pets_query.stream)
 
     for pet in pets:
-      await run_in_threadpool(pet.reference.delete)
+      await run_in_threadpool(pet.reference.update, {
+          "deletedAt": datetime.utcnow().isoformat()
+      })
       deletion_summary["pets_deleted"] += 1
 
-    # Firestore doesn't delete subcollections inside documents, so first
-    # we must delete all documents in votedPosts subcollection first
-    voted_posts_ref = user_ref.collection('votedPosts')
-    voted_posts_docs = await run_in_threadpool(voted_posts_ref.stream)
-
-    voted_posts_list = [doc for doc in voted_posts_docs]
-    for voted_post_doc in voted_posts_list:
-      await run_in_threadpool(voted_post_doc.reference.delete)
-
     # Delete user document
-    await run_in_threadpool(user_ref.delete)
+    await run_in_threadpool(user_ref.update, {
+          "deletedAt": datetime.utcnow().isoformat()
+      })
 
     # Delete from Firebase Auth
     try:
