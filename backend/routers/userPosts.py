@@ -13,7 +13,6 @@ from models import PostCreate, CommentCreate
 router = APIRouter()
 
 
-
 @router.post("/")
 async def create_post(post: PostCreate, user=Depends(auth_check)):
   """
@@ -24,6 +23,7 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
 # TODO: Separate photo upload logic and actual post/text field logic
   try:
     user_id = user["user_id"]
+    user_ref = db.collection("users").document(user_id).get().to_dict()
 
     # Create post document
     post_data = {
@@ -31,6 +31,8 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
         "petId": post.petId,
         "imageUrl": post.imageUrl,
         "caption": post.caption,
+        "cityName": user_ref["cityName"],
+        "provinceName": user_ref["provinceName"],
         "createdAt": datetime.utcnow().isoformat() + "Z",
         "voteCount": 0,
         "favouriteCount": 0,
@@ -267,6 +269,65 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
         status_code=500, detail=f"Error deleting comment: {str(e)}")
 
 
+@router.get("/rank/")
+async def rank_posts_by_location(
+    scope: Literal["global", "province", "city"] = "global",
+    province: Optional[str] = None,
+    city: Optional[str] = None,
+    user=Depends(auth_check)
+):
+  user_id = user["uid"]
+  user_doc = db.collection("users").document(user_id).get()
+  if not user_doc.exists:
+    raise HTTPException(404, "User not found")
+
+  profile = user_doc.to_dict()
+
+  if province is None:
+    province = profile.get("provinceName")
+  if city is None:
+    city = profile.get("cityName")
+
+  try:
+    if scope == "global":
+      query = db.collection("posts").order_by(
+          "voteCount",
+          direction=firestore.Query.DESCENDING
+      )
+
+    elif scope == "province":
+      if not province:
+        raise HTTPException(400, "province is required")
+
+      query = (
+          db.collection("posts")
+          .where("provinceName", "==", province)
+          .order_by("voteCount", direction=firestore.Query.DESCENDING)
+      )
+
+    elif scope == "city":
+      if not city or not province:
+        raise HTTPException(400, "city and province required")
+
+      query = (
+          db.collection("posts")
+          .where("provinceName", "==", province)
+          .where("cityName", "==", city)
+          .order_by("voteCount", direction=firestore.Query.DESCENDING)
+      )
+
+    docs = query.stream()
+
+    return [
+        {"id": doc.id, **doc.to_dict()}
+        for doc in docs
+    ]
+  except HTTPException:
+    raise
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+
+
 # TODO: This should be some sort of lambda function that runs at the end of each week... do we need an endpoint for that?
 @router.post("/admin/award-medals")
 async def award_medals():
@@ -485,172 +546,3 @@ async def post_vote(postId: str, request: Request):
   except Exception as e:
     raise HTTPException(
         status_code=500, detail=f"Error recording vote: {str(e)}")
-
-
-# TODO: Figure out better way to sort by City
-# Organize top voted by city
-@router.get("/rank/city/{location}")
-# fix class use if location stored as JSON instead of string
-async def rank_city(location: str):
-
-  try:
-    # convert user's location to Location object
-    user_location = Location.from_string(location)
-
-    # Get all documents from 'posts' collection
-    docs = db.collection("posts").stream()
-
-    # Convert documents to dictionary format
-    results = []
-    for doc in docs:
-
-      # get post's (other user's) location and convert to Location object
-      doc_data = doc.to_dict()
-      post_user_id = doc_data.get("userId")
-      user_doc = db.collection("users").document(post_user_id).get()
-      post_user = user_doc.to_dict()
-
-      # skip missing/empty user docs
-      if not post_user:
-        continue
-
-      # skip if user has not entered a location
-      post_loc_str = post_user.get("location")
-      if not post_loc_str:
-        continue
-
-      # get the location as object
-      post_location = post_user["location"]
-      post_location = Location.from_string(post_location)
-
-      # match 'location' to user's 'location'
-      if post_location.city == user_location.city:
-        doc_data["id"] = doc.id  # Include document ID
-        results.append(doc_data)
-
-    # sort from highest to lowest number of votes
-    results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
-
-    return results
-  except Exception as e:
-    raise HTTPException(
-        status_code=500, detail=f"Error fetching posts: {str(e)}")
-
-
-# TODO: Figure out better way to sort by Global
-@router.get("/rank/global")
-async def rank_global():
-
-  try:
-    # Get all documents from 'posts' collection
-    docs = db.collection("posts").stream()
-
-    # Convert documents to dictionary format
-    results = []
-    for doc in docs:
-      doc_data = doc.to_dict()
-      doc_data["id"] = doc.id  # Include document ID
-      results.append(doc_data)
-
-    # sort from highest to lowest number of votes
-    results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
-
-    return results
-  except Exception as e:
-    raise HTTPException(
-        status_code=500, detail=f"Error fetching posts: {str(e)}")
-
-
-# TODO: Figure out better way to sort by province
-@router.get("/rank/province/{location}")
-# fix class use if location stored as JSON instead of string
-async def rank_province(location: str):
-
-  try:
-    # convert user's location to Location object
-    location = Location.from_string(location)
-
-    # Get all documents from 'posts' collection
-    docs = db.collection("posts").stream()
-
-    # Convert documents to dictionary format
-    results = []
-    for doc in docs:
-
-      # get post's (other user's) location and convert to Location object
-      doc_data = doc.to_dict()
-      post_user_id = doc_data.get("userId")
-      user_doc = db.collection("users").document(post_user_id).get()
-      post_user = user_doc.to_dict()
-
-      # skip missing/empty user docs
-      if not post_user:
-        continue
-
-      # skip if user has not entered a location
-      post_loc_str = post_user.get("location")
-      if not post_loc_str:
-        continue
-
-      # get the location as object
-      post_location = post_user["location"]
-      post_location = Location.from_string(post_location)
-
-      # match 'location' to user's 'location'
-      if post_location.province == location.province:
-        doc_data["id"] = doc.id  # Include document ID
-        results.append(doc_data)
-
-    # sort from highest to lowest number of votes
-    results.sort(key=lambda x: x.get("voteCount", 0), reverse=True)
-
-    return results
-  except Exception as e:
-    raise HTTPException(
-        status_code=500, detail=f"Error fetching posts: {str(e)}")
-
-@router.get("/rank/")
-async def rank_posts_by_location(
-    scope: Literal["global", "province", "city"] = "global",
-    province: Optional[str] = None,
-    city: Optional[str] = None,
-):
-    print("test")
-    try:
-        if scope == "global":
-            query = db.collection("posts").order_by(
-                "voteCount",
-                direction="DESCENDING"
-            )
-            print(query)
-
-        elif scope == "province":
-            if not province:
-                raise HTTPException(400, "province is required")
-
-            query = (
-                db.collection("posts")
-                .where("provinceName", "==", province)
-                .order_by("voteCount", direction="DESCENDING")
-            )
-
-        elif scope == "city":
-            if not city or not province:
-                raise HTTPException(400, "city and province required")
-
-            query = (
-                db.collection("posts")
-                .where("cityName", "==", city)
-                .where("provinceName", "==", province)
-                .order_by("voteCount", direction="DESCENDING")
-            )
-
-        docs = query.stream()
-
-        return [
-            {"id": doc.id, **doc.to_dict()}
-            for doc in docs
-        ]
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))

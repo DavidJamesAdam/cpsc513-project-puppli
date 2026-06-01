@@ -43,6 +43,8 @@ class UpdateUser(BaseModel):
 class PostCreate(BaseModel):
   caption: str = Field(...)
   petId: str
+  cityName: str
+  provinceName: str
   imageUrl: str
 
 
