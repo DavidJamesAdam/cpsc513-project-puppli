@@ -1,14 +1,13 @@
 from firebase_service import db
-from fastapi import APIRouter, Request, HTTPException, Depends, status, Query
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
+from fastapi import APIRouter, Request, HTTPException, Depends, status, Query
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from typing import Optional, Literal
-from classes.location import Location
 from utils.authCheck import auth_check, require_owner_or_admin
-from models import PostCreate, CommentCreate
+from models import PostCreate, PostInfo, CommentCreate
 
 router = APIRouter()
 
@@ -54,22 +53,19 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
     raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/user")
+@router.get("/user", response_model=list[PostInfo])
 async def get_posts(user=Depends(auth_check)):
   """
   Retrieve all posts for the authenticated user
   """
   try:
     user_id = user["user_id"]
-
-    # Query posts collection filtered by userId
     docs = db.collection("posts").where("userId", "==", user_id).stream()
 
     results = []
     for doc in docs:
       post_data = doc.to_dict()
-      post_data["id"] = doc.id
-      results.append(post_data)
+      results.append(PostInfo.model_validate(post_data))
 
     return results
   except HTTPException:
@@ -78,27 +74,19 @@ async def get_posts(user=Depends(auth_check)):
     raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{post_id}", dependencies=[Depends(auth_check)])
+@router.get("/{post_id}", response_model=PostInfo, dependencies=[Depends(auth_check)])
 async def get_post_by_id(post_id: str):
   """
   Retrieve a single post by its ID
-  Returns the post with its ID and comments
   """
   try:
-    # Get the specific document from 'posts' collection
     doc_ref = db.collection("posts").document(post_id)
     doc = doc_ref.get()
 
     if not doc.exists:
       raise HTTPException(status_code=404, detail="Post not found")
 
-    # Convert document to dictionary format
-    doc_data = doc.to_dict()
-    doc_data["id"] = doc.id  # Include document ID
-
-    # Ensure comments field exists (initialize as empty array if missing)
-    if "comments" not in doc_data:
-      doc_data["comments"] = []
+    doc_data = PostInfo.model_validate(doc.to_dict())
 
     return doc_data
 
@@ -219,6 +207,7 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
         "post_id": post_id,
         "text": comment.text,
         "createdAt": datetime.utcnow().isoformat() + "Z",
+        "deletedAt": None
     }
 
     comment_collection = db.collection("comments")
@@ -269,7 +258,7 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
         status_code=500, detail=f"Error deleting comment: {str(e)}")
 
 
-@router.get("/rank/")
+@router.get("/rank/", response_model=list[PostInfo])
 async def rank_posts_by_location(
     scope: Literal["global", "province", "city"] = "global",
     province: Optional[str] = None,
@@ -318,10 +307,14 @@ async def rank_posts_by_location(
 
     docs = query.stream()
 
-    return [
-        {"id": doc.id, **doc.to_dict()}
+    posts = [
+        PostInfo.model_validate({
+            **doc.to_dict()
+        })
         for doc in docs
     ]
+
+    return posts
   except HTTPException:
     raise
   except Exception as e:

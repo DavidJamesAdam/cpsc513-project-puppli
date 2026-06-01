@@ -47,6 +47,12 @@ class PostCreate(BaseModel):
   provinceName: str
   imageUrl: str
 
+class PostInfo(BaseModel):
+  caption: str
+  imageUrl: str
+  favouriteCount: int
+  voteCount: int
+
 
 class CommentCreate(BaseModel):
   text: str = Field(..., max_length=56)
