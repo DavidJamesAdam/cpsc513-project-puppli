@@ -66,6 +66,14 @@ class PetCreate(BaseModel):
   favouriteTreat: str = Field(..., min_length=1)
 
 
+class PetInfo(BaseModel):
+  name: str
+  breed: str
+  birthday: str
+  favouriteToy: str
+  favouriteTreat: str
+
+
 class UpdatePet(BaseModel):
   name: str | None = None
   breed: str | None = None,

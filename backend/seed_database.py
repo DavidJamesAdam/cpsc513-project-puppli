@@ -2,7 +2,7 @@
 Run with: python seed_database.py
 """
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from faker import Faker
 from firebase_admin import auth
 from firebase_service import db
@@ -152,7 +152,7 @@ def generate_user():
       "totalBronze": random.randint(0, 25),
       "totalSilver": random.randint(0, 10),
       "totalGold": random.randint(0, 5),
-      "createdAt": datetime.utcnow(),
+      "createdAt": datetime.now(timezone.utc).isoformat(),
       "updatedAt": None,
       "deletedAt": None,
   }

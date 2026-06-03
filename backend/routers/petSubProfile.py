@@ -1,12 +1,13 @@
+from datetime import datetime, timezone
 from firebase_service import db
 from fastapi import APIRouter, HTTPException, Depends
 from utils.authCheck import auth_check, require_owner_or_admin
-from models import PetCreate, UpdatePet
+from models import PetCreate, PetInfo, UpdatePet
 
 router = APIRouter()
 
 
-@router.post("/create")
+@router.post("/create", response_model=PetInfo)
 async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
   """
   Create a new pet profile for the authenticated user
@@ -14,7 +15,6 @@ async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
   try:
     user_id = user["user_id"]
 
-    # Create a new document with auto-generated ID
     pets_collection = db.collection("pets")
     pet_ref = pets_collection.document()
 
@@ -25,6 +25,9 @@ async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
         "birthday": pet.birthday,
         "favouriteToy": pet.favouriteToy,
         "favouriteTreat": pet.favouriteTreat,
+        "createdAt": datetime.now(timezone.utc).isoformat(),
+        "updatedAt": None,
+        "deleteAt": None
     }
 
     # Save to Firestore
@@ -40,16 +43,13 @@ async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
     raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("")
+@router.get("", response_model=list[PetInfo])
 async def get_pets(user=Depends(auth_check)):
   """
   Retrieve all pets for the authenticated user
   """
   try:
-    # Verify session and get user ID
     user_id = user["user_id"]
-
-    # Query pets collection filtered by userId
     docs = db.collection("pets").where("userId", "==", user_id).stream()
 
     results = []
@@ -65,17 +65,16 @@ async def get_pets(user=Depends(auth_check)):
     raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{pet_id}")
+@router.get("/{pet_id}", response_model=PetInfo)
 async def get_pet(pet_id: str, user=Depends(auth_check)):
   """Retrieves pet by ID
 
   Admin can retrieve any pet, users who own a pet may only access their own pets"""
   try:
-    pet_doc = db.collection("pets").document(pet_id).get()
-    if not pet_doc.exists:
+    pet = db.collection("pets").document(pet_id).get().to_dict()
+    if pet["deletedAt"]:
       raise HTTPException(status_code=404, detail="Pet not found")
 
-    pet = pet_doc.to_dict()
     await require_owner_or_admin(
         owner_id=pet["userId"],
         user=user
@@ -145,7 +144,6 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
         user=user
     )
 
-
     # Sort posts by createdAt (most recent first)
     sorted_posts = sorted(
         docs, key=lambda doc: doc.to_dict().get("createdAt", ""), reverse=True
@@ -177,23 +175,28 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
 
 
 @router.patch("/update/{pet_id}")
-# update pet info
-# accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing
 async def update_pet(pet_id: str, updated_fields: UpdatePet, user=Depends(auth_check)):
 
   try:
-    doc_ref = db.collection("pets").document(pet_id)
-    doc = doc_ref.get()
-    if not doc.exists:
-      raise HTTPException(status_code=404, detail="User not found")
+    doc_collection = db.collection("pets").document(pet_id)
+    pet = doc_collection.get().to_dict()
+    if pet["deletedAt"]:
+      raise HTTPException(status_code=404, detail="Pet not found")
 
-    pet = doc.to_dict()
     await require_owner_or_admin(
         owner_id=pet["userId"],
         user=user
     )
 
-    doc_ref.update(updated_fields)
+    update_data = updated_fields.model_dump(exclude_none=True)
+    update_data["updatedAt"] = datetime.now(timezone.utc).isoformat()
+    if not update_data:
+      raise HTTPException(
+          status_code=400,
+          detail="No fields provided for update"
+      )
+
+    doc_collection.update(update_data)
 
     return {"message": "Pet updated successfully"}
 
@@ -205,22 +208,22 @@ async def update_pet(pet_id: str, updated_fields: UpdatePet, user=Depends(auth_c
 
 
 @router.delete("/delete/{pet_id}", status_code=204)
-# delete pet subprofile
 async def delete_pet(pet_id: str, user=Depends(auth_check)):
 
   try:
-    doc_ref = db.collection("pets").document(pet_id)
-    doc = doc_ref.get()
-    if not doc.exists:
+    doc_collection = db.collection("pets").document(pet_id)
+    pet = doc_collection.get().to_dict()
+    if pet["deletedAt"]:
       raise HTTPException(status_code=404, detail="Pet not found")
 
-    pet = doc.to_dict()
     await require_owner_or_admin(
         owner_id=pet["userId"],
         user=user
     )
 
-    doc_ref.delete()
+    pet["deletedAt"] = datetime.now(timezone.utc).isoformat()
+
+    doc_collection.update(pet)
 
   except HTTPException:
     raise

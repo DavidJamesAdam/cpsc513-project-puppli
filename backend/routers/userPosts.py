@@ -32,7 +32,7 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
         "caption": post.caption,
         "cityName": user_ref["cityName"],
         "provinceName": user_ref["provinceName"],
-        "createdAt": datetime.utcnow().isoformat() + "Z",
+        "createdAt": datetime.now(timezone.utc).isoformat() + "Z",
         "voteCount": 0,
         "favouriteCount": 0,
     }
@@ -206,7 +206,7 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
         "user": user["user_id"],
         "post_id": post_id,
         "text": comment.text,
-        "createdAt": datetime.utcnow().isoformat() + "Z",
+        "createdAt": datetime.now(timezone.utc).isoformat() + "Z",
         "deletedAt": None
     }
 

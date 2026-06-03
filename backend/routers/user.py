@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from firebase_service import db
 from fastapi import APIRouter, HTTPException, status, Depends
@@ -160,7 +160,7 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
     # the actual user document object
     doc = doc_ref.get().to_dict()
 
-    if doc["deletedAt"] != None:
+    if doc["deletedAt"]:
       raise HTTPException(status_code=404, detail="User not found")
 
     await require_owner_or_admin(
@@ -170,7 +170,7 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
 
     # Convert Pydantic model to a plain dict before updating Firestore
     update_data = updated_fields.model_dump(exclude_none=True)
-    update_data["updatedAt"] = datetime.utcnow().isoformat()
+    update_data["updatedAt"] = datetime.now(timezone.utc).isoformat()
     if not update_data:
       raise HTTPException(
           status_code=status.HTTP_400_BAD_REQUEST,
@@ -218,7 +218,7 @@ async def delete_user(user_id: str):
 
     for comment in comments:
       await run_in_threadpool(comment.reference.update, {
-          "deletedAt": datetime.utcnow().isoformat()
+          "deletedAt": datetime.now(timezone.utc).isoformat()
       })
       deletion_summary["comments_deleted"] += 1
 
@@ -228,7 +228,7 @@ async def delete_user(user_id: str):
 
     for post in posts:
       await run_in_threadpool(post.reference.update, {
-          "deletedAt": datetime.utcnow().isoformat()
+          "deletedAt": datetime.now(timezone.utc).isoformat()
       })
       deletion_summary["posts_deleted"] += 1
 
@@ -238,14 +238,14 @@ async def delete_user(user_id: str):
 
     for pet in pets:
       await run_in_threadpool(pet.reference.update, {
-          "deletedAt": datetime.utcnow().isoformat()
+          "deletedAt": datetime.now(timezone.utc).isoformat()
       })
       deletion_summary["pets_deleted"] += 1
 
     # Delete user document
     await run_in_threadpool(user_ref.update, {
-          "deletedAt": datetime.utcnow().isoformat()
-      })
+        "deletedAt": datetime.now(timezone.utc).isoformat()
+    })
 
     # Delete from Firebase Auth
     try:
