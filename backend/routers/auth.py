@@ -144,7 +144,6 @@ async def update_password(request: Request, update: PassUpdate, user: dict = Dep
         data = await request.json()
         update = PassUpdate(**data)
 
-        #update password in Firebase Auth
         auth.update_user(user["uid"], password=update.new_password)
 
         return {"status": "success", "message": "Password updated successfully"}
