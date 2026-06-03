@@ -12,6 +12,7 @@ router = APIRouter()
 
 SESSION_EXPIRES_DAYS = 5
 
+
 # TODO: Do I need to protect this route?
 @router.post("/sessionLogin")
 async def session_login(request: Request):
@@ -24,18 +25,23 @@ async def session_login(request: Request):
     id_token = body.get("idToken")
     if not id_token:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing idToken in body")
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing idToken in body"
+        )
 
     expires_in = timedelta(days=SESSION_EXPIRES_DAYS)
     try:
-        session_cookie = await run_in_threadpool(auth.create_session_cookie, id_token, expires_in=expires_in)
+        session_cookie = await run_in_threadpool(
+            auth.create_session_cookie, id_token, expires_in=expires_in
+        )
         # verify token to obtain uid for updating lastLogin
         # Not working, not sure why, but not crucial
         # decoded = await run_in_threadpool(admin_auth.verify_id_token, id_token, True)
         # uid = decoded.get("uid")
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Failed to create session cookie")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to create session cookie",
+        )
 
     # update lastLogin asynchronously
     # try:
@@ -54,6 +60,7 @@ async def session_login(request: Request):
         max_age=int(expires_in.total_seconds()),
     )
     return response
+
 
 # Alternative to redirecting on frontend
 # @router.get("/require")
@@ -78,6 +85,7 @@ async def session_login(request: Request):
 #         login_url = origin.rstrip("/") + "/login"
 #         return RedirectResponse(url=login_url, status_code=302)
 
+
 # TODO: Do I need to protect this route?
 @router.post("/logout")
 async def session_logout(request: Request):
@@ -88,7 +96,9 @@ async def session_logout(request: Request):
         return JSONResponse({"status": "ok"})
 
     try:
-        decoded = await run_in_threadpool(auth.verify_session_cookie, session_cookie, True)
+        decoded = await run_in_threadpool(
+            auth.verify_session_cookie, session_cookie, True
+        )
         uid = decoded.get("uid")
         # revoke refresh tokens (prevents new ID tokens from being minted)
         await run_in_threadpool(auth.revoke_refresh_tokens, uid)
@@ -99,6 +109,7 @@ async def session_logout(request: Request):
     response = JSONResponse({"status": "ok"})
     response.delete_cookie("session")
     return response
+
 
 # TODO: This already exists as a function, figure out a way to use this route and include user=Depends(auth_check)
 @router.get("/check")
@@ -112,16 +123,17 @@ def check_auth(request: Request):
     except Exception:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
+
 @router.post("/user/update-email")
 async def update_email(request: Request, user: dict = Depends(auth_check)):
     try:
         data = await request.json()
         update = EmailUpdate(**data)
 
-        #update email in Firebase Auth
+        # update email in Firebase Auth
         auth.update_user(user["uid"], email=update.new_email)
 
-        #update profile document in firestore
+        # update profile document in firestore
         user_ref = db.collection("users").document(user["uid"])
         user_ref.update({"email": update.new_email})
 
@@ -138,8 +150,11 @@ async def update_email(request: Request, user: dict = Depends(auth_check)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/user/update-password")
-async def update_password(request: Request, update: PassUpdate, user: dict = Depends(auth_check)):
+async def update_password(
+    request: Request, update: PassUpdate, user: dict = Depends(auth_check)
+):
     try:
         data = await request.json()
         update = PassUpdate(**data)
@@ -157,3 +172,6 @@ async def update_password(request: Request, update: PassUpdate, user: dict = Dep
         raise HTTPException(status_code=422, detail=error_messages)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Small test
