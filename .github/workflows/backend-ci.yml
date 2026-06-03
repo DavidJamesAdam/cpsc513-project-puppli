@@ -6,10 +6,25 @@ on:
       - 'backend/**'
 
 jobs:
-  hello:
+  workflow:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - run: echo "Run backend tests"
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run linter
+        run: |
+          ruff check
+
+      - run: echo "Finished workflow"
