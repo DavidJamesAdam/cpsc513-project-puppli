@@ -137,7 +137,7 @@ async def get_user(user_id: str, user=Depends(auth_check)):
 
     doc = db.collection('users').document(target_user_id).get().to_dict()
 
-    if doc["deletedAt"] != None:
+    if doc["deletedAt"]:
       raise HTTPException(status_code=404, detail="User not found")
 
     return doc

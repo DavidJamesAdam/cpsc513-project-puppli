@@ -1,7 +1,6 @@
 import firebase_admin # type: ignore (installed in venv)
 from firebase_admin import credentials, firestore # type: ignore (installed in venv)
 import os
-import glob
 from dotenv import load_dotenv
 
 load_dotenv()

@@ -192,7 +192,7 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
     post = post_ref.get().to_dict()
     if post["deletedAt"]:
       raise HTTPException(
-          status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+          status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
       )
 
     # Validate comment text length
@@ -517,9 +517,6 @@ async def post_vote(postId: str, request: Request):
 
     if not doc.exists:
       raise HTTPException(status_code=404, detail="Post not found")
-
-    data = doc.to_dict()
-    current_votes = data.get("votes", 0)
 
     # increment vote count
     doc_ref.update({"voteCount": firestore.Increment(1)})
