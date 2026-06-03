@@ -1,0 +1,15 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: echo "Run frontend tests"
