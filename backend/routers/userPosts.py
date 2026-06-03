@@ -1,7 +1,7 @@
 from firebase_service import db
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
-from fastapi import APIRouter, Request, HTTPException, Depends, status, Query
+from fastapi import APIRouter, Request, HTTPException, Depends, status
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
@@ -33,6 +33,8 @@ async def create_post(post: PostCreate, user=Depends(auth_check)):
         "cityName": user_ref["cityName"],
         "provinceName": user_ref["provinceName"],
         "createdAt": datetime.now(timezone.utc).isoformat() + "Z",
+        "updatedAt": None,
+        "deletedAt": None,
         "voteCount": 0,
         "favouriteCount": 0,
     }
@@ -60,7 +62,7 @@ async def get_posts(user=Depends(auth_check)):
   """
   try:
     user_id = user["user_id"]
-    docs = db.collection("posts").where("userId", "==", user_id).stream()
+    docs = db.collection("posts").where("userId", "==", user_id).where("deletedAt", "==", None).stream()
 
     results = []
     for doc in docs:
@@ -81,14 +83,14 @@ async def get_post_by_id(post_id: str):
   """
   try:
     doc_ref = db.collection("posts").document(post_id)
-    doc = doc_ref.get()
-
-    if not doc.exists:
+    post = doc_ref.get().to_dict()
+    if post["deletedAt"]:
       raise HTTPException(status_code=404, detail="Post not found")
 
-    doc_data = PostInfo.model_validate(doc.to_dict())
+    # TODO: Why do we need to use model_validate()?
+    # doc_data = PostInfo.model_validate(doc.to_dict())
 
-    return doc_data
+    return post
 
   except HTTPException:
     raise
@@ -160,20 +162,20 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
   the requesting user's role/ownership before deleting.
   """
   try:
-    post_ref = db.collection("posts").document(post_id)
-    post_doc = post_ref.get()
-    if not post_doc.exists:
+    post_collection = db.collection("posts").document(post_id)
+    post = post_collection.get().to_dict()
+    if post["deletedAt"]:
       raise HTTPException(
           status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
-    post = post_doc.to_dict() or {}
 
     await require_owner_or_admin(
         owner_id=post["userId"],
         user=user
     )
 
-    post_ref.delete()
+    post["deletedAt"] = datetime.now(timezone.utc).isoformat()
+
+    post_collection.update(post)
 
   except HTTPException:
     raise
@@ -187,8 +189,8 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
   """Add a comment to a post"""
   try:
     post_ref = db.collection("posts").document(post_id)
-    post = post_ref.get()
-    if not post.exists:
+    post = post_ref.get().to_dict()
+    if post["deletedAt"]:
       raise HTTPException(
           status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
       )
@@ -231,13 +233,11 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
   the requesting user's role/ownership before deleting.
   """
   try:
-    comment_ref = db.collection("comments").document(comment_uid)
-    comment_doc = comment_ref.get()
-    if not comment_doc.exists:
+    comment_collection = db.collection("comments").document(comment_uid)
+    comment = comment_collection.get().to_dict()
+    if comment["deletedAt"]:
       raise HTTPException(
           status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
-
-    comment = comment_doc.to_dict() or {}
 
     if comment.get("post_id") != post_id:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -249,7 +249,8 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
     )
 
     # Delete the comment
-    comment_ref.delete()
+    comment["deletedAt"] = datetime.now(timezone.utc).isoformat()
+    comment_collection.update(comment)
 
   except HTTPException:
     raise
