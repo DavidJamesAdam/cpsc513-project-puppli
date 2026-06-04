@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import Mock, patch
 from fastapi import HTTPException, status
 from fastapi.testclient import TestClient
+from utils.authCheck import auth_check
 
 # Import the router and dependencies
 import sys
@@ -16,6 +17,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Create a test app
 app = FastAPI()
 app.include_router(router, prefix="/users", tags=["users"])
+app.dependency_overrides[auth_check] = lambda: {
+    "uid": "test_user_123",
+    "email": "testuser@example.com",
+}
 
 # Create test client
 client = TestClient(app)
@@ -195,7 +200,7 @@ class TestGetUserEndpoint:
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
         )
 
-        response = client.get("/users/some_user_id")
+        response = client.get("/users")
 
         assert response.status_code == 401
 
