@@ -23,6 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install firebase
+        run: curl -sL https://firebase.tools | bash
+        
+      - name: Run firebase emulators
+        run: firebase emulators:start --only auth &
+
       - name: Run unit tests
         working-directory: backend
         run: |
