@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, patch
 from fastapi import HTTPException, status
 from fastapi.testclient import TestClient
-from utils.authCheck import auth_check
+from utils.authCheck import auth_check, require_admin
 
 # Import the router and dependencies
 import sys
@@ -21,6 +21,7 @@ app.dependency_overrides[auth_check] = lambda: {
     "uid": "test_user_123",
     "email": "testuser@example.com",
 }
+# app.dependency_overrides[require_admin] = lambda: {"uid": "admin_user_456", "email": "admin@example.com"}
 
 # Create test client
 client = TestClient(app)
@@ -192,6 +193,9 @@ class TestGetUserEndpoint:
         #     "/users/nonexistent_user", cookies={"session": "fake_session_token"}
         # )
 
+        # assert response.status_code == 404
+        # assert response.json()["detail"] == "User not found"
+
     @patch("routers.user.db")
     @patch("routers.user.auth_check")
     def test_get_user_without_authentication(self, mock_auth_check_dep, mock_db):
@@ -293,3 +297,80 @@ class TestGetCurrentUserEndpoint:
         assert response.status_code == 200
         assert response.json()["email"] == "current@example.com"
         assert response.json()["id"] == "current_user_123"
+
+class TestDeleteUserEndpoint:
+    """Test suite for the GET /users/me endpoint"""
+
+    @pytest.fixture
+    def mock_auth_check(self):
+        """Mock the auth_check dependency"""
+        return {"uid": "test_user_123", "email": "testuser@example.com"}
+
+    @pytest.fixture
+    def mock_user_doc(self):
+        """Mock a user document from Firestore"""
+        return {
+            "email": "targetuser@example.com",
+            "displayName": "Target User",
+            "cityName": "Vancouver",
+            "provinceName": "BC",
+            "bio": "Test bio",
+            "role": "user",
+            "totalBronze": 5,
+            "totalSilver": 2,
+            "totalGold": 0,
+            "deletedAt": None,
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": None,
+        }
+
+    @pytest.fixture
+    def mock_admin_doc(self):
+        """Mock an admin user document"""
+        return {
+            "email": "admin@example.com",
+            "displayName": "Admin User",
+            "cityName": "Toronto",
+            "provinceName": "ON",
+            "bio": "",
+            "role": "admin",
+            "totalBronze": 0,
+            "totalSilver": 0,
+            "totalGold": 0,
+            "deletedAt": None,
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": None,
+        }
+
+    @patch("routers.user.db")
+    @patch("routers.user.auth_check")
+    @pytest.mark.skip(reason="Just need this for testing for now")
+    def test_delete_existing_user_as_admin(self, mock_auth, mock_db):
+      # Mock the user document returned by db.collection('users').document(user_id).get()
+      mock_user_doc = Mock()
+      mock_user_doc.exists = True
+      mock_user_doc.to_dict.return_value = {"deletedAt": None, "displayName": "Target User"}
+      mock_user_doc.id = "target_user_123"
+
+      # Mock the document reference that has get() and update() methods
+      mock_doc_ref = Mock()
+      mock_doc_ref.get.return_value = mock_user_doc
+      mock_doc_ref.update.return_value = None
+
+      # Configure the mocked db: collection(...).document(...) -> mock_doc_ref
+      mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+      # Mock queries for comments/posts/pets to return empty iterables
+      mock_collection = mock_db.collection.return_value
+      mock_collection.where.return_value.stream.return_value = []
+
+      # Mock Firebase Auth delete_user to do nothing
+      mock_auth.delete_user.return_value = None
+
+      # Call the endpoint (no cookie needed because dependency override bypasses auth_check)
+      resp = client.delete("/users/target_user_123")
+
+      assert resp.status_code == 204
+
+      # Cleanup override
+      app.dependency_overrides.pop(require_admin, None)
