@@ -23,12 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Write Firebase service account
+      - name: Write Firebase credentials
         env:
-          FIREBASE_SA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          FIREBASE_SA_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
-          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS" > /tmp/firebase-sa.json
-          echo "FIREBASE_SA_PATH=/tmp/firebase-sa.json" >> $GITHUB_ENV
+          printf '%s' "$FIREBASE_SA_JSON" > /tmp/firebase-sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json" >> $GITHUB_ENV
 
       - name: Run unit tests
         working-directory: backend
