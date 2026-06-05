@@ -473,5 +473,3 @@ class TestDeleteUserEndpoint:
 
       # Cleanup override
       app.dependency_overrides.pop(require_admin, None)
-
-# test
