@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.13.7'
 
       - name: Install dependencies
         working-directory: backend
@@ -23,11 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install firebase
-        run: curl -sL https://firebase.tools | bash
-        
-      - name: Run firebase emulators
-        run: firebase emulators:start --only auth &
+      - name: Write Firebase service account
+        env:
+          FIREBASE_SA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          printf '%s' "$FIREBASE_SA" > /tmp/firebase-sa.json
+          echo "FIREBASE_SA_PATH=/tmp/firebase-sa.json" >> $GITHUB_ENV
 
       - name: Run unit tests
         working-directory: backend
