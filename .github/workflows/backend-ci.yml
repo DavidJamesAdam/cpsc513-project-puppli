@@ -25,10 +25,10 @@ jobs:
 
       - name: Write Firebase service account
         env:
-          FIREBASE_SA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
-          printf '%s' "$FIREBASE_SA" > /tmp/firebase-sa.json
-          echo "FIREBASE_SA_PATH=/tmp/firebase-sa.json" >> $GITHUB_ENV
+          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS" > /tmp/firebase-sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json" >> $GITHUB_ENV
 
       - name: Run unit tests
         working-directory: backend

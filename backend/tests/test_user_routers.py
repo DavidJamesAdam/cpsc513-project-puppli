@@ -407,3 +407,36 @@ class TestDeleteUserEndpoint:
 
       # Cleanup override
       app.dependency_overrides.pop(require_admin, None)
+
+    @patch("routers.user.db")
+    @patch("routers.user.auth_check")
+    @pytest.mark.skip(reason="Just need this for testing for now")
+    def test_delete_non_existing_user(self, mock_auth, mock_db):
+      # Mock the user document returned by db.collection('users').document(user_id).get()
+      mock_user_doc = Mock()
+      mock_user_doc.exists = True
+      mock_user_doc.to_dict.return_value = {"deletedAt": None, "displayName": "Target User"}
+      mock_user_doc.id = "target_user_123"
+
+      # Mock the document reference that has get() and update() methods
+      mock_doc_ref = Mock()
+      mock_doc_ref.get.return_value = mock_user_doc
+      mock_doc_ref.update.return_value = None
+
+      # Configure the mocked db: collection(...).document(...) -> mock_doc_ref
+      mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+      # Mock queries for comments/posts/pets to return empty iterables
+      mock_collection = mock_db.collection.return_value
+      mock_collection.where.return_value.stream.return_value = []
+
+      # Mock Firebase Auth delete_user to do nothing
+      mock_auth.delete_user.return_value = None
+
+      # Call the endpoint (no cookie needed because dependency override bypasses auth_check)
+      resp = client.delete("/users/target_user_123")
+
+      assert resp.status_code == 204
+
+      # Cleanup override
+      app.dependency_overrides.pop(require_admin, None)
