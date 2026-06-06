@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator, Field
+
 import re
 
 COMMON_PASSWORDS = {"password", "12345678", "qwerty", "letmein"}
@@ -41,11 +42,10 @@ class UpdateUser(BaseModel):
   cityName: str | None = None
 
 class PostCreate(BaseModel):
-  caption: str = Field(...)
+  caption: str
   petId: str
   cityName: str
   provinceName: str
-  imageUrl: str
 
 class PostInfo(BaseModel):
   caption: str
@@ -67,6 +67,7 @@ class PetCreate(BaseModel):
 
 
 class PetInfo(BaseModel):
+  id: str
   name: str
   breed: str
   birthday: str

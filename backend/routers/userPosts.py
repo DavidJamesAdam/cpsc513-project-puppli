@@ -1,35 +1,47 @@
 from firebase_service import db
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
-from fastapi import APIRouter, Request, HTTPException, Depends, status
+import firebase_admin.storage as storage
+from fastapi import APIRouter, Request, HTTPException, Depends, status, UploadFile, File, Form
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from typing import Optional, Literal
 from utils.authCheck import auth_check, require_owner_or_admin
-from models import PostCreate, PostInfo, CommentCreate
+from models import PostInfo, CommentCreate
 
 router = APIRouter()
 
-
-@router.post("/")
-async def create_post(post: PostCreate, user=Depends(auth_check)):
+@router.post("")
+async def create_post(caption: str = Form(...), petId: str = Form(...), image: UploadFile = File(...), user=Depends(auth_check)):
   """
   Create a new post with an image URL, caption, and pet ID
   Requires authentication
   """
-# TODO: Implement file verification (is the post actually a photo or a zip bomb, malware, etc)
-# TODO: Separate photo upload logic and actual post/text field logic
   try:
+    if image.content_type not in ["image/jpeg", "image/png", "image/webp"]:
+      raise HTTPException(status_code=400, detail="Invalid file type")
+
     user_id = user["user_id"]
+
+    timestamp = datetime.now(timezone.utc).isoformat()
+    path = f"posts/{user_id}/{timestamp}_{image.filename}"
+
+    bucket = storage.bucket("puppli-422db.firebasestorage.app")
+    blob = bucket.blob(path)
+    blob.upload_from_file(image.file, content_type=image.content_type)
+    blob.make_public()
+
+    image_url = blob.public_url
+
     user_ref = db.collection("users").document(user_id).get().to_dict()
 
     # Create post document
     post_data = {
         "userId": user_id,
-        "petId": post.petId,
-        "imageUrl": post.imageUrl,
-        "caption": post.caption,
+        "petId": petId,
+        "imageUrl": image_url,
+        "caption": caption,
         "cityName": user_ref["cityName"],
         "provinceName": user_ref["provinceName"],
         "createdAt": datetime.now(timezone.utc).isoformat() + "Z",
@@ -62,7 +74,8 @@ async def get_posts(user=Depends(auth_check)):
   """
   try:
     user_id = user["user_id"]
-    docs = db.collection("posts").where("userId", "==", user_id).where("deletedAt", "==", None).stream()
+    docs = db.collection("posts").where(
+        "userId", "==", user_id).where("deletedAt", "==", None).stream()
 
     results = []
     for doc in docs:
