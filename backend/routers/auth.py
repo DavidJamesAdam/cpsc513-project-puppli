@@ -7,6 +7,10 @@ from firebase_admin import auth
 from firebase_service import db
 from utils.authCheck import auth_check
 from models import EmailUpdate, PassUpdate
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter()
 
@@ -104,6 +108,7 @@ async def session_logout(request: Request):
 
 @router.get("/check")
 async def check_auth(user: dict = Depends(auth_check)):
+  logger.debug("test")
   return {"status": "ok", "uid": user["uid"]}
 
 

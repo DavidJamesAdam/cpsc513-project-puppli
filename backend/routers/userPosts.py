@@ -9,8 +9,12 @@ import random
 from typing import Optional, Literal
 from utils.authCheck import auth_check, require_owner_or_admin
 from models import PostInfo, CommentCreate
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
 
 @router.post("")
 async def create_post(caption: str = Form(...), petId: str = Form(...), image: UploadFile = File(...), user=Depends(auth_check)):
@@ -49,6 +53,7 @@ async def create_post(caption: str = Form(...), petId: str = Form(...), image: U
         "deletedAt": None,
         "voteCount": 0,
         "favouriteCount": 0,
+        "favouritedBy": []
     }
 
     # Add document to posts collection
@@ -456,47 +461,50 @@ async def award_medals():
         status_code=500, detail=f"Error awarding medals: {str(e)}")
 
 
-# TODO: Need to figure out what to do with this endpoint. IE have a gallery for user to view favs? Is there an easier way to increase/decrease fav count?
+
 @router.post("/favourite/{postId}")
-# favourite toggle (add or remove)
-async def post_favourite(postId: str, request: Request):
+async def post_favourite(postId: str, user=Depends(auth_check)):
+  """Retrieves all posts favourited by currently authenticated user"""
+  user_id = user["uid"]
   try:
-    # Get user ID from session cookie for authentication
-    session_cookie = request.cookies.get("session")
-    if not session_cookie:
-      raise HTTPException(status_code=401, detail="Not authenticated")
+    user_collection = db.collection("users").document(user_id)
 
-    try:
-      decoded = auth.verify_session_cookie(session_cookie, check_revoked=True)
-      user_id = decoded.get("uid")
-    except Exception:
-      raise HTTPException(status_code=401, detail="Invalid session")
+    post_collection = db.collection("posts").document(postId)
+    post_ref = post_collection.get()
+    post_data = post_ref.to_dict()
+    favourited_by = post_data.get("favouritedBy", [])
 
-    doc_ref = db.collection("posts").document(postId)
-    doc = doc_ref.get()
-
-    if not doc.exists:
+    if not post_ref.exists:
       raise HTTPException(status_code=404, detail="Post not found")
-
-    data = doc.to_dict()
-    favourited_by = data.get("favouritedBy", [])
 
     # Toggle: if user already favorited, remove; otherwise add
     if user_id in favourited_by:
       # Remove favorite
-      doc_ref.update(
+      post_collection.update(
           {
               "favouriteCount": firestore.Increment(-1),
               "favouritedBy": firestore.ArrayRemove([user_id]),
           }
       )
+
+      user_collection.update(
+          {
+              "favourites": firestore.ArrayRemove([postId]),
+          }
+      )
       return {"message": "Favourite removed", "favourited": False}
     else:
       # Add favorite
-      doc_ref.update(
+      post_collection.update(
           {
               "favouriteCount": firestore.Increment(1),
               "favouritedBy": firestore.ArrayUnion([user_id]),
+          }
+      )
+
+      user_collection.update(
+          {
+              "favourites": firestore.ArrayUnion([postId]),
           }
       )
       return {"message": "Favourite added", "favourited": True}
@@ -507,6 +515,36 @@ async def post_favourite(postId: str, request: Request):
     raise HTTPException(
         status_code=500, detail=f"Error toggling favourite: {str(e)}"
     )
+
+
+@router.get("/favourite/", response_model=list[PostInfo])
+async def get_all_favourites_for_current_user(user=Depends(auth_check)):
+  user_id = user["uid"]
+  try:
+    user_collection = db.collection("users").document(user_id)
+    user_ref = user_collection.get()
+    user_data = user_ref.to_dict()
+
+    if not user_ref.exists:
+      raise HTTPException(status_code=404, detail="User not found")
+
+    favourite_ids = user_data.get("favourites", [])
+
+    results = []
+    for favourite_id in favourite_ids:
+      post_doc = db.collection("posts").document(favourite_id).get()
+      if not post_doc.exists:
+        raise HTTPException(status_code=404, detail="User not found")
+        continue
+      post_data = post_doc.to_dict() or {}
+      if post_data.get("deletedAt"):
+        raise HTTPException(status_code=404, detail="User not found")
+      post_data = post_doc.to_dict()
+      results.append(PostInfo.model_validate(post_data))
+
+    return results
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 # TODO: Similar to adding favourites, is there an easier way? Can we just use this as a "favourite gallery"? Do we even need a favourite function in that case?

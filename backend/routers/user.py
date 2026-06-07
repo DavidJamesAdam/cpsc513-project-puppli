@@ -51,6 +51,7 @@ async def create_user(user: User) -> User:
             "totalBronze": 0,
             "totalSilver": 0,
             "totalGold": 0,
+            "favourites": [],
             "createdAt": gcfirestore.SERVER_TIMESTAMP,
             "updatedAt": None,
             "deleteAt": None
