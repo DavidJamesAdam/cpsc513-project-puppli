@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -7,11 +8,9 @@ from firebase_admin import auth
 from firebase_service import db
 from utils.authCheck import auth_check
 from models import EmailUpdate, PassUpdate
-import logging
 from limiter import limiter
 
 logger = logging.getLogger(__name__)
-
 
 router = APIRouter()
 
