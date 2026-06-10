@@ -20,3 +20,5 @@ venv/
 
 # Private Keys
 keys/
+
+myapp.log

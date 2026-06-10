@@ -62,3 +62,9 @@ The `clear_database.py` script is for **testing purposes only** and removes all 
   "favouriteCount": 0
 }
 ```
+
+SlowAPI documentation
+https://slowapi.readthedocs.io/en/latest/
+
+Logger basicConfig info
+https://www.hrekov.com/blog/python-logging-basicconfig

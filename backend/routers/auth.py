@@ -110,7 +110,7 @@ async def session_logout(request: Request):
 
 @router.get("/check")
 async def check_auth(user: dict = Depends(auth_check)):
-  logger.debug("test")
+  logger.info("Test")
   return {"status": "ok", "uid": user["uid"]}
 
 
