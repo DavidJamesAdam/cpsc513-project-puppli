@@ -1,0 +1,193 @@
+2026-06-10 16:23:44 - uvicorn.error - INFO - Started server process [37524]
+2026-06-10 16:23:44 - uvicorn.error - INFO - Waiting for application startup.
+2026-06-10 16:23:44 - uvicorn.error - INFO - Application startup complete.
+2026-06-10 16:24:00 - uvicorn.error - INFO - Shutting down
+2026-06-10 16:24:00 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-06-10 16:24:00 - uvicorn.error - INFO - Application shutdown complete.
+2026-06-10 16:24:00 - uvicorn.error - INFO - Finished server process [37524]
+2026-06-10 16:24:11 - uvicorn.error - INFO - Will watch for changes in these directories: ['C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\backend']
+2026-06-10 16:24:11 - uvicorn.error - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-06-10 16:24:11 - uvicorn.error - INFO - Started reloader process [43528] using WatchFiles
+2026-06-10 16:24:13 - uvicorn.error - INFO - Started server process [46588]
+2026-06-10 16:24:13 - uvicorn.error - INFO - Waiting for application startup.
+2026-06-10 16:24:13 - uvicorn.error - INFO - Application startup complete.
+2026-06-10 16:24:20 - routers.auth - INFO - Test
+2026-06-10 16:25:24 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:24 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:25:24 - uvicorn.error - INFO - Shutting down
+2026-06-10 16:25:24 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-06-10 16:25:24 - uvicorn.error - INFO - Application shutdown complete.
+2026-06-10 16:25:24 - uvicorn.error - INFO - Finished server process [46588]
+2026-06-10 16:25:25 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:25:27 - uvicorn.error - INFO - Started server process [41164]
+2026-06-10 16:25:27 - uvicorn.error - INFO - Waiting for application startup.
+2026-06-10 16:25:27 - uvicorn.error - INFO - Application startup complete.
+2026-06-10 16:25:28 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:28 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:25:28 - uvicorn.error - INFO - Shutting down
+2026-06-10 16:25:28 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-06-10 16:25:28 - uvicorn.error - INFO - Application shutdown complete.
+2026-06-10 16:25:28 - uvicorn.error - INFO - Finished server process [41164]
+2026-06-10 16:25:29 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:25:34 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:34 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:25:35 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:25:38 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:38 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:25:39 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:25:42 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:42 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:25:43 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:25:59 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:25:59 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:00 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:26:07 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:07 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:10 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:10 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:10 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:26:11 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:11 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:13 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:13 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:13 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:26:14 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:14 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:16 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:26:22 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:22 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:26:23 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:26:25,133", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [14300]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:26:25,137", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:26:25,139", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:26:26 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:26:26 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:26:26,260", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:26:26,363", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:26:26,364", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:26:26,365", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [14300]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:26:27 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:26:28,731", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [39948]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:26:28,733", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:26:28,734", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+{"asctime": "2026-06-10 16:26:50,346", "name": "routers.auth", "levelname": "INFO", "message": "Test", "request_id": null}
+2026-06-10 16:29:08 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:08 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:29:08,253", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:29:08,355", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:29:08,356", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:29:08,357", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [39948]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:29:09 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:29:13 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:13 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:29:14 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:29:20 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:20 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:29:21 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:29:22 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:22 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:29:23 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:29:33 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:33 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:29:34 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:29:55 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:29:55 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:29:55 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:30:06 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:30:06 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:30:07 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:30:07 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:30:08 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:30:09,545", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [23948]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:30:09,547", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:30:09,549", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:30:16 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:30:16 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:30:16,064", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:30:16,167", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:30:16,168", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:30:16,169", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [23948]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:30:17 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:30:18,895", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [17372]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:30:18,897", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:30:18,898", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:30:27 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:30:27 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:30:27,432", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:30:27,534", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:30:27,535", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:30:27,536", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [17372]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:30:28 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:30:29,847", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [40288]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:30:29,849", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:30:29,850", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:30:34 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:30:34 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:30:34,053", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:30:34,156", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:30:34,157", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:30:34,158", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [40288]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:30:35 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:30:36,586", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [21000]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:30:36,588", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:30:36,589", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:31:01 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:31:01 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:31:01,927", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:31:02,030", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:31:02,031", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:31:02,032", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [21000]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:31:02 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:31:03 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:31:03 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:31:04,513", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [44096]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:31:04,515", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:31:04,517", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+{"asctime": "2026-06-10 16:31:04,602", "name": "uvicorn.error", "levelname": "ERROR", "message": "Traceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_events.py\", line 725, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 195, in run\n    return runner.run(main)\n           ~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 123, in run\n    raise KeyboardInterrupt()\nKeyboardInterrupt\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\starlette\\routing.py\", line 701, in lifespan\n    await receive()\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\uvicorn\\lifespan\\on.py\", line 137, in receive\n    return await self.receive_queue.get()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\queues.py\", line 186, in get\n    await getter\nasyncio.exceptions.CancelledError\n", "request_id": null}
+2026-06-10 16:31:05 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:31:06,963", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [26884]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:31:06,966", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:31:06,967", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+{"asctime": "2026-06-10 16:31:19,648", "name": "routers.auth", "levelname": "INFO", "message": "Test", "request_id": null}
+2026-06-10 16:33:10 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:10 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:33:10,790", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:33:10,893", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:33:10,895", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:33:10,896", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [26884]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:33:11 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:33:14 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:14 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:33:15 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:33:16 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:16 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:33:17,032", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [43112]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:33:17,034", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:33:17,035", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+{"asctime": "2026-06-10 16:33:17,147", "name": "uvicorn.error", "levelname": "ERROR", "message": "Traceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_events.py\", line 725, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 195, in run\n    return runner.run(main)\n           ~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 123, in run\n    raise KeyboardInterrupt()\nKeyboardInterrupt\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\starlette\\routing.py\", line 701, in lifespan\n    await receive()\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\uvicorn\\lifespan\\on.py\", line 137, in receive\n    return await self.receive_queue.get()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\queues.py\", line 186, in get\n    await getter\nasyncio.exceptions.CancelledError\n", "request_id": null}
+2026-06-10 16:33:18 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:33:19,974", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [41640]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:33:19,976", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:33:19,978", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+2026-06-10 16:33:34 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:34 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:33:34,651", "name": "uvicorn.error", "levelname": "INFO", "message": "Shutting down", "request_id": null}
+{"asctime": "2026-06-10 16:33:34,753", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application shutdown.", "request_id": null}
+{"asctime": "2026-06-10 16:33:34,754", "name": "uvicorn.error", "levelname": "INFO", "message": "Application shutdown complete.", "request_id": null}
+{"asctime": "2026-06-10 16:33:34,755", "name": "uvicorn.error", "levelname": "INFO", "message": "Finished server process [41640]", "request_id": null, "color_message": "Finished server process [\u001b[36m%d\u001b[0m]"}
+2026-06-10 16:33:35 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:33:36 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:36 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+{"asctime": "2026-06-10 16:33:37,425", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [19004]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:33:37,426", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:33:37,428", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
+{"asctime": "2026-06-10 16:33:37,519", "name": "uvicorn.error", "levelname": "ERROR", "message": "Traceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\base_events.py\", line 725, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 195, in run\n    return runner.run(main)\n           ~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\runners.py\", line 123, in run\n    raise KeyboardInterrupt()\nKeyboardInterrupt\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\starlette\\routing.py\", line 701, in lifespan\n    await receive()\n  File \"C:\\Users\\david\\Documents\\GitHub\\seng513-202510-group-9\\.venv\\Lib\\site-packages\\uvicorn\\lifespan\\on.py\", line 137, in receive\n    return await self.receive_queue.get()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\david\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\queues.py\", line 186, in get\n    await getter\nasyncio.exceptions.CancelledError\n", "request_id": null}
+2026-06-10 16:33:38 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:38 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:33:38 - watchfiles.main - INFO - 5 changes detected
+2026-06-10 16:33:43 - watchfiles.main - INFO - 1 change detected
+2026-06-10 16:33:43 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-06-10 16:33:44 - watchfiles.main - INFO - 5 changes detected
+{"asctime": "2026-06-10 16:33:45,983", "name": "uvicorn.error", "levelname": "INFO", "message": "Started server process [43856]", "request_id": null, "color_message": "Started server process [\u001b[36m%d\u001b[0m]"}
+{"asctime": "2026-06-10 16:33:45,985", "name": "uvicorn.error", "levelname": "INFO", "message": "Waiting for application startup.", "request_id": null}
+{"asctime": "2026-06-10 16:33:45,986", "name": "uvicorn.error", "levelname": "INFO", "message": "Application startup complete.", "request_id": null}
