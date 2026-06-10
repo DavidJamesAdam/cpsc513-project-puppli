@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response
 from utils.authCheck import auth_check
+from limiter import limiter
 
 from routers.auth import router as auth_router
 from routers.petSubProfile import router as pet_profile_router
@@ -14,6 +15,7 @@ api_router.include_router(user_router, prefix="/user", tags=["User"])
 api_router.include_router(user_posts_router, prefix="/posts", tags=["User Posts"], dependencies=[Depends(auth_check)])
 
 @api_router.get("/healthCheck")
-async def health_check():
+@limiter.limit("100/minute")
+async def health_check(request: Request, response: Response):
   return {"status": "healthy"}
 

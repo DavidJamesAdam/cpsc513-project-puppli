@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 
+from limiter import limiter
 from firebase_service import db
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, Request, Response, status, Depends
 from fastapi.concurrency import run_in_threadpool
 from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
@@ -12,7 +13,8 @@ router = APIRouter()
 
 
 @router.post("/")
-async def create_user(user: User) -> User:
+@limiter.limit("5/minute")
+async def create_user(request: Request, response: Response, user: User) -> User:
   """
   Creates user in Firebase database.
   """
@@ -150,7 +152,8 @@ async def get_user(user_id: str, user=Depends(auth_check)):
 
 
 @router.patch("/update/{user_id}")
-async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def update_user(request: Request, response: Response, user_id: str, updated_fields: UpdateUser, user=Depends(auth_check)):
   """
   Update user info.
   Accepts a dict of fields with new values, not all fields need to be provided, just the ones that are changing.
@@ -191,7 +194,8 @@ async def update_user(user_id: str, updated_fields: UpdateUser, user=Depends(aut
 
 # Deletes a user and all of their associated data (posts, profile, subprofile, Firestore document, Firesbase Auth record)
 @router.delete("/{user_id}", dependencies=[Depends(require_admin)], status_code=204)
-async def delete_user(user_id: str):
+@limiter.limit("5/minute")
+async def delete_user(request: Request, response: Response, user_id: str):
   try:
     # Make sure user exists
     user_ref = db.collection('users').document(user_id)

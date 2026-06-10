@@ -13,3 +13,4 @@ pre-commit
 pytest
 pytest-asyncio
 httpx
+slowapi

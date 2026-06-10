@@ -8,6 +8,7 @@ from firebase_service import db
 from utils.authCheck import auth_check
 from models import EmailUpdate, PassUpdate
 import logging
+from limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ SESSION_EXPIRES_DAYS = 5
 
 
 @router.post("/sessionLogin")
+@limiter.limit("5/minute")
 async def session_login(request: Request):
   """
   Exchange a Firebase ID token for a long-lived session cookie stored as HttpOnly cookie.
@@ -83,6 +85,7 @@ async def session_login(request: Request):
 
 
 @router.post("/logout")
+@limiter.limit("5/minute")
 async def session_logout(request: Request):
   # expect session cookie - read and verify it to get uid
   session_cookie = request.cookies.get("session")
@@ -113,6 +116,7 @@ async def check_auth(user: dict = Depends(auth_check)):
 
 
 @router.post("/user/update-email")
+@limiter.limit("5/minute")
 async def update_email(request: Request, user: dict = Depends(auth_check)):
   try:
     data = await request.json()
@@ -140,6 +144,7 @@ async def update_email(request: Request, user: dict = Depends(auth_check)):
 
 
 @router.post("/user/update-password")
+@limiter.limit("5/minute")
 async def update_password(
     request: Request, update: PassUpdate, user: dict = Depends(auth_check)
 ):

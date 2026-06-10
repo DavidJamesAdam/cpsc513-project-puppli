@@ -2,13 +2,14 @@ from firebase_service import db
 from firebase_admin import auth
 import firebase_admin.firestore as firestore
 import firebase_admin.storage as storage
-from fastapi import APIRouter, Request, HTTPException, Depends, status, UploadFile, File, Form
+from fastapi import APIRouter, Request, HTTPException, Depends, Response, status, UploadFile, File, Form
 from fastapi.concurrency import run_in_threadpool
 from datetime import datetime, timezone
 import random
 from typing import Optional, Literal
 from utils.authCheck import auth_check, require_owner_or_admin
 from models import PostInfo, CommentCreate
+from limiter import limiter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,9 @@ router = APIRouter()
 
 
 @router.post("")
-async def create_post(caption: str = Form(...), petId: str = Form(...), image: UploadFile = File(...), user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def create_post(request: Request, response: Response, caption: str = Form(...),
+                      petId: str = Form(...), image: UploadFile = File(...), user=Depends(auth_check)):
   """
   Create a new post with an image URL, caption, and pet ID
   Requires authentication
@@ -173,7 +176,8 @@ async def read_posts(user=Depends(auth_check)):
 
 
 @router.delete("/{post_id}", status_code=204)
-async def delete_post(post_id: str, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def delete_post(request: Request, response: Response, post_id: str, user=Depends(auth_check)):
   """Delete a post if the requester is the post owner or an admin.
 
   Verifies the post exists then checks
@@ -203,7 +207,9 @@ async def delete_post(post_id: str, user=Depends(auth_check)):
 
 
 @router.post("/{post_id}/comment/")
-async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def add_comment(request: Request, response: Response, post_id: str,
+                      comment: CommentCreate, user=Depends(auth_check)):
   """Add a comment to a post"""
   try:
     post_ref = db.collection("posts").document(post_id)
@@ -244,7 +250,9 @@ async def add_comment(post_id: str, comment: CommentCreate, user=Depends(auth_ch
 
 
 @router.delete("/{post_id}/comment/{comment_uid}", status_code=204)
-async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def delete_comment(request: Request, response: Response, post_id: str,
+                        comment_uid: str, user=Depends(auth_check)):
   """Delete a comment if the requester is the comment owner or an admin.
 
   Verifies the comment exists and belongs to the given post, then checks
@@ -279,6 +287,7 @@ async def delete_comment(post_id: str, comment_uid: str, user=Depends(auth_check
 
 @router.get("/rank/", response_model=list[PostInfo])
 async def rank_posts_by_location(
+    request: Request, response: Response,
     scope: Literal["global", "province", "city"] = "global",
     province: Optional[str] = None,
     city: Optional[str] = None,
@@ -461,9 +470,9 @@ async def award_medals():
         status_code=500, detail=f"Error awarding medals: {str(e)}")
 
 
-
 @router.post("/favourite/{postId}")
-async def post_favourite(postId: str, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def post_favourite(request: Request, response: Response, postId: str, user=Depends(auth_check)):
   """Retrieves all posts favourited by currently authenticated user"""
   user_id = user["uid"]
   try:

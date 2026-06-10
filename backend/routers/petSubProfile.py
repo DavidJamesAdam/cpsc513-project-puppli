@@ -1,14 +1,16 @@
 from datetime import datetime, timezone
 from firebase_service import db
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request, Response
 from utils.authCheck import auth_check, require_owner_or_admin
 from models import PetCreate, PetInfo, UpdatePet
+from limiter import limiter
 
 router = APIRouter()
 
 
 @router.post("/create", response_model=PetInfo)
-async def create_subprofile(pet: PetCreate, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def create_subprofile(request: Request, response: Response, pet: PetCreate, user=Depends(auth_check)):
   """
   Create a new pet profile for the authenticated user
   """
@@ -175,7 +177,8 @@ async def get_pet_images(pet_id: str, user=Depends(auth_check)):
 
 
 @router.patch("/update/{pet_id}")
-async def update_pet(pet_id: str, updated_fields: UpdatePet, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def update_pet(request: Request, response: Response, pet_id: str, updated_fields: UpdatePet, user=Depends(auth_check)):
 
   try:
     doc_collection = db.collection("pets").document(pet_id)
@@ -208,7 +211,8 @@ async def update_pet(pet_id: str, updated_fields: UpdatePet, user=Depends(auth_c
 
 
 @router.delete("/delete/{pet_id}", status_code=204)
-async def delete_pet(pet_id: str, user=Depends(auth_check)):
+@limiter.limit("5/minute")
+async def delete_pet(request: Request, response: Response, pet_id: str, user=Depends(auth_check)):
 
   try:
     doc_collection = db.collection("pets").document(pet_id)
