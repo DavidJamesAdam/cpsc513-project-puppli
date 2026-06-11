@@ -8,6 +8,9 @@ from firebase_admin import auth
 from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check, require_admin, require_owner_or_admin
 from models import User, UpdateUser, UserInfo
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -32,6 +35,8 @@ async def create_user(request: Request, response: Response, user: User) -> User:
     user_record = await run_in_threadpool(auth.create_user, email=email, password=password)
     uid = user_record.uid
   except Exception as e:
+    logger.exception("user.creation.failed",
+                     extra={"action": "user.create", "email": email})
     # Map certain error messages to appropriate statuses if you want
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail=f"Error creating auth user: {e}")
@@ -64,9 +69,11 @@ async def create_user(request: Request, response: Response, user: User) -> User:
     txn2 = db.transaction()
     await run_in_threadpool(_finalize_txn, txn2, user_ref, email, displayName, city, province)
   except ValueError as ve:
+    logger.exception("user.creation.failed", extra={ve})
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT, detail=str(ve))
   except Exception as e:
+    logger.exception("user.creation.failed", extra={e})
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error writing profile: {e}")
 
@@ -93,6 +100,7 @@ def read_users():
 
     return users
   except HTTPException:
+    logger.exception("user.get.failed")
     raise
   except Exception as e:
     raise HTTPException(

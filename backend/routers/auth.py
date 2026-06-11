@@ -28,6 +28,7 @@ async def session_login(request: Request):
   body = await request.json()
   id_token = body.get("idToken")
   if not id_token:
+    logger.exception("Missing ID token")
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST, detail="Missing idToken in body"
     )
@@ -42,6 +43,7 @@ async def session_login(request: Request):
     # decoded = await run_in_threadpool(admin_auth.verify_id_token, id_token, True)
     # uid = decoded.get("uid")
   except Exception:
+    logger.exception("Failed to create session cookie")
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Failed to create session cookie",
