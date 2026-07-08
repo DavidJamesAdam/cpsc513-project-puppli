@@ -11,10 +11,11 @@ from utils.authCheck import auth_check, require_owner_or_admin
 from models import PostInfo, CommentCreate
 from limiter import limiter
 import logging
+from logger import LoggedRoute
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(route_class=LoggedRoute)
 
 
 @router.post("")
@@ -252,7 +253,7 @@ async def add_comment(request: Request, response: Response, post_id: str,
 @router.delete("/{post_id}/comment/{comment_uid}", status_code=204)
 @limiter.limit("5/minute")
 async def delete_comment(request: Request, response: Response, post_id: str,
-                        comment_uid: str, user=Depends(auth_check)):
+                         comment_uid: str, user=Depends(auth_check)):
   """Delete a comment if the requester is the comment owner or an admin.
 
   Verifies the comment exists and belongs to the given post, then checks

@@ -4,8 +4,9 @@ from fastapi import APIRouter, HTTPException, Depends, Request, Response
 from utils.authCheck import auth_check, require_owner_or_admin
 from models import PetCreate, PetInfo, UpdatePet
 from limiter import limiter
+from logger import LoggedRoute
 
-router = APIRouter()
+router = APIRouter(route_class=LoggedRoute)
 
 
 @router.post("/create", response_model=PetInfo)

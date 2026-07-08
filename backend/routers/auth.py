@@ -9,10 +9,11 @@ from firebase_service import db
 from utils.authCheck import auth_check
 from models import EmailUpdate, PassUpdate
 from limiter import limiter
+from logger import LoggedRoute
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(route_class=LoggedRoute)
 
 SESSION_EXPIRES_DAYS = 5
 

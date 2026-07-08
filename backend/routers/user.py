@@ -9,10 +9,11 @@ from google.cloud import firestore as gcfirestore
 from utils.authCheck import auth_check, require_admin, require_owner_or_admin
 from models import User, UpdateUser, UserInfo
 import logging
+from logger import LoggedRoute
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(route_class=LoggedRoute)
 
 
 @router.post("/")
